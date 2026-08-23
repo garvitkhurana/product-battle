@@ -13,6 +13,7 @@ import {
 import { WebhookHandlers } from "./webhookHandlers";
 import { constructStripeEvent } from "./stripeClient";
 import { handleFailedPayment, handlePaidCheckout } from "./routes/market";
+import { handlePaidBattleCheckout } from "./routes/battles";
 
 const app: Express = express();
 
@@ -49,6 +50,7 @@ app.post(
       await WebhookHandlers.processWebhook(req.body as Buffer, signature);
       const event = await constructStripeEvent(req.body as Buffer, signature);
       await handlePaidCheckout(event);
+      await handlePaidBattleCheckout(event);
       await handleFailedPayment(event);
       res.status(200).json({ received: true });
     } catch (error) {

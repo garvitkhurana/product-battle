@@ -30,6 +30,8 @@ export interface Product {
   ycBatch: string;
   websiteUrl: string;
   location: string;
+  source: 'yc' | 'external';
+  tags: string[];
   creatorName: string;
   creatorId: string;
   voteCount: number;
@@ -127,9 +129,34 @@ export interface Transaction {
   createdAt: string;
 }
 
+export interface Battle {
+  id: string;
+  slug: string;
+  title: string;
+  space: string;
+  description: string;
+  left: Product;
+  right: Product;
+  leftArgument: string;
+  rightArgument: string;
+  leftVoteCount: number;
+  rightVoteCount: number;
+  status: string;
+  featured: boolean;
+  createdAt: string;
+}
+
+export interface BattleCheckoutInput {
+  battleId: string;
+  side: 'left' | 'right';
+  disclosureAccepted: boolean;
+}
+
 export type ListProductsParams = {
 search?: string;
 category?: string;
+tag?: string;
+source?: 'yc' | 'external';
 sort?: ListProductsSort;
 };
 

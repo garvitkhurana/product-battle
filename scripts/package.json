@@ -5,7 +5,14 @@
   "type": "module",
   "scripts": {
     "hello": "tsx ./src/hello.ts",
+    "sync-yc-companies": "node ./sync-yc-companies.mjs",
+    "import-yc-companies": "tsx ./src/import-yc-companies.ts",
+    "import-battles": "tsx ./src/import-battles.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@workspace/db": "workspace:*",
+    "drizzle-orm": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
