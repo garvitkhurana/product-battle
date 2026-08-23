@@ -164,66 +164,6 @@ export const UpdateProductStatusResponse = zod.object({
 
 
 /**
- * @summary Get community rating rankings
- */
-export const GetRankingsResponseItem = zod.object({
-  "rank": zod.int(),
-  "product": zod.object({
-  "id": zod.string(),
-  "slug": zod.string(),
-  "title": zod.string(),
-  "shortDescription": zod.string(),
-  "description": zod.string(),
-  "imageUrl": zod.string(),
-  "category": zod.string(),
-  "ycBatch": zod.string(),
-  "websiteUrl": zod.string(),
-  "location": zod.string(),
-  "creatorName": zod.string(),
-  "creatorId": zod.string(),
-  "voteCount": zod.int(),
-  "ratingAverage": zod.number(),
-  "totalRaised": zod.number(),
-  "status": zod.enum(['pending', 'published', 'paused', 'rejected']),
-  "featured": zod.boolean(),
-  "createdAt": zod.coerce.date()
-})
-})
-export const GetRankingsResponse = zod.array(GetRankingsResponseItem)
-
-
-/**
- * @summary Get owner metrics and company profiles
- */
-export const GetCreatorDashboardResponse = zod.object({
-  "totalVotes": zod.int(),
-  "totalRaised": zod.number(),
-  "publishedCount": zod.int(),
-  "pendingCount": zod.int(),
-  "products": zod.array(zod.object({
-  "id": zod.string(),
-  "slug": zod.string(),
-  "title": zod.string(),
-  "shortDescription": zod.string(),
-  "description": zod.string(),
-  "imageUrl": zod.string(),
-  "category": zod.string(),
-  "ycBatch": zod.string(),
-  "websiteUrl": zod.string(),
-  "location": zod.string(),
-  "creatorName": zod.string(),
-  "creatorId": zod.string(),
-  "voteCount": zod.int(),
-  "ratingAverage": zod.number(),
-  "totalRaised": zod.number(),
-  "status": zod.enum(['pending', 'published', 'paused', 'rejected']),
-  "featured": zod.boolean(),
-  "createdAt": zod.coerce.date()
-}))
-})
-
-
-/**
  * @summary List rating receipts and payment history
  */
 export const listTransactionsResponseRatingMax = 5;
@@ -246,27 +186,6 @@ export const ListTransactionsResponseItem = zod.object({
   "selectedParticipantName": zod.string().nullable()
 })
 export const ListTransactionsResponse = zod.array(ListTransactionsResponseItem)
-
-
-/**
- * @summary Create a Stripe Checkout session for one company rating
- */
-export const createCheckoutBodyRatingMax = 5;
-
-
-
-export const CreateCheckoutBody = zod.object({
-  "productId": zod.string(),
-  "rating": zod.int().min(1).max(createCheckoutBodyRatingMax),
-  "disclosureAccepted": zod.boolean()
-})
-
-export const CreateCheckoutResponse = zod.object({
-  "paymentId": zod.string(),
-  "checkoutUrl": zod.url(),
-  "amount": zod.number(),
-  "disclosure": zod.string()
-})
 
 
 /**
@@ -298,8 +217,16 @@ export const GetPaymentResponse = zod.object({
 
 
 /**
- * @summary List public company battles
+ * @summary List launch comparisons
  */
+export const listBattlesResponseParticipantAConfidenceMin = 0;
+export const listBattlesResponseParticipantAConfidenceMax = 100;
+
+export const listBattlesResponseParticipantBConfidenceMin = 0;
+export const listBattlesResponseParticipantBConfidenceMax = 100;
+
+
+
 export const ListBattlesResponseItem = zod.object({
   "id": zod.string(),
   "slug": zod.string(),
@@ -334,11 +261,13 @@ export const ListBattlesResponseItem = zod.object({
   "location": zod.string(),
   "isYcCompany": zod.boolean()
 }),
-  "participantAVotes": zod.int(),
-  "participantBVotes": zod.int(),
-  "totalVotes": zod.int(),
+  "comparisonCount": zod.int(),
   "participantAPercentage": zod.number(),
   "participantBPercentage": zod.number(),
+  "participantARating": zod.int(),
+  "participantBRating": zod.int(),
+  "participantAConfidence": zod.int().min(listBattlesResponseParticipantAConfidenceMin).max(listBattlesResponseParticipantAConfidenceMax),
+  "participantBConfidence": zod.int().min(listBattlesResponseParticipantBConfidenceMin).max(listBattlesResponseParticipantBConfidenceMax),
   "status": zod.enum(['active', 'completed']),
   "winnerParticipantId": zod.string().nullable(),
   "createdAt": zod.coerce.date()
@@ -422,11 +351,19 @@ export const CreateBattleResponse = zod.object({
 
 
 /**
- * @summary Get a head-to-head company battle
+ * @summary Get a launch comparison
  */
 export const GetBattleParams = zod.object({
   "slug": zod.coerce.string()
 })
+
+export const getBattleResponseParticipantAConfidenceMin = 0;
+export const getBattleResponseParticipantAConfidenceMax = 100;
+
+export const getBattleResponseParticipantBConfidenceMin = 0;
+export const getBattleResponseParticipantBConfidenceMax = 100;
+
+
 
 export const GetBattleResponse = zod.object({
   "id": zod.string(),
@@ -462,11 +399,13 @@ export const GetBattleResponse = zod.object({
   "location": zod.string(),
   "isYcCompany": zod.boolean()
 }),
-  "participantAVotes": zod.int(),
-  "participantBVotes": zod.int(),
-  "totalVotes": zod.int(),
+  "comparisonCount": zod.int(),
   "participantAPercentage": zod.number(),
   "participantBPercentage": zod.number(),
+  "participantARating": zod.int(),
+  "participantBRating": zod.int(),
+  "participantAConfidence": zod.int().min(getBattleResponseParticipantAConfidenceMin).max(getBattleResponseParticipantAConfidenceMax),
+  "participantBConfidence": zod.int().min(getBattleResponseParticipantBConfidenceMin).max(getBattleResponseParticipantBConfidenceMax),
   "status": zod.enum(['active', 'completed']),
   "winnerParticipantId": zod.string().nullable(),
   "createdAt": zod.coerce.date()
@@ -474,19 +413,227 @@ export const GetBattleResponse = zod.object({
 
 
 /**
- * @summary Create a Stripe Checkout session for a battle vote
+ * @summary Start an anonymous perception session
  */
-export const CreateBattleCheckoutBody = zod.object({
-  "battleId": zod.string(),
-  "participantId": zod.string(),
-  "disclosureAccepted": zod.boolean()
+export const CreatePerceptionSessionResponse = zod.object({
+  "sessionToken": zod.string(),
+  "expiresAt": zod.coerce.date()
 })
 
-export const CreateBattleCheckoutResponse = zod.object({
-  "paymentId": zod.string(),
-  "checkoutUrl": zod.url(),
-  "amount": zod.number(),
-  "disclosure": zod.string()
+
+/**
+ * @summary Record a free pairwise preference
+ */
+export const recordPerceptionSwipeBodySessionTokenMin = 20;
+
+export const recordPerceptionSwipeBodyRequestIdMin = 8;
+export const recordPerceptionSwipeBodyRequestIdMax = 120;
+
+
+
+export const RecordPerceptionSwipeBody = zod.object({
+  "sessionToken": zod.string().min(recordPerceptionSwipeBodySessionTokenMin),
+  "battleId": zod.string(),
+  "winnerParticipantId": zod.string(),
+  "requestId": zod.string().min(recordPerceptionSwipeBodyRequestIdMin).max(recordPerceptionSwipeBodyRequestIdMax)
 })
+
+export const recordPerceptionSwipeResponseParticipantAConfidenceMin = 0;
+export const recordPerceptionSwipeResponseParticipantAConfidenceMax = 100;
+
+export const recordPerceptionSwipeResponseParticipantBConfidenceMin = 0;
+export const recordPerceptionSwipeResponseParticipantBConfidenceMax = 100;
+
+export const recordPerceptionSwipeResponseTasteDnaConfidenceMin = 0;
+export const recordPerceptionSwipeResponseTasteDnaConfidenceMax = 100;
+
+export const recordPerceptionSwipeResponseTasteDnaAxesItemScoreMax = 5;
+
+export const recordPerceptionSwipeResponseTasteDnaAxesItemConfidenceMin = 0;
+export const recordPerceptionSwipeResponseTasteDnaAxesItemConfidenceMax = 100;
+
+
+
+export const RecordPerceptionSwipeResponse = zod.object({
+  "comparisonCount": zod.int(),
+  "participantARating": zod.int(),
+  "participantBRating": zod.int(),
+  "participantAConfidence": zod.int().min(recordPerceptionSwipeResponseParticipantAConfidenceMin).max(recordPerceptionSwipeResponseParticipantAConfidenceMax),
+  "participantBConfidence": zod.int().min(recordPerceptionSwipeResponseParticipantBConfidenceMin).max(recordPerceptionSwipeResponseParticipantBConfidenceMax),
+  "tasteDna": zod.object({
+  "comparisonCount": zod.int(),
+  "confidence": zod.int().min(recordPerceptionSwipeResponseTasteDnaConfidenceMin).max(recordPerceptionSwipeResponseTasteDnaConfidenceMax),
+  "canShare": zod.boolean(),
+  "headline": zod.string(),
+  "axes": zod.array(zod.object({
+  "key": zod.string(),
+  "label": zod.string(),
+  "score": zod.int().min(1).max(recordPerceptionSwipeResponseTasteDnaAxesItemScoreMax),
+  "confidence": zod.int().min(recordPerceptionSwipeResponseTasteDnaAxesItemConfidenceMin).max(recordPerceptionSwipeResponseTasteDnaAxesItemConfidenceMax)
+})),
+  "closestCompanies": zod.array(zod.string()),
+  "completedBattleIds": zod.array(zod.string())
+})
+})
+
+
+/**
+ * @summary Get a visitor's current taste DNA
+ */
+export const getTasteDnaBodySessionTokenMin = 20;
+
+
+
+export const GetTasteDnaBody = zod.object({
+  "sessionToken": zod.string().min(getTasteDnaBodySessionTokenMin)
+})
+
+export const getTasteDnaResponseConfidenceMin = 0;
+export const getTasteDnaResponseConfidenceMax = 100;
+
+export const getTasteDnaResponseAxesItemScoreMax = 5;
+
+export const getTasteDnaResponseAxesItemConfidenceMin = 0;
+export const getTasteDnaResponseAxesItemConfidenceMax = 100;
+
+
+
+export const GetTasteDnaResponse = zod.object({
+  "comparisonCount": zod.int(),
+  "confidence": zod.int().min(getTasteDnaResponseConfidenceMin).max(getTasteDnaResponseConfidenceMax),
+  "canShare": zod.boolean(),
+  "headline": zod.string(),
+  "axes": zod.array(zod.object({
+  "key": zod.string(),
+  "label": zod.string(),
+  "score": zod.int().min(1).max(getTasteDnaResponseAxesItemScoreMax),
+  "confidence": zod.int().min(getTasteDnaResponseAxesItemConfidenceMin).max(getTasteDnaResponseAxesItemConfidenceMax)
+})),
+  "closestCompanies": zod.array(zod.string()),
+  "completedBattleIds": zod.array(zod.string())
+})
+
+
+/**
+ * @summary Get a company perception profile
+ */
+export const GetCompanyPerceptionParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const getCompanyPerceptionResponseConfidenceMin = 0;
+export const getCompanyPerceptionResponseConfidenceMax = 100;
+
+export const getCompanyPerceptionResponseAxesItemScoreMax = 5;
+
+export const getCompanyPerceptionResponseAxesItemConfidenceMin = 0;
+export const getCompanyPerceptionResponseAxesItemConfidenceMax = 100;
+
+
+
+export const GetCompanyPerceptionResponse = zod.object({
+  "participant": zod.object({
+  "id": zod.string(),
+  "productId": zod.string().nullable(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "shortDescription": zod.string(),
+  "description": zod.string(),
+  "imageUrl": zod.string(),
+  "websiteUrl": zod.string(),
+  "ycBatch": zod.string().nullish(),
+  "category": zod.string(),
+  "location": zod.string(),
+  "isYcCompany": zod.boolean()
+}),
+  "rating": zod.int(),
+  "comparisonCount": zod.int(),
+  "confidence": zod.int().min(getCompanyPerceptionResponseConfidenceMin).max(getCompanyPerceptionResponseConfidenceMax),
+  "axes": zod.array(zod.object({
+  "key": zod.string(),
+  "label": zod.string(),
+  "score": zod.int().min(1).max(getCompanyPerceptionResponseAxesItemScoreMax),
+  "confidence": zod.int().min(getCompanyPerceptionResponseAxesItemConfidenceMin).max(getCompanyPerceptionResponseAxesItemConfidenceMax)
+})),
+  "words": zod.array(zod.object({
+  "word": zod.string(),
+  "count": zod.int()
+})),
+  "affinities": zod.array(zod.string()),
+  "profileStatus": zod.enum(['collecting', 'emerging'])
+})
+
+
+/**
+ * @summary Add a one-word reaction after meaningful participation
+ */
+export const createPerceptionWordBodySessionTokenMin = 20;
+
+export const createPerceptionWordBodyWordMin = 2;
+export const createPerceptionWordBodyWordMax = 32;
+
+
+
+export const CreatePerceptionWordBody = zod.object({
+  "sessionToken": zod.string().min(createPerceptionWordBodySessionTokenMin),
+  "participantId": zod.string(),
+  "word": zod.string().min(createPerceptionWordBodyWordMin).max(createPerceptionWordBodyWordMax)
+})
+
+export const CreatePerceptionWordResponse = zod.object({
+  "word": zod.string(),
+  "count": zod.int()
+})
+
+
+/**
+ * @summary Request to claim a company perception page
+ */
+export const createCompanyClaimBodyMessageMin = 10;
+export const createCompanyClaimBodyMessageMax = 1000;
+
+
+
+export const CreateCompanyClaimBody = zod.object({
+  "participantId": zod.string(),
+  "message": zod.string().min(createCompanyClaimBodyMessageMin).max(createCompanyClaimBodyMessageMax)
+})
+
+export const CreateCompanyClaimResponse = zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['pending']),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List confidence-aware ecosystem map points
+ */
+export const getPerceptionMapResponseConfidenceMin = 0;
+export const getPerceptionMapResponseConfidenceMax = 100;
+
+
+
+export const GetPerceptionMapResponseItem = zod.object({
+  "participant": zod.object({
+  "id": zod.string(),
+  "productId": zod.string().nullable(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "shortDescription": zod.string(),
+  "description": zod.string(),
+  "imageUrl": zod.string(),
+  "websiteUrl": zod.string(),
+  "ycBatch": zod.string().nullish(),
+  "category": zod.string(),
+  "location": zod.string(),
+  "isYcCompany": zod.boolean()
+}),
+  "x": zod.number(),
+  "y": zod.number(),
+  "cluster": zod.string(),
+  "confidence": zod.int().min(getPerceptionMapResponseConfidenceMin).max(getPerceptionMapResponseConfidenceMax)
+})
+export const GetPerceptionMapResponse = zod.array(GetPerceptionMapResponseItem)
 
 

@@ -1,0 +1,98 @@
+# YC Battle — Final Plan
+
+## The pivot in one line
+
+**From:** pay $0.99 to move a bar on a company you don't own.
+**To:** swipe free, get your taste DNA, and give every company a perception profile — then publish the map of the whole ecosystem.
+
+Same aesthetic, same domain, same battles. The money moves off the user and onto the companies.
+
+---
+
+## Phase 0 — Stop the bleeding (this week)
+
+Do these before building anything new.
+
+1. **Turn off paid voting.** Kill the modal in your screenshot entirely.
+2. **Remove the K.O. loser state.** It's your best animation and your worst strategic decision.
+3. **Fix the hover-navigation bug** — hovering the VS badge yanks you to the detail page.
+4. **Add the non-affiliation disclaimer.** Prominent, footer + about page.
+5. **Cut 73 battles to ~10.** Density beats breadth when you have no votes.
+6. **Drop `maximum-scale=1`** from the viewport tag.
+7. **Add a static `og:image`** as a stopgap; SSR the shell so scrapers see content.
+
+## Phase 1 — The engine (weeks 1–2)
+
+**Swipe.** Full-screen A vs B, free, no account, no limit. Keyboard arrows on desktop. This is the whole product — everything else is output.
+
+**Elo behind it.** Pairwise → live ranking. Store session fingerprint, rate-limit, log everything.
+
+**Tag your companies** on 5 axes so profiles can be computed: infra↔consumer, challenger↔incumbent, craft↔scale, batch era, regulated↔pure software.
+
+**Seed real data.** 200–300 friends and Twitter mutuals swiping before any public post. Nothing may ever display `0 VOTES`.
+
+## Phase 2 — The share loop (weeks 2–3)
+
+**Personal DNA card** at ~20 swipes. Every line a real number:
+
+> THE INFRA CONTRARIAN · backed the smaller company 11/15 · 78% infra · rarest 6% · closest match: Render, Supabase, Deel
+
+Show a confidence indicator. Let them keep swiping to sharpen it. One-tap share to X with the card as image.
+
+**Dynamic OG images** per battle and per company. `/companies/linear` previews as a live perception card. This is non-negotiable — without it, nothing you post anywhere renders.
+
+## Phase 3 — Company side (weeks 3–4)
+
+**One-word prompt** after ~10 swipes. Threshold at **5+ independent submissions** before a word appears — auto-filters garbage, makes every visible word meaningful, gives you a clean answer when a company complains.
+
+**Company pages:** word cloud + backer profile ("backed by craft-leaning infra people, 71% contrarian") + affinity graph ("people who back Linear also back Figma, Vercel, Raycast").
+
+**Claim-your-page flow** so founders are participants, not targets.
+
+## Phase 4 — The map (week 5)
+
+Cluster every company by who backs them. One image: the YC ecosystem arranged by taste, with visible clusters and the unexpected bridges between them.
+
+**This is the launch asset.** It's the only thing that works on all three platforms.
+
+---
+
+## Launch sequence
+
+**Hacker News** — Tuesday–Thursday, 7–9am PT.
+
+> `Show HN: I mapped the YC ecosystem from 2M taste comparisons`
+
+First comment, posted immediately: methodology, how you handled ballot-stuffing and transitivity violations, where the data is weak, the non-affiliation note, and a CSV link. Volunteer the criticism before they find it — HN rewards that more than polish. Then sit in the thread six hours and answer everything, especially the hostile stuff. Never ask for upvotes.
+
+**X** — the map goes out as a native image. Then DM founders their company page. They quote-tweet their own cluster position, and that's your distribution — no premium account required, because it isn't your account doing the work.
+
+**LinkedIn** — native image, insight framing ("what 8,000 people believe about the YC ecosystem"), link in the **first comment** not the body. Tag 3–5 founders max.
+
+---
+
+## Money
+
+Consumer side free forever. Sell to the subjects, not the audience:
+
+- **Perception dashboard** — sentiment over time, word drift after a launch, competitor benchmarking
+- **Sponsored/custom brackets** — a VC running its portfolio through the machine
+- **Data licensing** — the affinity graph
+
+Companies already pay agencies five figures for worse versions of this.
+
+---
+
+## The three ways this fails
+
+**Fabricated profiles.** If someone screenshots two contradictory results from the same swipes, you're a toy. Show confidence honestly; suppress axes with thin data.
+
+**Adversarial founders.** A cloud full of "overhyped" turns your best amplifiers into enemies. Threshold hard, cap negative display, ship the claim flow.
+
+**Empty launch.** Volume is the product. Do not post publicly until the numbers are real.
+
+---
+
+## What to do Monday
+
+Turn off payments. Ship the swipe. Get 300 people swiping. Everything else follows from having data.

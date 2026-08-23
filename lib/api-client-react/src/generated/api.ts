@@ -21,18 +21,24 @@ import type {
 
 import type {
   Battle,
-  BattleCheckoutInput,
   BattleInput,
   BattleSubmission,
-  CheckoutInput,
-  CheckoutSession,
-  CreatorDashboard,
+  CompanyClaim,
+  CompanyClaimInput,
+  CompanyPerception,
   HealthStatus,
   ListProductsParams,
+  PerceptionMapPoint,
+  PerceptionSession,
+  PerceptionSessionInput,
+  PerceptionSwipeInput,
+  PerceptionSwipeResult,
+  PerceptionWord,
+  PerceptionWordInput,
   Product,
   ProductInput,
-  Ranking,
   StatusUpdate,
+  TasteDna,
   Transaction
 } from './api.schemas';
 
@@ -445,160 +451,6 @@ export const useUpdateProductStatus = <TError = ErrorType<void>,
       return useMutation(getUpdateProductStatusMutationOptions(options));
     }
 
-export const getGetRankingsUrl = () => {
-
-
-
-
-  return `/api/rankings`
-}
-
-/**
- * @summary Get community rating rankings
- */
-export const getRankings = async ( options?: Parameters<typeof customFetch>[1]): Promise<Ranking[]> => {
-
-  return customFetch<Ranking[]>(getGetRankingsUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getGetRankingsQueryKey = () => {
-    return [
-    `/api/rankings`
-    ] as const;
-    }
-
-
-export const getGetRankingsQueryOptions = <TData = Awaited<ReturnType<typeof getRankings>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRankings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetRankingsQueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRankings>>> = ({ signal }) => getRankings({ signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRankings>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetRankingsQueryResult = NonNullable<Awaited<ReturnType<typeof getRankings>>>
-export type GetRankingsQueryError = ErrorType<unknown>
-
-
-/**
- * @summary Get community rating rankings
- */
-
-export function useGetRankings<TData = Awaited<ReturnType<typeof getRankings>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRankings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getGetRankingsQueryOptions(options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-
-export const getGetCreatorDashboardUrl = () => {
-
-
-
-
-  return `/api/creator/dashboard`
-}
-
-/**
- * @summary Get owner metrics and company profiles
- */
-export const getCreatorDashboard = async ( options?: Parameters<typeof customFetch>[1]): Promise<CreatorDashboard> => {
-
-  return customFetch<CreatorDashboard>(getGetCreatorDashboardUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getGetCreatorDashboardQueryKey = () => {
-    return [
-    `/api/creator/dashboard`
-    ] as const;
-    }
-
-
-export const getGetCreatorDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getCreatorDashboard>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCreatorDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getGetCreatorDashboardQueryKey();
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCreatorDashboard>>> = ({ signal }) => getCreatorDashboard({ signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCreatorDashboard>>, TError, TData> & { queryKey: QueryKey }
-}
-
-export type GetCreatorDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getCreatorDashboard>>>
-export type GetCreatorDashboardQueryError = ErrorType<void>
-
-
-/**
- * @summary Get owner metrics and company profiles
- */
-
-export function useGetCreatorDashboard<TData = Awaited<ReturnType<typeof getCreatorDashboard>>, TError = ErrorType<void>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCreatorDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
-
- ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-
-  const queryOptions = getGetCreatorDashboardQueryOptions(options)
-
-  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
-
-
-
-
-
-
 export const getListTransactionsUrl = () => {
 
 
@@ -675,77 +527,6 @@ export function useListTransactions<TData = Awaited<ReturnType<typeof listTransa
 
 
 
-
-export const getCreateCheckoutUrl = () => {
-
-
-
-
-  return `/api/checkout`
-}
-
-/**
- * @summary Create a Stripe Checkout session for one company rating
- */
-export const createCheckout = async (checkoutInput: CheckoutInput, options?: Parameters<typeof customFetch>[1]): Promise<CheckoutSession> => {
-
-  return customFetch<CheckoutSession>(getCreateCheckoutUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(checkoutInput)
-  }
-);}
-
-
-
-
-
-export const getCreateCheckoutMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCheckout>>, TError,{data: BodyType<CheckoutInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createCheckout>>, TError,{data: BodyType<CheckoutInput>}, TContext> => {
-
-const mutationKey = ['createCheckout'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCheckout>>, {data: BodyType<CheckoutInput>}> = (props) => {
-          const {data} = props ?? {};
-
-          return  createCheckout(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type CreateCheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof createCheckout>>>
-    export type CreateCheckoutMutationBody = BodyType<CheckoutInput>
-    export type CreateCheckoutMutationError = ErrorType<void>
-
-    /**
- * @summary Create a Stripe Checkout session for one company rating
- */
-export const useCreateCheckout = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCheckout>>, TError,{data: BodyType<CheckoutInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof createCheckout>>,
-        TError,
-        {data: BodyType<CheckoutInput>},
-        TContext
-      > => {
-      return useMutation(getCreateCheckoutMutationOptions(options));
-    }
 
 export const getGetPaymentUrl = (id: string,) => {
 
@@ -833,7 +614,7 @@ export const getListBattlesUrl = () => {
 }
 
 /**
- * @summary List public company battles
+ * @summary List launch comparisons
  */
 export const listBattles = async ( options?: Parameters<typeof customFetch>[1]): Promise<Battle[]> => {
 
@@ -880,7 +661,7 @@ export type ListBattlesQueryError = ErrorType<unknown>
 
 
 /**
- * @summary List public company battles
+ * @summary List launch comparisons
  */
 
 export function useListBattles<TData = Awaited<ReturnType<typeof listBattles>>, TError = ErrorType<unknown>>(
@@ -981,7 +762,7 @@ export const getGetBattleUrl = (slug: string,) => {
 }
 
 /**
- * @summary Get a head-to-head company battle
+ * @summary Get a launch comparison
  */
 export const getBattle = async (slug: string, options?: Parameters<typeof customFetch>[1]): Promise<Battle> => {
 
@@ -1028,7 +809,7 @@ export type GetBattleQueryError = ErrorType<void>
 
 
 /**
- * @summary Get a head-to-head company battle
+ * @summary Get a launch comparison
  */
 
 export function useGetBattle<TData = Awaited<ReturnType<typeof getBattle>>, TError = ErrorType<void>>(
@@ -1049,25 +830,25 @@ export function useGetBattle<TData = Awaited<ReturnType<typeof getBattle>>, TErr
 
 
 
-export const getCreateBattleCheckoutUrl = () => {
+export const getCreatePerceptionSessionUrl = () => {
 
 
 
 
-  return `/api/battle-checkout`
+  return `/api/perception/sessions`
 }
 
 /**
- * @summary Create a Stripe Checkout session for a battle vote
+ * @summary Start an anonymous perception session
  */
-export const createBattleCheckout = async (battleCheckoutInput: BattleCheckoutInput, options?: Parameters<typeof customFetch>[1]): Promise<CheckoutSession> => {
+export const createPerceptionSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<PerceptionSession> => {
 
-  return customFetch<CheckoutSession>(getCreateBattleCheckoutUrl(),
+  return customFetch<PerceptionSession>(getCreatePerceptionSessionUrl(),
   {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(battleCheckoutInput)
+    method: 'POST'
+
+
   }
 );}
 
@@ -1075,11 +856,11 @@ export const createBattleCheckout = async (battleCheckoutInput: BattleCheckoutIn
 
 
 
-export const getCreateBattleCheckoutMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBattleCheckout>>, TError,{data: BodyType<BattleCheckoutInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createBattleCheckout>>, TError,{data: BodyType<BattleCheckoutInput>}, TContext> => {
+export const getCreatePerceptionSessionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPerceptionSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPerceptionSession>>, TError,void, TContext> => {
 
-const mutationKey = ['createBattleCheckout'];
+const mutationKey = ['createPerceptionSession'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1089,10 +870,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBattleCheckout>>, {data: BodyType<BattleCheckoutInput>}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPerceptionSession>>, void> = () => {
 
-          return  createBattleCheckout(data,requestOptions)
+
+          return  createPerceptionSession(requestOptions)
         }
 
 
@@ -1102,21 +883,459 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type CreateBattleCheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof createBattleCheckout>>>
-    export type CreateBattleCheckoutMutationBody = BodyType<BattleCheckoutInput>
-    export type CreateBattleCheckoutMutationError = ErrorType<void>
+    export type CreatePerceptionSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createPerceptionSession>>>
+
+    export type CreatePerceptionSessionMutationError = ErrorType<unknown>
 
     /**
- * @summary Create a Stripe Checkout session for a battle vote
+ * @summary Start an anonymous perception session
  */
-export const useCreateBattleCheckout = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBattleCheckout>>, TError,{data: BodyType<BattleCheckoutInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+export const useCreatePerceptionSession = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPerceptionSession>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
-        Awaited<ReturnType<typeof createBattleCheckout>>,
+        Awaited<ReturnType<typeof createPerceptionSession>>,
         TError,
-        {data: BodyType<BattleCheckoutInput>},
+        void,
         TContext
       > => {
-      return useMutation(getCreateBattleCheckoutMutationOptions(options));
+      return useMutation(getCreatePerceptionSessionMutationOptions(options));
     }
+
+export const getRecordPerceptionSwipeUrl = () => {
+
+
+
+
+  return `/api/perception/swipes`
+}
+
+/**
+ * @summary Record a free pairwise preference
+ */
+export const recordPerceptionSwipe = async (perceptionSwipeInput: PerceptionSwipeInput, options?: Parameters<typeof customFetch>[1]): Promise<PerceptionSwipeResult> => {
+
+  return customFetch<PerceptionSwipeResult>(getRecordPerceptionSwipeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(perceptionSwipeInput)
+  }
+);}
+
+
+
+
+
+export const getRecordPerceptionSwipeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordPerceptionSwipe>>, TError,{data: BodyType<PerceptionSwipeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof recordPerceptionSwipe>>, TError,{data: BodyType<PerceptionSwipeInput>}, TContext> => {
+
+const mutationKey = ['recordPerceptionSwipe'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof recordPerceptionSwipe>>, {data: BodyType<PerceptionSwipeInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  recordPerceptionSwipe(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RecordPerceptionSwipeMutationResult = NonNullable<Awaited<ReturnType<typeof recordPerceptionSwipe>>>
+    export type RecordPerceptionSwipeMutationBody = BodyType<PerceptionSwipeInput>
+    export type RecordPerceptionSwipeMutationError = ErrorType<void>
+
+    /**
+ * @summary Record a free pairwise preference
+ */
+export const useRecordPerceptionSwipe = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof recordPerceptionSwipe>>, TError,{data: BodyType<PerceptionSwipeInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof recordPerceptionSwipe>>,
+        TError,
+        {data: BodyType<PerceptionSwipeInput>},
+        TContext
+      > => {
+      return useMutation(getRecordPerceptionSwipeMutationOptions(options));
+    }
+
+export const getGetTasteDnaUrl = () => {
+
+
+
+
+  return `/api/perception/dna`
+}
+
+/**
+ * @summary Get a visitor's current taste DNA
+ */
+export const getTasteDna = async (perceptionSessionInput: PerceptionSessionInput, options?: Parameters<typeof customFetch>[1]): Promise<TasteDna> => {
+
+  return customFetch<TasteDna>(getGetTasteDnaUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(perceptionSessionInput)
+  }
+);}
+
+
+
+
+
+export const getGetTasteDnaMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getTasteDna>>, TError,{data: BodyType<PerceptionSessionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof getTasteDna>>, TError,{data: BodyType<PerceptionSessionInput>}, TContext> => {
+
+const mutationKey = ['getTasteDna'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof getTasteDna>>, {data: BodyType<PerceptionSessionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  getTasteDna(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GetTasteDnaMutationResult = NonNullable<Awaited<ReturnType<typeof getTasteDna>>>
+    export type GetTasteDnaMutationBody = BodyType<PerceptionSessionInput>
+    export type GetTasteDnaMutationError = ErrorType<void>
+
+    /**
+ * @summary Get a visitor's current taste DNA
+ */
+export const useGetTasteDna = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof getTasteDna>>, TError,{data: BodyType<PerceptionSessionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof getTasteDna>>,
+        TError,
+        {data: BodyType<PerceptionSessionInput>},
+        TContext
+      > => {
+      return useMutation(getGetTasteDnaMutationOptions(options));
+    }
+
+export const getGetCompanyPerceptionUrl = (slug: string,) => {
+
+
+
+
+  return `/api/perception/companies/${slug}`
+}
+
+/**
+ * @summary Get a company perception profile
+ */
+export const getCompanyPerception = async (slug: string, options?: Parameters<typeof customFetch>[1]): Promise<CompanyPerception> => {
+
+  return customFetch<CompanyPerception>(getGetCompanyPerceptionUrl(slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCompanyPerceptionQueryKey = (slug: string,) => {
+    return [
+    `/api/perception/companies/${slug}`
+    ] as const;
+    }
+
+
+export const getGetCompanyPerceptionQueryOptions = <TData = Awaited<ReturnType<typeof getCompanyPerception>>, TError = ErrorType<void>>(slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanyPerception>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCompanyPerceptionQueryKey(slug);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCompanyPerception>>> = ({ signal }) => getCompanyPerception(slug, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: slug !== null && slug !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCompanyPerception>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCompanyPerceptionQueryResult = NonNullable<Awaited<ReturnType<typeof getCompanyPerception>>>
+export type GetCompanyPerceptionQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a company perception profile
+ */
+
+export function useGetCompanyPerception<TData = Awaited<ReturnType<typeof getCompanyPerception>>, TError = ErrorType<void>>(
+ slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCompanyPerception>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCompanyPerceptionQueryOptions(slug,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreatePerceptionWordUrl = () => {
+
+
+
+
+  return `/api/perception/words`
+}
+
+/**
+ * @summary Add a one-word reaction after meaningful participation
+ */
+export const createPerceptionWord = async (perceptionWordInput: PerceptionWordInput, options?: Parameters<typeof customFetch>[1]): Promise<PerceptionWord> => {
+
+  return customFetch<PerceptionWord>(getCreatePerceptionWordUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(perceptionWordInput)
+  }
+);}
+
+
+
+
+
+export const getCreatePerceptionWordMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPerceptionWord>>, TError,{data: BodyType<PerceptionWordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPerceptionWord>>, TError,{data: BodyType<PerceptionWordInput>}, TContext> => {
+
+const mutationKey = ['createPerceptionWord'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPerceptionWord>>, {data: BodyType<PerceptionWordInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPerceptionWord(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePerceptionWordMutationResult = NonNullable<Awaited<ReturnType<typeof createPerceptionWord>>>
+    export type CreatePerceptionWordMutationBody = BodyType<PerceptionWordInput>
+    export type CreatePerceptionWordMutationError = ErrorType<void>
+
+    /**
+ * @summary Add a one-word reaction after meaningful participation
+ */
+export const useCreatePerceptionWord = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPerceptionWord>>, TError,{data: BodyType<PerceptionWordInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPerceptionWord>>,
+        TError,
+        {data: BodyType<PerceptionWordInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePerceptionWordMutationOptions(options));
+    }
+
+export const getCreateCompanyClaimUrl = () => {
+
+
+
+
+  return `/api/perception/claims`
+}
+
+/**
+ * @summary Request to claim a company perception page
+ */
+export const createCompanyClaim = async (companyClaimInput: CompanyClaimInput, options?: Parameters<typeof customFetch>[1]): Promise<CompanyClaim> => {
+
+  return customFetch<CompanyClaim>(getCreateCompanyClaimUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(companyClaimInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCompanyClaimMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyClaim>>, TError,{data: BodyType<CompanyClaimInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCompanyClaim>>, TError,{data: BodyType<CompanyClaimInput>}, TContext> => {
+
+const mutationKey = ['createCompanyClaim'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCompanyClaim>>, {data: BodyType<CompanyClaimInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCompanyClaim(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCompanyClaimMutationResult = NonNullable<Awaited<ReturnType<typeof createCompanyClaim>>>
+    export type CreateCompanyClaimMutationBody = BodyType<CompanyClaimInput>
+    export type CreateCompanyClaimMutationError = ErrorType<void>
+
+    /**
+ * @summary Request to claim a company perception page
+ */
+export const useCreateCompanyClaim = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCompanyClaim>>, TError,{data: BodyType<CompanyClaimInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCompanyClaim>>,
+        TError,
+        {data: BodyType<CompanyClaimInput>},
+        TContext
+      > => {
+      return useMutation(getCreateCompanyClaimMutationOptions(options));
+    }
+
+export const getGetPerceptionMapUrl = () => {
+
+
+
+
+  return `/api/perception/map`
+}
+
+/**
+ * @summary List confidence-aware ecosystem map points
+ */
+export const getPerceptionMap = async ( options?: Parameters<typeof customFetch>[1]): Promise<PerceptionMapPoint[]> => {
+
+  return customFetch<PerceptionMapPoint[]>(getGetPerceptionMapUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPerceptionMapQueryKey = () => {
+    return [
+    `/api/perception/map`
+    ] as const;
+    }
+
+
+export const getGetPerceptionMapQueryOptions = <TData = Awaited<ReturnType<typeof getPerceptionMap>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPerceptionMap>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPerceptionMapQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPerceptionMap>>> = ({ signal }) => getPerceptionMap({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPerceptionMap>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPerceptionMapQueryResult = NonNullable<Awaited<ReturnType<typeof getPerceptionMap>>>
+export type GetPerceptionMapQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List confidence-aware ecosystem map points
+ */
+
+export function useGetPerceptionMap<TData = Awaited<ReturnType<typeof getPerceptionMap>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPerceptionMap>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPerceptionMapQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 

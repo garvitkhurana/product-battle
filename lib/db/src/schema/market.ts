@@ -2,6 +2,7 @@ import { createInsertSchema } from "drizzle-zod";
 import {
   boolean,
   integer,
+  index,
   numeric,
   pgTable,
   text,
@@ -105,6 +106,7 @@ export const battlesTable = pgTable("battles", {
   participantAId: text("participant_a_id").notNull(),
   participantBId: text("participant_b_id").notNull(),
   status: text("status").notNull().default("active"),
+  isLaunch: boolean("is_launch").notNull().default(false),
   winnerParticipantId: text("winner_participant_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -129,6 +131,111 @@ export const webhookEventsTable = pgTable("webhook_events", {
   processedAt: timestamp("processed_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const perceptionSessionsTable = pgTable(
+  "perception_sessions",
+  {
+    id: text("id").primaryKey(),
+    tokenHash: text("token_hash").notNull().unique(),
+    abuseHash: text("abuse_hash").notNull().default("legacy"),
+    userId: text("user_id"),
+    rateLimitWindowStartedAt: timestamp("rate_limit_window_started_at", { withTimezone: true }).notNull().defaultNow(),
+    swipesInWindow: integer("swipes_in_window").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  },
+  (table) => ({
+    expiryIdx: index("perception_sessions_expiry_idx").on(table.expiresAt),
+  }),
+);
+
+export const perceptionSessionWindowsTable = pgTable("perception_session_windows", {
+  id: text("id").primaryKey(),
+  abuseHash: text("abuse_hash").notNull(),
+  windowStartedAt: timestamp("window_started_at", { withTimezone: true }).notNull(),
+  sessionCount: integer("session_count").notNull().default(0),
+});
+
+export const perceptionSignalsTable = pgTable("perception_signals", {
+  participantId: text("participant_id").primaryKey(),
+  rating: integer("rating").notNull().default(1500),
+  comparisonCount: integer("comparison_count").notNull().default(0),
+  winCount: integer("win_count").notNull().default(0),
+  lossCount: integer("loss_count").notNull().default(0),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const perceptionComparisonsTable = pgTable(
+  "perception_comparisons",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    battleId: text("battle_id").notNull(),
+    winnerParticipantId: text("winner_participant_id").notNull(),
+    loserParticipantId: text("loser_participant_id").notNull(),
+    requestId: text("request_id").notNull().unique(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    sessionIdx: index("perception_comparisons_session_idx").on(table.sessionId),
+    battleIdx: index("perception_comparisons_battle_idx").on(table.battleId),
+    participantIdx: index("perception_comparisons_winner_idx").on(table.winnerParticipantId),
+    sessionBattleIdx: uniqueIndex("perception_comparisons_session_battle_idx").on(table.sessionId, table.battleId),
+  }),
+);
+
+export const perceptionAxesTable = pgTable(
+  "perception_axes",
+  {
+    id: text("id").primaryKey(),
+    participantId: text("participant_id").notNull(),
+    axisKey: text("axis_key").notNull(),
+    score: integer("score").notNull(),
+    source: text("source").notNull(),
+    version: text("version").notNull().default("v1"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    participantAxisIdx: uniqueIndex("perception_axes_participant_axis_idx").on(table.participantId, table.axisKey),
+  }),
+);
+
+export const perceptionWordsTable = pgTable(
+  "perception_words",
+  {
+    id: text("id").primaryKey(),
+    sessionId: text("session_id").notNull(),
+    participantId: text("participant_id").notNull(),
+    word: text("word").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    sessionParticipantWordIdx: uniqueIndex("perception_words_session_participant_word_idx").on(
+      table.sessionId,
+      table.participantId,
+      table.word,
+    ),
+    participantIdx: index("perception_words_participant_idx").on(table.participantId),
+  }),
+);
+
+export const companyClaimsTable = pgTable(
+  "company_claims",
+  {
+    id: text("id").primaryKey(),
+    participantId: text("participant_id").notNull(),
+    userId: text("user_id").notNull(),
+    message: text("message").notNull(),
+    status: text("status").notNull().default("pending"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => ({
+    pendingClaimIdx: uniqueIndex("company_claims_pending_user_participant_idx")
+      .on(table.userId, table.participantId)
+      .where(sql`${table.status} = 'pending'`),
+  }),
+);
+
 export const insertProductSchema = createInsertSchema(productsTable).omit({
   id: true,
   creatorId: true,
@@ -148,3 +255,5 @@ export type Payment = typeof paymentsTable.$inferSelect;
 export type BattleParticipant = typeof battleParticipantsTable.$inferSelect;
 export type Battle = typeof battlesTable.$inferSelect;
 export type BattleVote = typeof battleVotesTable.$inferSelect;
+export type PerceptionSession = typeof perceptionSessionsTable.$inferSelect;
+export type PerceptionComparison = typeof perceptionComparisonsTable.$inferSelect;

@@ -17,6 +17,21 @@ const DEFAULT_JSON_ACCEPT = "application/json, application/problem+json";
 
 let _baseUrl: string | null = null;
 let _authTokenGetter: AuthTokenGetter | null = null;
+const PERCEPTION_CLIENT_KEY = "yc_battle_perception_client";
+
+function getPerceptionClientId(): string | null {
+  if (typeof window === "undefined" || !window.localStorage) return null;
+  try {
+    const saved = window.localStorage.getItem(PERCEPTION_CLIENT_KEY);
+    if (saved && /^[a-zA-Z0-9-]{16,128}$/.test(saved)) return saved;
+    const created = typeof crypto?.randomUUID === "function" ? crypto.randomUUID() : null;
+    if (!created) return null;
+    window.localStorage.setItem(PERCEPTION_CLIENT_KEY, created);
+    return created;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Set a base URL that is prepended to every relative request URL
@@ -347,6 +362,10 @@ export async function customFetch<T = unknown>(
 
   if (responseType === "json" && !headers.has("accept")) {
     headers.set("accept", DEFAULT_JSON_ACCEPT);
+  }
+  if (!headers.has("x-perception-client")) {
+    const clientId = getPerceptionClientId();
+    if (clientId) headers.set("x-perception-client", clientId);
   }
 
   // Attach bearer token when an auth getter is configured and no

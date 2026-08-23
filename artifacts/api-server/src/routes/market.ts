@@ -1,50 +1,97 @@
 import { Router, type IRouter, type Request, type Response, type NextFunction } from "express";
 import { getAuth } from "@clerk/express";
-import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { z } from "zod/v4";
 import {
   battleParticipantsTable,
   battlesTable,
   battleVotesTable,
+  companyClaimsTable,
   db,
   paymentsTable,
+  perceptionComparisonsTable,
+  perceptionSignalsTable,
   productsTable,
   usersTable,
   votesTable,
   webhookEventsTable,
 } from "@workspace/db";
 import {
-  CreateBattleCheckoutBody,
-  CreateBattleCheckoutResponse,
+  CreateCompanyClaimBody,
+  CreateCompanyClaimResponse,
   CreateBattleBody,
   CreateBattleResponse,
-  CreateCheckoutBody,
-  CreateCheckoutResponse,
   CreateProductBody,
   CreateProductResponse,
-  GetCreatorDashboardResponse,
   GetBattleParams,
   GetBattleResponse,
+  GetCompanyPerceptionParams,
+  GetCompanyPerceptionResponse,
+  GetPerceptionMapResponse,
   GetPaymentParams,
   GetPaymentResponse,
+  GetTasteDnaBody,
+  GetTasteDnaResponse,
   GetProductParams,
   GetProductResponse,
-  GetRankingsResponse,
   ListProductsQueryParams,
   ListProductsResponse,
   ListBattlesResponse,
   ListTransactionsResponse,
+  CreatePerceptionSessionResponse,
+  CreatePerceptionWordBody,
+  CreatePerceptionWordResponse,
+  RecordPerceptionSwipeBody,
+  RecordPerceptionSwipeResponse,
   UpdateProductStatusBody,
   UpdateProductStatusParams,
 } from "@workspace/api-zod";
 import { getUncachableStripeClient } from "../stripeClient";
 import { logger } from "../lib/logger";
+import { CURATED_BATTLE_ORDER, HOUSEHOLD_BATTLE_SLUGS } from "../lib/battleSeed";
+import {
+  createPerceptionSession,
+  createPerceptionWord,
+  getCompanyPerceptionBySlug,
+  getNextPerceptionBatchForSession,
+  getPerceptionMapPoints,
+  getTasteDnaForSession,
+  hashPrivacyAbuseSignal,
+  PerceptionError,
+  recordPerceptionSwipe,
+  requirePerceptionSession,
+} from "../lib/perception";
 
 const router: IRouter = Router();
 const DISCLOSURE =
   "This $0.99 community rating is non-refundable. It is not investment advice, an endorsement, a securities transaction, or a guarantee of a company's performance.";
 const BATTLE_DISCLOSURE =
   "This $0.99 community battle vote is non-refundable. It records a community opinion only; it is not investment advice, a YC endorsement, a securities transaction, or a performance guarantee.";
-const battlePaymentsEnabled = process.env.ENABLE_BATTLE_PAYMENTS === "true";
+// Keep historical webhook/receipt support, but no longer allow a public checkout to start.
+const battlePaymentsEnabled = false;
+const publicPaymentsEnabled = false;
+const CreateBattleCheckoutBody = z.object({
+  battleId: z.string(),
+  participantId: z.string(),
+  disclosureAccepted: z.boolean(),
+});
+const CreateBattleCheckoutResponse = z.object({
+  paymentId: z.string(),
+  checkoutUrl: z.url(),
+  amount: z.number(),
+  disclosure: z.string(),
+});
+const CreateCheckoutBody = z.object({
+  productId: z.string(),
+  rating: z.number().int().min(1).max(5),
+  disclosureAccepted: z.boolean(),
+});
+const CreateCheckoutResponse = z.object({
+  paymentId: z.string(),
+  checkoutUrl: z.url(),
+  amount: z.number(),
+  disclosure: z.string(),
+});
 const voteLimits = new Map<string, { count: number; resetAt: number }>();
 const ratingAverage = sql`CASE WHEN ${productsTable.ratingCount} > 0 THEN ${productsTable.ratingSum}::numeric / ${productsTable.ratingCount} ELSE 0 END`;
 
@@ -53,6 +100,17 @@ type AuthedRequest = Request & { userId?: string };
 function currentUserId(req: Request): string | null {
   const auth = getAuth(req);
   return auth?.userId ?? null;
+}
+
+function perceptionBrowserIdForRequest(req: Request): string | null {
+  const browserId = req.get("x-perception-client")?.trim();
+  return browserId && /^[a-zA-Z0-9-]{16,128}$/.test(browserId) ? browserId : null;
+}
+
+function privacyAbuseHashForRequest(req: Request): string {
+  const ip = req.ip ?? req.socket.remoteAddress ?? "unknown";
+  const safeBrowserId = perceptionBrowserIdForRequest(req) ?? "unknown";
+  return hashPrivacyAbuseSignal(`${ip}:${req.get("user-agent") ?? "unknown"}:${safeBrowserId}`);
 }
 
 function requireAuth(req: Request, res: Response, next: NextFunction): void {
@@ -135,20 +193,36 @@ function slugify(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
 }
 
-async function getPublicBattleViews() {
-  const [battleRows, participantRows, voteRows] = await Promise.all([
-    db.select().from(battlesTable).orderBy(desc(battlesTable.createdAt)),
+async function getPublicBattleViews(includeArchived = false) {
+  const [battleRows, participantRows, comparisonRows, signalRows] = await Promise.all([
+    db
+      .select()
+      .from(battlesTable)
+      .where(inArray(battlesTable.slug, CURATED_BATTLE_ORDER))
+      .orderBy(desc(battlesTable.createdAt)),
     db.select().from(battleParticipantsTable),
-    db.select({ battleId: battleVotesTable.battleId, participantId: battleVotesTable.participantId }).from(battleVotesTable),
+    db.select().from(perceptionComparisonsTable),
+    db.select().from(perceptionSignalsTable),
   ]);
   const participants = new Map(participantRows.map((participant) => [participant.id, participant]));
-  const counts = new Map<string, number>();
-  for (const vote of voteRows) {
-    const key = `${vote.battleId}:${vote.participantId}`;
-    counts.set(key, (counts.get(key) ?? 0) + 1);
+  const signals = new Map(signalRows.map((signal) => [signal.participantId, signal]));
+  const launchOrder = new Map(CURATED_BATTLE_ORDER.map((slug, index) => [slug, index]));
+  battleRows.sort(
+    (a, b) => (launchOrder.get(a.slug) ?? Number.MAX_SAFE_INTEGER) - (launchOrder.get(b.slug) ?? Number.MAX_SAFE_INTEGER),
+  );
+  const comparisons = new Map<string, { total: number; winners: Map<string, number> }>();
+  for (const comparison of comparisonRows) {
+    const current = comparisons.get(comparison.battleId) ?? { total: 0, winners: new Map<string, number>() };
+    current.total += 1;
+    current.winners.set(comparison.winnerParticipantId, (current.winners.get(comparison.winnerParticipantId) ?? 0) + 1);
+    comparisons.set(comparison.battleId, current);
   }
   return battleRows.flatMap((battle) => {
-    if (battle.status !== "active" && battle.status !== "completed") {
+    if (
+      battle.status !== "active" &&
+      battle.status !== "completed" &&
+      !(includeArchived && battle.status === "archived")
+    ) {
       return [];
     }
     const participantA = participants.get(battle.participantAId);
@@ -157,9 +231,12 @@ async function getPublicBattleViews() {
       logger.warn({ battleId: battle.id }, "Battle has missing participant data");
       return [];
     }
-    const participantAVotes = counts.get(`${battle.id}:${participantA.id}`) ?? 0;
-    const participantBVotes = counts.get(`${battle.id}:${participantB.id}`) ?? 0;
-    const totalVotes = participantAVotes + participantBVotes;
+    const comparison = comparisons.get(battle.id) ?? { total: 0, winners: new Map<string, number>() };
+    const participantASignal = signals.get(participantA.id);
+    const participantBSignal = signals.get(participantB.id);
+    const participantAWins = comparison.winners.get(participantA.id) ?? 0;
+    const participantBWins = comparison.winners.get(participantB.id) ?? 0;
+    const showShare = comparison.total >= 10;
     return [
       {
         id: battle.id,
@@ -169,11 +246,13 @@ async function getPublicBattleViews() {
         category: battle.category,
         participantA: toBattleParticipant(participantA),
         participantB: toBattleParticipant(participantB),
-        participantAVotes,
-        participantBVotes,
-        totalVotes,
-        participantAPercentage: totalVotes ? Math.round((participantAVotes / totalVotes) * 100) : 50,
-        participantBPercentage: totalVotes ? Math.round((participantBVotes / totalVotes) * 100) : 50,
+        comparisonCount: comparison.total,
+        participantAPercentage: showShare ? Math.round((participantAWins / comparison.total) * 100) : 50,
+        participantBPercentage: showShare ? Math.round((participantBWins / comparison.total) * 100) : 50,
+        participantARating: participantASignal?.rating ?? 1500,
+        participantBRating: participantBSignal?.rating ?? 1500,
+        participantAConfidence: Math.min(100, Math.round(((participantASignal?.comparisonCount ?? 0) / 20) * 100)),
+        participantBConfidence: Math.min(100, Math.round(((participantBSignal?.comparisonCount ?? 0) / 20) * 100)),
         status: battle.status,
         winnerParticipantId: battle.winnerParticipantId,
         createdAt: battle.createdAt,
@@ -281,32 +360,6 @@ router.patch("/products/:id/status", requireAuth, async (req, res): Promise<void
     .where(eq(productsTable.id, params.data.id))
     .returning();
   res.json(GetProductResponse.parse(toProduct(row)));
-});
-
-router.get("/rankings", async (_req, res): Promise<void> => {
-  const rows = await db
-    .select()
-    .from(productsTable)
-    .where(eq(productsTable.status, "published"))
-    .orderBy(desc(ratingAverage), desc(productsTable.ratingCount))
-    .limit(5);
-  res.json(GetRankingsResponse.parse(rows.map((product, index) => ({ rank: index + 1, product: toProduct(product) }))));
-});
-
-router.get("/creator/dashboard", requireAuth, async (req, res): Promise<void> => {
-  const userId = (req as AuthedRequest).userId!;
-  const rows = await db.select().from(productsTable).where(eq(productsTable.creatorId, userId)).orderBy(desc(productsTable.createdAt));
-  const totalVotes = rows.reduce((sum, row) => sum + row.ratingCount, 0);
-  const totalRaised = rows.reduce((sum, row) => sum + Number(row.totalRaised), 0);
-  res.json(
-    GetCreatorDashboardResponse.parse({
-      totalVotes,
-      totalRaised,
-      publishedCount: rows.filter((row) => row.status === "published").length,
-      pendingCount: rows.filter((row) => row.status === "pending").length,
-      products: rows.map(toProduct),
-    }),
-  );
 });
 
 router.get("/transactions", requireAuth, async (req, res): Promise<void> => {
@@ -432,9 +485,170 @@ router.get("/battles/:slug", async (req, res): Promise<void> => {
   res.json(GetBattleResponse.parse(battle));
 });
 
-router.post("/battle-checkout", rateLimit, async (req, res): Promise<void> => {
+function sendPerceptionError(error: unknown, res: Response): boolean {
+  if (error instanceof PerceptionError) {
+    res.status(error.status).json({ error: error.message });
+    return true;
+  }
+  return false;
+}
+
+router.post("/perception/sessions", async (req, res): Promise<void> => {
+  try {
+    const stableClientId = perceptionBrowserIdForRequest(req);
+    const session = await createPerceptionSession(
+      currentUserId(req),
+      privacyAbuseHashForRequest(req),
+      stableClientId ? hashPrivacyAbuseSignal(`stable-client:${stableClientId}`) : null,
+    );
+    res.status(201).json(CreatePerceptionSessionResponse.parse(session));
+  } catch (error) {
+    if (sendPerceptionError(error, res)) return;
+    logger.error({ err: error }, "Unable to create perception session");
+    res.status(503).json({ error: "We could not start a comparison session." });
+  }
+});
+
+router.post("/perception/swipes", async (req, res): Promise<void> => {
+  const parsed = RecordPerceptionSwipeBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  try {
+    const result = await recordPerceptionSwipe(parsed.data);
+    res.status(201).json(RecordPerceptionSwipeResponse.parse(result));
+  } catch (error) {
+    if (sendPerceptionError(error, res)) return;
+    logger.error({ err: error }, "Unable to record perception swipe");
+    res.status(503).json({ error: "We could not record that signal. Please try again." });
+  }
+});
+
+router.post("/perception/dna", async (req, res): Promise<void> => {
+  const parsed = GetTasteDnaBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  try {
+    const session = await requirePerceptionSession(parsed.data.sessionToken);
+    res.json(GetTasteDnaResponse.parse(await getTasteDnaForSession(session.id)));
+  } catch (error) {
+    if (sendPerceptionError(error, res)) return;
+    logger.error({ err: error }, "Unable to calculate taste DNA");
+    res.status(503).json({ error: "We could not calculate this taste DNA." });
+  }
+});
+
+router.get("/perception/companies/:slug", async (req, res): Promise<void> => {
+  const params = GetCompanyPerceptionParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  try {
+    res.json(GetCompanyPerceptionResponse.parse(await getCompanyPerceptionBySlug(params.data.slug)));
+  } catch (error) {
+    if (sendPerceptionError(error, res)) return;
+    logger.error({ err: error, slug: params.data.slug }, "Unable to build company perception profile");
+    res.status(503).json({ error: "We could not load this company profile." });
+  }
+});
+
+router.post("/perception/words", async (req, res): Promise<void> => {
+  const parsed = CreatePerceptionWordBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  try {
+    res.status(201).json(CreatePerceptionWordResponse.parse(await createPerceptionWord(parsed.data)));
+  } catch (error) {
+    if (sendPerceptionError(error, res)) return;
+    logger.error({ err: error }, "Unable to record perception word");
+    res.status(503).json({ error: "We could not record that reaction." });
+  }
+});
+
+router.post("/perception/claims", requireAuth, async (req, res): Promise<void> => {
+  const parsed = CreateCompanyClaimBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const userId = (req as AuthedRequest).userId!;
+  await ensureUser(userId);
+  const [participant] = await db
+    .select({ id: battleParticipantsTable.id })
+    .from(battleParticipantsTable)
+    .where(eq(battleParticipantsTable.id, parsed.data.participantId));
+  if (!participant) {
+    res.status(404).json({ error: "Company not found." });
+    return;
+  }
+  const [claim] = await db
+    .insert(companyClaimsTable)
+    .values({ id: crypto.randomUUID(), participantId: participant.id, userId, message: parsed.data.message })
+    .onConflictDoUpdate({
+      target: [companyClaimsTable.userId, companyClaimsTable.participantId],
+      targetWhere: sql`${companyClaimsTable.status} = 'pending'`,
+      set: { message: parsed.data.message, createdAt: new Date() },
+    })
+    .returning();
+  res.status(201).json(CreateCompanyClaimResponse.parse({ id: claim.id, status: "pending", createdAt: claim.createdAt }));
+});
+
+router.get("/perception/map", async (_req, res): Promise<void> => {
+  try {
+    res.json(GetPerceptionMapResponse.parse(await getPerceptionMapPoints()));
+  } catch (error) {
+    logger.error({ err: error }, "Unable to load perception map");
+    res.status(503).json({ error: "We could not load the ecosystem map." });
+  }
+});
+
+router.post("/perception/next-batch", async (req, res): Promise<void> => {
+  const parsed = z.object({ sessionToken: z.string().min(1) }).safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "A private session is required to add another batch." });
+    return;
+  }
+
+  try {
+    const session = await requirePerceptionSession(parsed.data.sessionToken);
+    const nextBatch = await getNextPerceptionBatchForSession(session.id);
+    if (nextBatch.comparisonCount < HOUSEHOLD_BATTLE_SLUGS.length) {
+      res.status(409).json({
+        error: `Finish the current ${HOUSEHOLD_BATTLE_SLUGS.length}-comparison queue before adding another batch.`,
+      });
+      return;
+    }
+
+    const viewsBySlug = new Map(
+      (await getPublicBattleViews(true)).map((battle) => [battle.slug, battle]),
+    );
+    const battles = nextBatch.slugs
+      .map((slug) => viewsBySlug.get(slug))
+      .filter((battle): battle is NonNullable<typeof battle> => Boolean(battle))
+      .map((battle) => ({ ...battle, status: "active" as const }));
+
+    res.json({
+      battles,
+      batchNumber: nextBatch.batchNumber,
+      hasMore: nextBatch.hasMore,
+    });
+  } catch (error) {
+    if (sendPerceptionError(error, res)) return;
+    logger.error({ err: error }, "Unable to load the next perception batch");
+    res.status(503).json({ error: "We could not prepare another comparison batch." });
+  }
+});
+
+const legacyCheckoutRoutesEnabled = false;
+if (legacyCheckoutRoutesEnabled) router.post("/battle-checkout", rateLimit, async (req, res): Promise<void> => {
   if (!battlePaymentsEnabled) {
-    res.status(503).json({ error: "Battle voting is not open yet." });
+    res.status(410).json({ error: "Paid battle voting has been retired. YC Battle now collects free pairwise perception signals." });
     return;
   }
   const parsed = CreateBattleCheckoutBody.safeParse(req.body);
@@ -571,7 +785,11 @@ router.post("/battle-checkout", rateLimit, async (req, res): Promise<void> => {
   );
 });
 
-router.post("/checkout", requireAuth, rateLimit, async (req, res): Promise<void> => {
+if (legacyCheckoutRoutesEnabled) router.post("/checkout", rateLimit, async (req, res): Promise<void> => {
+  if (!publicPaymentsEnabled) {
+    res.status(410).json({ error: "Paid ratings are no longer available. YC Battle now collects free pairwise perception signals." });
+    return;
+  }
   const parsed = CreateCheckoutBody.safeParse(req.body);
   if (!parsed.success || parsed.data.disclosureAccepted !== true) {
     res.status(400).json({ error: "You must accept the rating disclosure before checkout." });

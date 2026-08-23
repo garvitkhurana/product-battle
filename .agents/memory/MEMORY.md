@@ -4,3 +4,6 @@
 - [Authenticated route gates](authenticated-route-gates.md) — prevent signed-out account pages from firing protected queries and rendering blank states.
 - [Battle entry motion](battle-entry-motion.md) — arena effects fire once when entering from the battle board, not as continuous ambient movement.
 - [Battle submission review](battle-submission-review.md) — community-created matchups wait for review and stay out of public battle routes until approved.
+- [GitHub publication path](github-publication-path.md) — this workspace’s shell remote is Replit backup; publish public commits through the managed GitHub connection.
+- [Perception session lifecycle](perception-session-lifecycle.md) — private session creation needs a synchronous in-flight guard under React development remounts.
+- [Ecosystem queue expansion](ecosystem-queue-expansion.md) — extra comparison batches are session-bound, sequential, and never expose session capabilities in URLs.

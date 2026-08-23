@@ -2042,12 +2042,12 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "Consumer",
-    "description": "Vrbo (Expedia Group) is a vacation-rental marketplace focused on entire homes for families and groups, making it Airbnb's closest like-for-like rival.",
+    "description": "Vrbo is a vacation-rental marketplace focused on whole homes for family and group travel.",
     "id": "ext-vrbo",
     "location": "Austin, TX",
     "logo_url": "https://www.google.com/s2/favicons?domain=vrbo.com&sz=128",
     "name": "Vrbo",
-    "one_liner": "Vacation rentals built around whole homes.",
+    "one_liner": "Whole-home vacation rentals for group travel.",
     "slug": "vrbo",
     "tags": [
       "Travel",
@@ -2162,6 +2162,21 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "B2B",
+    "description": "Jira is the incumbent project and issue tracking suite for software organizations.",
+    "id": "ext-jira",
+    "location": "Sydney, Australia",
+    "logo_url": "https://www.google.com/s2/favicons?domain=atlassian.com&sz=128",
+    "name": "Jira",
+    "one_liner": "Atlassian's default issue tracker for engineering teams.",
+    "slug": "jira",
+    "tags": [
+      "Developer Tools",
+      "Productivity"
+    ],
+    "website": "https://www.atlassian.com/software/jira"
+  },
+  {
+    "category": "B2B",
     "description": "Labelbox helps teams create and manage labeled datasets for machine learning.",
     "id": "ext-labelbox",
     "location": "San Francisco, CA",
@@ -2251,6 +2266,21 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     "website": "https://www.remitly.com"
   },
   {
+    "category": "Education",
+    "description": "DataCamp offers browser-based interactive courses in Python, R, SQL, and data science topics for individuals and enterprise teams.",
+    "id": "ext-datacamp",
+    "location": "New York, NY",
+    "logo_url": "https://www.google.com/s2/favicons?domain=datacamp.com&sz=128",
+    "name": "DataCamp",
+    "one_liner": "Interactive online courses for data science, coding, and AI skills.",
+    "slug": "datacamp",
+    "tags": [
+      "Edtech",
+      "Data Science"
+    ],
+    "website": "https://www.datacamp.com"
+  },
+  {
     "category": "B2B",
     "description": "mParticle is a customer data platform (CDP) that unifies and routes customer data across marketing, analytics, and product tools.",
     "id": "ext-mparticle",
@@ -2279,6 +2309,21 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "SaaS"
     ],
     "website": "https://www.docusign.com"
+  },
+  {
+    "category": "Fintech",
+    "description": "Square, part of Block, Inc. (NYSE: XYZ), provides point-of-sale, payments, and loyalty/marketing tools used heavily by small businesses.",
+    "id": "ext-square",
+    "location": "San Francisco, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=squareup.com&sz=128",
+    "name": "Square",
+    "one_liner": "Payments and point-of-sale platform with built-in loyalty and marketing tools.",
+    "slug": "square",
+    "tags": [
+      "Payments",
+      "POS"
+    ],
+    "website": "https://squareup.com"
   },
   {
     "category": "Consumer",
@@ -2341,6 +2386,21 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     "website": "https://vwo.com"
   },
   {
+    "category": "B2B",
+    "description": "Adobe Analytics is Adobe's enterprise-grade analytics product for tracking customer behavior across web and mobile.",
+    "id": "ext-adobe-analytics",
+    "location": "San Jose, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=adobe.com&sz=128",
+    "name": "Adobe Analytics",
+    "one_liner": "Enterprise web and app analytics suite within Adobe Experience Cloud.",
+    "slug": "adobe-analytics",
+    "tags": [
+      "Analytics",
+      "Enterprise Software"
+    ],
+    "website": "https://business.adobe.com/products/analytics/adobe-analytics.html"
+  },
+  {
     "category": "Consumer",
     "description": "Kindle Unlimited is Amazon's subscription reading service offering access to millions of ebooks and audiobooks.",
     "id": "ext-kindle-unlimited",
@@ -2354,6 +2414,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Subscription"
     ],
     "website": "https://www.amazon.com/kindle-dbs/hz/subscribe/ku"
+  },
+  {
+    "category": "Consumer",
+    "description": "Discord hosts millions of community servers for gaming, interest groups, and creators, competing for the same online-community attention as forums like Reddit.",
+    "id": "ext-discord",
+    "location": "San Francisco, CA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=discord.com&sz=128",
+    "name": "Discord",
+    "one_liner": "Voice, video, and text chat platform built around communities.",
+    "slug": "discord",
+    "tags": [
+      "Community",
+      "Social",
+      "Chat"
+    ],
+    "website": "https://discord.com"
   },
   {
     "category": "Education",
@@ -2370,6 +2446,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "SaaS"
     ],
     "website": "https://www.classlink.com"
+  },
+  {
+    "category": "Fintech",
+    "description": "NerdWallet is a Nasdaq-listed personal finance site that compares financial products and, like SmartAsset, connects readers with financial advisors and services.",
+    "id": "ext-nerdwallet",
+    "location": "San Francisco, CA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=nerdwallet.com&sz=128",
+    "name": "NerdWallet",
+    "one_liner": "Public personal-finance comparison and content platform.",
+    "slug": "nerdwallet",
+    "tags": [
+      "Fintech",
+      "Personal Finance",
+      "Marketplace"
+    ],
+    "website": "https://www.nerdwallet.com"
   },
   {
     "category": "B2B",
@@ -2437,6 +2529,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "B2B",
+    "description": "Amplitude is a Nasdaq-listed product analytics company that competes with Heap on event tracking, funnels, and behavioral analysis for product teams.",
+    "id": "ext-amplitude",
+    "location": "San Francisco, CA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=amplitude.com&sz=128",
+    "name": "Amplitude",
+    "one_liner": "Public product analytics platform for digital teams.",
+    "slug": "amplitude",
+    "tags": [
+      "SaaS",
+      "Analytics",
+      "Product"
+    ],
+    "website": "https://amplitude.com"
+  },
+  {
+    "category": "B2B",
     "description": "Framer lets designers build and publish sites directly from a design canvas with heavy animation support, and is widely cited as Webflow's leading 2026 no-code rival.",
     "id": "ext-framer",
     "location": "Amsterdam, Netherlands",
@@ -2466,6 +2574,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Hardware"
     ],
     "website": "https://ouraring.com"
+  },
+  {
+    "category": "B2B",
+    "description": "Freightos (Nasdaq: CRGO) digitizes freight booking and payments across ocean, air, and land carriers, and is listed among Flexport's primary competitors in digital freight forwarding.",
+    "id": "ext-freightos",
+    "location": "Jerusalem, Israel",
+    "logo_url": "https://www.google.com/s2/favicons?domain=freightos.com&sz=128",
+    "name": "Freightos",
+    "one_liner": "Public vendor-neutral booking and payment platform for global freight.",
+    "slug": "freightos",
+    "tags": [
+      "Logistics",
+      "Supply Chain",
+      "Marketplace"
+    ],
+    "website": "https://www.freightos.com"
   },
   {
     "category": "Healthcare",
@@ -2545,6 +2669,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Fulfillment"
     ],
     "website": "https://www.shipmonk.com"
+  },
+  {
+    "category": "Healthcare",
+    "description": "Twist Bioscience makes synthetic DNA at scale on a silicon-based platform, supplying biotech, pharma, and industrial biology customers, including Ginkgo itself.",
+    "id": "ext-twist-bioscience",
+    "location": "South San Francisco, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=twistbioscience.com&sz=128",
+    "name": "Twist Bioscience",
+    "one_liner": "Public synthetic DNA manufacturer for biotech and pharma.",
+    "slug": "twist-bioscience",
+    "tags": [
+      "Synthetic Biology",
+      "Biotech",
+      "DNA Synthesis"
+    ],
+    "website": "https://www.twistbioscience.com"
   },
   {
     "category": "Industrials",
@@ -2721,6 +2861,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     "website": "https://www.getzippin.com"
   },
   {
+    "category": "Healthcare",
+    "description": "Hims & Hers is a publicly traded telehealth company selling prescriptions and treatments for sexual health, hair loss, mental health, and more.",
+    "id": "ext-hims-hers",
+    "location": "San Francisco, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=hims.com&sz=128",
+    "name": "Hims & Hers Health",
+    "one_liner": "Public telehealth brand for prescriptions delivered by mail.",
+    "slug": "hims-and-hers",
+    "tags": [
+      "Telehealth",
+      "Consumer Health",
+      "Prescriptions"
+    ],
+    "website": "https://www.hims.com"
+  },
+  {
     "category": "Consumer",
     "description": "iFood commands over 80% of Brazil's food delivery market and is fully owned by Prosus and its affiliate Movile.",
     "id": "ext-ifood",
@@ -2751,6 +2907,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "India"
     ],
     "website": "https://www.flipkart.com"
+  },
+  {
+    "category": "Consumer",
+    "description": "Sports Illustrated is a decades-old sports journalism brand now published under a 10-year license by Minute Media on behalf of brand owner Authentic Brands Group.",
+    "id": "ext-sports-illustrated",
+    "location": "New York, NY",
+    "logo_url": "https://www.google.com/s2/favicons?domain=si.com&sz=128",
+    "name": "Sports Illustrated",
+    "one_liner": "Legacy sports media brand now licensed to Minute Media.",
+    "slug": "sports-illustrated",
+    "tags": [
+      "Media",
+      "Sports",
+      "Publishing"
+    ],
+    "website": "https://www.si.com"
   },
   {
     "category": "B2B",
@@ -2894,6 +3066,37 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     "website": "https://skims.com"
   },
   {
+    "category": "Industrials",
+    "description": "Rocket Lab (NASDAQ: RKLB) is a publicly traded space company offering launch, satellite, and in-space/orbital transfer services.",
+    "id": "ext-rocket-lab",
+    "location": "Long Beach, CA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=rocketlabusa.com&sz=128",
+    "name": "Rocket Lab",
+    "one_liner": "Public launch and space-systems company.",
+    "slug": "rocket-lab",
+    "tags": [
+      "Commercial Space Launch",
+      "Space Exploration"
+    ],
+    "website": "https://www.rocketlabusa.com"
+  },
+  {
+    "category": "Fintech",
+    "description": "M-Pesa is the mobile money service jointly run by Safaricom and Vodacom, dominant across Kenya and much of East and Southern Africa.",
+    "id": "ext-mpesa",
+    "location": "Nairobi, Kenya",
+    "logo_url": "https://www.google.com/s2/favicons?domain=safaricom.co.ke&sz=128",
+    "name": "M-Pesa",
+    "one_liner": "Africa's dominant mobile money network.",
+    "slug": "m-pesa",
+    "tags": [
+      "Mobile Money",
+      "Africa",
+      "Payments"
+    ],
+    "website": "https://www.safaricom.co.ke/m-pesa"
+  },
+  {
     "category": "B2B",
     "description": "Remote is a VC-backed global employment platform offering EOR, payroll, and contractor management, competing directly with Deel.",
     "id": "ext-remote",
@@ -2924,6 +3127,22 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Freight"
     ],
     "website": "https://www.dhl.com/global-en/home/global-forwarding.html"
+  },
+  {
+    "category": "B2B",
+    "description": "Toast (NYSE: TOST) is a restaurant-focused POS, payments, and operations platform used broadly across cafes and restaurants.",
+    "id": "ext-toast",
+    "location": "Boston, MA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=toasttab.com&sz=128",
+    "name": "Toast",
+    "one_liner": "Public restaurant point-of-sale and operations platform.",
+    "slug": "toast",
+    "tags": [
+      "Restaurant Tech",
+      "POS",
+      "SaaS"
+    ],
+    "website": "https://pos.toasttab.com"
   },
   {
     "category": "Consumer",
@@ -2975,7 +3194,7 @@ export const curatedBattles: CuratedBattle[] = [
     "featured": true,
     "id": "battle-airbnb-vrbo",
     "left_argument": "Homes and experiences brand with community trust.",
-    "right_argument": "Whole-home vacation rentals built for families and groups.",
+    "right_argument": "Whole-home focus for family and group vacation travel.",
     "rival_id": "ext-vrbo",
     "slug": "airbnb-vs-vrbo",
     "space": "Travel",
@@ -3127,6 +3346,17 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
+    "id": "battle-codecademy-datacamp",
+    "left_argument": "Broad interactive curriculum spanning web development, coding fundamentals, and career paths.",
+    "right_argument": "Data science and analytics-focused courses used heavily by industry teams.",
+    "rival_id": "ext-datacamp",
+    "slug": "codecademy-vs-datacamp",
+    "space": "Online Coding Education",
+    "title": "Codecademy vs DataCamp",
+    "yc_slug": "codecademy"
+  },
+  {
+    "featured": false,
     "id": "battle-segment-mparticle",
     "left_argument": "Twilio-owned CDP that pioneered simple one-line data collection APIs.",
     "right_argument": "Real-time CDP built for mobile-first and enterprise data orchestration.",
@@ -3146,6 +3376,17 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "eSignature",
     "title": "HelloSign vs DocuSign",
     "yc_slug": "hellosign"
+  },
+  {
+    "featured": false,
+    "id": "battle-fivestars-square",
+    "left_argument": "Cross-merchant loyalty network now backed by SumUp's scale.",
+    "right_argument": "Payments-native loyalty and marketing tools bundled into the point-of-sale system merchants already run.",
+    "rival_id": "ext-square",
+    "slug": "fivestars-vs-square",
+    "space": "SMB Loyalty & Payments",
+    "title": "Fivestars vs Square",
+    "yc_slug": "fivestars"
   },
   {
     "featured": true,
@@ -3193,6 +3434,17 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
+    "id": "battle-mixpanel-adobe-analytics",
+    "left_argument": "Self-serve event analytics built for product teams that need fast answers.",
+    "right_argument": "Enterprise analytics suite bundled into Adobe Experience Cloud.",
+    "rival_id": "ext-adobe-analytics",
+    "slug": "mixpanel-vs-adobe-analytics",
+    "space": "Product & Web Analytics",
+    "title": "Mixpanel vs Adobe Analytics",
+    "yc_slug": "mixpanel"
+  },
+  {
+    "featured": false,
     "id": "battle-scribd-kindle-unlimited",
     "left_argument": "Multi-format library (now Everand) spanning ebooks, audiobooks, and documents with a social reading layer.",
     "right_argument": "Amazon-scale ebook and audiobook catalog bundled into the Kindle ecosystem.",
@@ -3204,6 +3456,17 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
+    "id": "battle-reddit-discord",
+    "left_argument": "Searchable public forums and threads for every topic imaginable.",
+    "right_argument": "Real-time voice and chat servers where communities actually hang out.",
+    "rival_id": "ext-discord",
+    "slug": "reddit-vs-discord",
+    "space": "Online Communities",
+    "title": "Reddit vs Discord",
+    "yc_slug": "reddit"
+  },
+  {
+    "featured": false,
     "id": "battle-clever-classlink",
     "left_argument": "Widely adopted classroom single sign-on with a huge app-library.",
     "right_argument": "District-first identity and rostering platform, free to districts.",
@@ -3212,6 +3475,17 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Education SSO",
     "title": "Clever vs ClassLink",
     "yc_slug": "clever"
+  },
+  {
+    "featured": false,
+    "id": "battle-smartasset-nerdwallet",
+    "left_argument": "Matches consumers directly with vetted financial advisors.",
+    "right_argument": "Broad personal-finance comparison engine with massive organic reach.",
+    "rival_id": "ext-nerdwallet",
+    "slug": "smartasset-vs-nerdwallet",
+    "space": "Personal Finance",
+    "title": "SmartAsset vs NerdWallet",
+    "yc_slug": "smartasset"
   },
   {
     "featured": false,
@@ -3259,6 +3533,17 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
+    "id": "battle-heap-amplitude",
+    "left_argument": "Auto-captures every user interaction with no manual event tagging.",
+    "right_argument": "Mature, plan-and-tag analytics suite trusted at enterprise scale.",
+    "rival_id": "ext-amplitude",
+    "slug": "heap-vs-amplitude",
+    "space": "Product Analytics",
+    "title": "Heap vs Amplitude",
+    "yc_slug": "heap"
+  },
+  {
+    "featured": false,
     "id": "battle-webflow-framer",
     "left_argument": "Mature visual CMS for complex, content-heavy sites with strong SEO.",
     "right_argument": "Design-canvas-first builder built for speed and motion.",
@@ -3278,6 +3563,17 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Wellness Wearables",
     "title": "Bellabeat vs Oura",
     "yc_slug": "bellabeat"
+  },
+  {
+    "featured": false,
+    "id": "battle-flexport-freightos",
+    "left_argument": "Full-service freight forwarder with an end-to-end tech platform.",
+    "right_argument": "Vendor-neutral booking and payment marketplace for global freight.",
+    "rival_id": "ext-freightos",
+    "slug": "flexport-vs-freightos",
+    "space": "Freight & Logistics",
+    "title": "Flexport vs Freightos",
+    "yc_slug": "flexport"
   },
   {
     "featured": false,
@@ -3333,6 +3629,17 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "E-commerce Fulfillment",
     "title": "ShipBob vs ShipMonk",
     "yc_slug": "shipbob"
+  },
+  {
+    "featured": false,
+    "id": "battle-ginkgo-bioworks-twist",
+    "left_argument": "Full-stack biology foundry that designs and engineers organisms for customers.",
+    "right_argument": "The DNA supplier of record, manufacturing synthetic genes at industrial scale, including for Ginkgo.",
+    "rival_id": "ext-twist-bioscience",
+    "slug": "ginkgo-bioworks-vs-twist-bioscience",
+    "space": "Synthetic Biology",
+    "title": "Ginkgo Bioworks vs Twist Bioscience",
+    "yc_slug": "ginkgo-bioworks"
   },
   {
     "featured": false,
@@ -3457,6 +3764,17 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
+    "id": "battle-nurx-hims-hers",
+    "left_argument": "Birth control, PrEP, and women's health prescriptions delivered online.",
+    "right_argument": "Public telehealth brand covering sexual health, hair loss, and mental health.",
+    "rival_id": "ext-hims-hers",
+    "slug": "nurx-vs-hims-and-hers",
+    "space": "Telehealth",
+    "title": "Nurx vs Hims & Hers",
+    "yc_slug": "nurx"
+  },
+  {
+    "featured": false,
     "id": "battle-rappi-ifood",
     "left_argument": "Colombia-born multi-vertical super-app for delivery and financial services.",
     "right_argument": "Brazil's dominant food delivery app, owned by Prosus and Movile.",
@@ -3476,6 +3794,17 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Indian E-commerce",
     "title": "Meesho vs Flipkart",
     "yc_slug": "meesho"
+  },
+  {
+    "featured": false,
+    "id": "battle-the-athletic-sports-illustrated",
+    "left_argument": "Subscription-only sports journalism, now owned by the New York Times.",
+    "right_argument": "Decades-old sports media brand, now licensed to and published by Minute Media.",
+    "rival_id": "ext-sports-illustrated",
+    "slug": "the-athletic-vs-sports-illustrated",
+    "space": "Sports Media",
+    "title": "The Athletic vs Sports Illustrated",
+    "yc_slug": "the-athletic"
   },
   {
     "featured": false,
@@ -3578,6 +3907,28 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
+    "id": "battle-momentus-rocket-lab",
+    "left_argument": "Public in-space infrastructure company running orbital transfer and servicing vehicles.",
+    "right_argument": "Public launch and space-systems company expanding into in-space services.",
+    "rival_id": "ext-rocket-lab",
+    "slug": "momentus-vs-rocket-lab",
+    "space": "In-Space Transportation",
+    "title": "Momentus vs Rocket Lab",
+    "yc_slug": "momentus"
+  },
+  {
+    "featured": false,
+    "id": "battle-wave-mpesa",
+    "left_argument": "Low-fee mobile money challenger dominant in Francophone West Africa.",
+    "right_argument": "Continent-defining mobile money network run by Safaricom and Vodacom.",
+    "rival_id": "ext-mpesa",
+    "slug": "wave-vs-m-pesa",
+    "space": "Mobile Money",
+    "title": "Wave vs M-Pesa",
+    "yc_slug": "wave"
+  },
+  {
+    "featured": false,
     "id": "battle-deel-remote",
     "left_argument": "150+ country global employment platform combining payroll, HR, and IT.",
     "right_argument": "VC-backed global EOR and payroll platform covering 100+ countries.",
@@ -3597,6 +3948,17 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Freight Forwarding",
     "title": "Nowports vs DHL Global Forwarding",
     "yc_slug": "nowports"
+  },
+  {
+    "featured": false,
+    "id": "battle-odeko-toast",
+    "left_argument": "All-in-one ordering, supply, and operations platform built specifically for independent cafes.",
+    "right_argument": "Public restaurant POS and ordering platform used broadly across cafes and restaurants.",
+    "rival_id": "ext-toast",
+    "slug": "odeko-vs-toast",
+    "space": "Cafe & Restaurant Tech",
+    "title": "Odeko vs Toast",
+    "yc_slug": "odeko"
   },
   {
     "featured": true,

@@ -16,11 +16,21 @@ export interface Battle {
   category: string;
   participantA: BattleParticipant;
   participantB: BattleParticipant;
-  participantAVotes: number;
-  participantBVotes: number;
-  totalVotes: number;
+  comparisonCount: number;
   participantAPercentage: number;
   participantBPercentage: number;
+  participantARating: number;
+  participantBRating: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  participantAConfidence: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  participantBConfidence: number;
   status: BattleStatus;
   /** @nullable */
   winnerParticipantId: string | null;

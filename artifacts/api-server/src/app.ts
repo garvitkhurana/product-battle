@@ -15,6 +15,8 @@ import { parseVerifiedStripeEvent } from "./stripeClient";
 import { handleFailedPayment, handlePaidCheckout } from "./routes/market";
 
 const app: Express = express();
+// Requests reach this service through Replit's single trusted proxy hop.
+app.set("trust proxy", 1);
 
 app.use(
   pinoHttp({

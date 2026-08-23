@@ -15,18 +15,27 @@ import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
 
 import { Layout } from '@/components/layout/Layout';
-import Explore from '@/pages/explore';
-import ProductDetail from '@/pages/product-detail';
+import Index from '@/pages/index';
 import BattlesList from '@/pages/battles/index';
 import BattleDetail from '@/pages/battles/[slug]';
-import Submit from '@/pages/submit';
-import Dashboard from '@/pages/dashboard';
+import SwipeFlow from '@/pages/swipe/index';
+import TasteDna from '@/pages/dna/index';
+import CompanyProfile from '@/pages/companies/[slug]';
+import EcosystemMap from '@/pages/map/index';
+import Submit from '@/pages/submit/index';
 import Transactions from '@/pages/transactions';
-import { PaymentSuccess, PaymentCancel } from '@/pages/payment-outcome';
+import Legal from '@/pages/legal';
 import { SignInPage, SignUpPage } from '@/pages/auth';
-import { TermsPage, PrivacyPage, VotingDisclosurePage } from '@/pages/legal';
+import { PerceptionSessionProvider } from '@/lib/session';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const clerkPubKey = publishableKeyFromHost(
   window.location.hostname,
@@ -38,34 +47,45 @@ const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const clerkAppearance = {
   theme: shadcn,
   cssLayerName: "clerk",
+  options: {
+    socialButtonsPlacement: "top" as const,
+    socialButtonsVariant: "blockButton" as const,
+  },
   variables: {
-    colorPrimary: "#ff4f32",
-    colorForeground: "#211b18",
-    colorMutedForeground: "#665e57",
-    colorDanger: "#d13e27",
-    colorBackground: "#f8e9d8",
-    colorInput: "#fffaf3",
-    colorInputForeground: "#211b18",
-    colorNeutral: "#d5cbc0",
-    fontFamily: "'Plus Jakarta Sans', sans-serif",
+    colorPrimary: "#4c00ff",
+    colorBackground: "#fff8ef",
+    colorInput: "#fff8ef",
+    colorInputForeground: "#181513",
+    colorForeground: "#181513",
+    colorMutedForeground: "#625c55",
+    colorDanger: "#ff5038",
+    colorNeutral: "#181513",
+    fontFamily: "'Bricolage Grotesque', sans-serif",
     borderRadius: "0px",
   },
   elements: {
     rootBox: "w-full flex justify-center",
-    cardBox: "w-[440px] max-w-full overflow-hidden rounded-none border-2 border-[#211b18] bg-[#f8e9d8] shadow-[10px_10px_0_#ff4f32]",
-    card: "!rounded-none !border-0 !bg-transparent !shadow-none",
-    footer: "!rounded-none !border-0 !border-t-2 !border-[#211b18] !bg-transparent !shadow-none",
-    headerTitle: "font-extrabold tracking-[-0.04em] text-[#211b18]",
-    headerSubtitle: "text-[#665e57]",
-    socialButtonsBlockButtonText: "font-semibold text-[#211b18]",
-    formFieldLabel: "font-bold text-[#211b18]",
-    footerActionLink: "font-bold text-[#ff4f32]",
-    footerActionText: "text-[#665e57]",
-    dividerText: "text-[#665e57]",
-    formFieldInput: "rounded-none border-2 border-[#211b18] bg-[#fffaf3] text-[#211b18]",
-    socialButtonsBlockButton: "rounded-none border-2 border-[#211b18] bg-[#fffaf3]",
-    formButtonPrimary: "rounded-none border-2 border-[#211b18] bg-[#211b18] font-bold text-[#f8e9d8] hover:bg-[#ff4f32]",
-    dividerLine: "bg-[#211b18]/20",
+    cardBox: "bg-[#fff8ef] rounded-none w-[440px] max-w-full overflow-hidden border-2 border-[#181513] shadow-[6px_6px_0_#181513]",
+    card: "!shadow-none !border-0 !bg-transparent !rounded-none",
+    footer: "!shadow-none !border-t !border-[#181513] !bg-transparent !rounded-none",
+    headerTitle: "!font-bold !text-[#181513]",
+    headerSubtitle: "!text-[#625c55]",
+    socialButtonsBlockButtonText: "!text-[#181513]",
+    formFieldLabel: "!text-[#181513]",
+    footerActionLink: "!text-[#4c00ff]",
+    footerActionText: "!text-[#625c55]",
+    dividerText: "!text-[#625c55]",
+    logoBox: "hidden",
+    socialButtonsBlockButton: "!rounded-none !border-2 !border-[#181513] !bg-[#fff8ef] hover:!bg-[#d7ff45]",
+    formButtonPrimary: "!rounded-none !bg-[#4c00ff] !text-white hover:!bg-[#3d00cc]",
+    formFieldInput: "!rounded-none !border-2 !border-[#181513] !bg-[#fff8ef] !text-[#181513]",
+    footerAction: "!bg-transparent",
+    dividerLine: "!bg-[#181513]/25",
+    alert: "!border-[#ff5038] !bg-[#fff0eb]",
+    alertText: "!text-[#181513]",
+    otpCodeFieldInput: "!rounded-none !border-2 !border-[#181513] !bg-[#fff8ef] !text-[#181513]",
+    formFieldRow: "gap-2",
+    main: "gap-5",
   },
 };
 
@@ -74,22 +94,20 @@ function Router() {
     <Layout>
       <RoutedErrorBoundary>
         <Switch>
-          <Route path="/" component={BattlesList} />
-          <Route path="/explore" component={Explore} />
-          <Route path="/companies/:slug" component={ProductDetail} />
-
+          <Route path="/" component={Index} />
+          
           <Route path="/battles" component={BattlesList} />
           <Route path="/battles/:slug" component={BattleDetail} />
           
-          <Route path="/submit" component={Submit} />
-          <Route path="/dashboard" component={Dashboard} />
-          <Route path="/transactions" component={Transactions} />
+          <Route path="/swipe" component={SwipeFlow} />
+          <Route path="/dna" component={TasteDna} />
           
-          <Route path="/payment/success" component={PaymentSuccess} />
-          <Route path="/payment/cancel" component={PaymentCancel} />
-          <Route path="/terms" component={TermsPage} />
-          <Route path="/privacy" component={PrivacyPage} />
-          <Route path="/voting-disclosure" component={VotingDisclosurePage} />
+          <Route path="/companies/:slug" component={CompanyProfile} />
+          <Route path="/map" component={EcosystemMap} />
+          
+          <Route path="/submit" component={Submit} />
+          <Route path="/transactions" component={Transactions} />
+          <Route path="/legal" component={Legal} />
           
           <Route path="/sign-in/*?" component={SignInPage} />
           <Route path="/sign-up/*?" component={SignUpPage} />
@@ -112,28 +130,30 @@ function App() {
       publishableKey={clerkPubKey}
       proxyUrl={clerkProxyUrl}
       appearance={clerkAppearance}
+      signInUrl={`${basePath}/sign-in`}
+      signUpUrl={`${basePath}/sign-up`}
       localization={{
         signIn: {
           start: {
-            title: "Welcome back",
-            subtitle: "Sign in to join the next YC Battle",
+            title: "Sign in to YC Battle",
+            subtitle: "Welcome back. Continue to your YC Battle account.",
           },
         },
         signUp: {
           start: {
             title: "Join YC Battle",
-            subtitle: "Create an account to back the companies you believe in",
+            subtitle: "Create an account to save your profile and claim a company.",
           },
         },
       }}
-      signInUrl={`${basePath}/sign-in`}
-      signUpUrl={`${basePath}/sign-up`}
     >
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
           <TooltipProvider>
             <WouterRouter base={basePath}>
-              <Router />
+              <PerceptionSessionProvider>
+                <Router />
+              </PerceptionSessionProvider>
             </WouterRouter>
             <Toaster />
           </TooltipProvider>

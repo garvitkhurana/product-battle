@@ -19,7 +19,9 @@ tags:
   - name: payments
     description: Paid ratings and receipts
   - name: battles
-    description: Head-to-head company battles
+    description: Curated launch comparisons
+  - name: perception
+    description: Free community perception signals
 paths:
   /healthz:
     get:
@@ -133,34 +135,6 @@ paths:
           description: Sign in required
         "403":
           description: Not allowed
-  /rankings:
-    get:
-      operationId: getRankings
-      tags: [rankings]
-      summary: Get community rating rankings
-      responses:
-        "200":
-          description: Ranked company profiles
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Ranking"
-  /creator/dashboard:
-    get:
-      operationId: getCreatorDashboard
-      tags: [creator]
-      summary: Get owner metrics and company profiles
-      responses:
-        "200":
-          description: Creator dashboard
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CreatorDashboard"
-        "401":
-          description: Sign in required
   /transactions:
     get:
       operationId: listTransactions
@@ -177,28 +151,6 @@ paths:
                   $ref: "#/components/schemas/Transaction"
         "401":
           description: Sign in required
-  /checkout:
-    post:
-      operationId: createCheckout
-      tags: [payments]
-      summary: Create a Stripe Checkout session for one company rating
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CheckoutInput"
-      responses:
-        "201":
-          description: Checkout session
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CheckoutSession"
-        "400":
-          description: Disclosure must be accepted
-        "401":
-          description: Authentication is optional; guests may pay for a battle vote
   /payments/{id}:
     get:
       operationId: getPayment
@@ -223,7 +175,7 @@ paths:
     get:
       operationId: listBattles
       tags: [battles]
-      summary: List public company battles
+      summary: List launch comparisons
       responses:
         "200":
           description: Public battles
@@ -256,7 +208,7 @@ paths:
     get:
       operationId: getBattle
       tags: [battles]
-      summary: Get a head-to-head company battle
+      summary: Get a launch comparison
       parameters:
         - name: slug
           in: path
@@ -272,30 +224,142 @@ paths:
                 $ref: "#/components/schemas/Battle"
         "404":
           description: Battle not found
-  /battle-checkout:
+  /perception/sessions:
     post:
-      operationId: createBattleCheckout
-      tags: [battles, payments]
-      summary: Create a Stripe Checkout session for a battle vote
+      operationId: createPerceptionSession
+      tags: [perception]
+      summary: Start an anonymous perception session
+      responses:
+        "201":
+          description: New perception session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerceptionSession"
+  /perception/swipes:
+    post:
+      operationId: recordPerceptionSwipe
+      tags: [perception]
+      summary: Record a free pairwise preference
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/BattleCheckoutInput"
+              $ref: "#/components/schemas/PerceptionSwipeInput"
       responses:
         "201":
-          description: Battle checkout session
+          description: Recorded preference
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CheckoutSession"
+                $ref: "#/components/schemas/PerceptionSwipeResult"
         "400":
-          description: Disclosure must be accepted
+          description: Invalid preference
+        "409":
+          description: Duplicate request
+        "429":
+          description: Too many preferences in a short time
+        "404":
+          description: Launch comparison not found
+  /perception/dna:
+    post:
+      operationId: getTasteDna
+      tags: [perception]
+      summary: Get a visitor's current taste DNA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PerceptionSessionInput"
+      responses:
+        "200":
+          description: Taste DNA summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TasteDna"
+        "404":
+          description: Session not found
+  /perception/companies/{slug}:
+    get:
+      operationId: getCompanyPerception
+      tags: [perception]
+      summary: Get a company perception profile
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Perception profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyPerception"
+        "404":
+          description: Company not found
+  /perception/words:
+    post:
+      operationId: createPerceptionWord
+      tags: [perception]
+      summary: Add a one-word reaction after meaningful participation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PerceptionWordInput"
+      responses:
+        "201":
+          description: Recorded word
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PerceptionWord"
+        "400":
+          description: Invalid or unavailable word
+        "404":
+          description: Session or company not found
+  /perception/claims:
+    post:
+      operationId: createCompanyClaim
+      tags: [perception, companies]
+      summary: Request to claim a company perception page
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyClaimInput"
+      responses:
+        "201":
+          description: Claim request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyClaim"
         "401":
           description: Sign in required
         "404":
-          description: Battle not found
+          description: Company not found
+  /perception/map:
+    get:
+      operationId: getPerceptionMap
+      tags: [perception]
+      summary: List confidence-aware ecosystem map points
+      responses:
+        "200":
+          description: Public ecosystem map points
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PerceptionMapPoint"
 components:
   schemas:
     HealthStatus:
@@ -367,21 +431,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Product"
-    CheckoutInput:
-      type: object
-      required: [productId, rating, disclosureAccepted]
-      properties:
-        productId: { type: string }
-        rating: { type: integer, minimum: 1, maximum: 5 }
-        disclosureAccepted: { type: boolean }
-    CheckoutSession:
-      type: object
-      required: [paymentId, checkoutUrl, amount, disclosure]
-      properties:
-        paymentId: { type: string }
-        checkoutUrl: { type: string, format: uri }
-        amount: { type: number }
-        disclosure: { type: string }
     Transaction:
       type: object
       required: [id, productId, productTitle, amount, rating, status, disclosure, createdAt, kind, battleId, battleTitle, selectedParticipantName]
@@ -421,7 +470,7 @@ components:
         isYcCompany: { type: boolean }
     Battle:
       type: object
-      required: [id, slug, title, description, category, participantA, participantB, participantAVotes, participantBVotes, totalVotes, participantAPercentage, participantBPercentage, status, winnerParticipantId, createdAt]
+      required: [id, slug, title, description, category, participantA, participantB, comparisonCount, participantAPercentage, participantBPercentage, participantARating, participantBRating, participantAConfidence, participantBConfidence, status, winnerParticipantId, createdAt]
       properties:
         id: { type: string }
         slug: { type: string }
@@ -432,11 +481,13 @@ components:
           $ref: "#/components/schemas/BattleParticipant"
         participantB:
           $ref: "#/components/schemas/BattleParticipant"
-        participantAVotes: { type: integer }
-        participantBVotes: { type: integer }
-        totalVotes: { type: integer }
+        comparisonCount: { type: integer }
         participantAPercentage: { type: number }
         participantBPercentage: { type: number }
+        participantARating: { type: integer }
+        participantBRating: { type: integer }
+        participantAConfidence: { type: integer, minimum: 0, maximum: 100 }
+        participantBConfidence: { type: integer, minimum: 0, maximum: 100 }
         status:
           type: string
           enum: [active, completed]
@@ -474,6 +525,126 @@ components:
           type: string
           enum: [pending]
         createdAt: { type: string, format: date-time }
+    PerceptionSession:
+      type: object
+      required: [sessionToken, expiresAt]
+      properties:
+        sessionToken: { type: string }
+        expiresAt: { type: string, format: date-time }
+    PerceptionSessionInput:
+      type: object
+      required: [sessionToken]
+      properties:
+        sessionToken: { type: string, minLength: 20 }
+    PerceptionSwipeInput:
+      type: object
+      required: [sessionToken, battleId, winnerParticipantId, requestId]
+      properties:
+        sessionToken: { type: string, minLength: 20 }
+        battleId: { type: string }
+        winnerParticipantId: { type: string }
+        requestId: { type: string, minLength: 8, maxLength: 120 }
+    PerceptionSwipeResult:
+      type: object
+      required: [comparisonCount, participantARating, participantBRating, participantAConfidence, participantBConfidence, tasteDna]
+      properties:
+        comparisonCount: { type: integer }
+        participantARating: { type: integer }
+        participantBRating: { type: integer }
+        participantAConfidence: { type: integer, minimum: 0, maximum: 100 }
+        participantBConfidence: { type: integer, minimum: 0, maximum: 100 }
+        tasteDna:
+          $ref: "#/components/schemas/TasteDna"
+    TasteDna:
+      type: object
+      required: [comparisonCount, confidence, canShare, headline, axes, closestCompanies, completedBattleIds]
+      properties:
+        comparisonCount: { type: integer }
+        confidence: { type: integer, minimum: 0, maximum: 100 }
+        canShare: { type: boolean }
+        headline: { type: string }
+        axes:
+          type: array
+          items:
+            $ref: "#/components/schemas/PerceptionAxis"
+        closestCompanies:
+          type: array
+          items:
+            type: string
+        completedBattleIds:
+          type: array
+          items:
+            type: string
+    PerceptionAxis:
+      type: object
+      required: [key, label, score, confidence]
+      properties:
+        key: { type: string }
+        label: { type: string }
+        score: { type: integer, minimum: 1, maximum: 5 }
+        confidence: { type: integer, minimum: 0, maximum: 100 }
+    PerceptionWordInput:
+      type: object
+      required: [sessionToken, participantId, word]
+      properties:
+        sessionToken: { type: string, minLength: 20 }
+        participantId: { type: string }
+        word: { type: string, minLength: 2, maxLength: 32 }
+    PerceptionWord:
+      type: object
+      required: [word, count]
+      properties:
+        word: { type: string }
+        count: { type: integer }
+    CompanyPerception:
+      type: object
+      required: [participant, rating, comparisonCount, confidence, axes, words, affinities, profileStatus]
+      properties:
+        participant:
+          $ref: "#/components/schemas/BattleParticipant"
+        rating: { type: integer }
+        comparisonCount: { type: integer }
+        confidence: { type: integer, minimum: 0, maximum: 100 }
+        axes:
+          type: array
+          items:
+            $ref: "#/components/schemas/PerceptionAxis"
+        words:
+          type: array
+          items:
+            $ref: "#/components/schemas/PerceptionWord"
+        affinities:
+          type: array
+          items:
+            type: string
+        profileStatus:
+          type: string
+          enum: [collecting, emerging]
+    CompanyClaimInput:
+      type: object
+      required: [participantId, message]
+      properties:
+        participantId: { type: string }
+        message: { type: string, minLength: 10, maxLength: 1000 }
+    CompanyClaim:
+      type: object
+      required: [id, status, createdAt]
+      properties:
+        id: { type: string }
+        status:
+          type: string
+          enum: [pending]
+        createdAt: { type: string, format: date-time }
+    PerceptionMapPoint:
+      type: object
+      required: [participant, x, y, cluster, confidence]
+      properties:
+        participant:
+          $ref: "#/components/schemas/BattleParticipant"
+        x: { type: number }
+        y: { type: number }
+        cluster: { type: string }
+        confidence: { type: integer, minimum: 0, maximum: 100 }
     BattleCheckoutInput:
       type: object
       required: [battleId, participantId, disclosureAccepted]

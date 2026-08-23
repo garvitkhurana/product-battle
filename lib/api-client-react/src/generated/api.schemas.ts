@@ -82,23 +82,6 @@ export interface CreatorDashboard {
   products: Product[];
 }
 
-export interface CheckoutInput {
-  productId: string;
-  /**
-     * @minimum 1
-     * @maximum 5
-     */
-  rating: number;
-  disclosureAccepted: boolean;
-}
-
-export interface CheckoutSession {
-  paymentId: string;
-  checkoutUrl: string;
-  amount: number;
-  disclosure: string;
-}
-
 export type TransactionStatus = typeof TransactionStatus[keyof typeof TransactionStatus];
 
 
@@ -178,11 +161,21 @@ export interface Battle {
   category: string;
   participantA: BattleParticipant;
   participantB: BattleParticipant;
-  participantAVotes: number;
-  participantBVotes: number;
-  totalVotes: number;
+  comparisonCount: number;
   participantAPercentage: number;
   participantBPercentage: number;
+  participantARating: number;
+  participantBRating: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  participantAConfidence: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  participantBConfidence: number;
   status: BattleStatus;
   /** @nullable */
   winnerParticipantId: string | null;
@@ -247,6 +240,147 @@ export interface BattleSubmission {
   title: string;
   status: BattleSubmissionStatus;
   createdAt: string;
+}
+
+export interface PerceptionSession {
+  sessionToken: string;
+  expiresAt: string;
+}
+
+export interface PerceptionSessionInput {
+  /** @minLength 20 */
+  sessionToken: string;
+}
+
+export interface PerceptionSwipeInput {
+  /** @minLength 20 */
+  sessionToken: string;
+  battleId: string;
+  winnerParticipantId: string;
+  /**
+     * @minLength 8
+     * @maxLength 120
+     */
+  requestId: string;
+}
+
+export interface PerceptionAxis {
+  key: string;
+  label: string;
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  score: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  confidence: number;
+}
+
+export interface TasteDna {
+  comparisonCount: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  confidence: number;
+  canShare: boolean;
+  headline: string;
+  axes: PerceptionAxis[];
+  closestCompanies: string[];
+  completedBattleIds: string[];
+}
+
+export interface PerceptionSwipeResult {
+  comparisonCount: number;
+  participantARating: number;
+  participantBRating: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  participantAConfidence: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  participantBConfidence: number;
+  tasteDna: TasteDna;
+}
+
+export interface PerceptionWordInput {
+  /** @minLength 20 */
+  sessionToken: string;
+  participantId: string;
+  /**
+     * @minLength 2
+     * @maxLength 32
+     */
+  word: string;
+}
+
+export interface PerceptionWord {
+  word: string;
+  count: number;
+}
+
+export type CompanyPerceptionProfileStatus = typeof CompanyPerceptionProfileStatus[keyof typeof CompanyPerceptionProfileStatus];
+
+
+export const CompanyPerceptionProfileStatus = {
+  collecting: 'collecting',
+  emerging: 'emerging',
+} as const;
+
+export interface CompanyPerception {
+  participant: BattleParticipant;
+  rating: number;
+  comparisonCount: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  confidence: number;
+  axes: PerceptionAxis[];
+  words: PerceptionWord[];
+  affinities: string[];
+  profileStatus: CompanyPerceptionProfileStatus;
+}
+
+export interface CompanyClaimInput {
+  participantId: string;
+  /**
+     * @minLength 10
+     * @maxLength 1000
+     */
+  message: string;
+}
+
+export type CompanyClaimStatus = typeof CompanyClaimStatus[keyof typeof CompanyClaimStatus];
+
+
+export const CompanyClaimStatus = {
+  pending: 'pending',
+} as const;
+
+export interface CompanyClaim {
+  id: string;
+  status: CompanyClaimStatus;
+  createdAt: string;
+}
+
+export interface PerceptionMapPoint {
+  participant: BattleParticipant;
+  x: number;
+  y: number;
+  cluster: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  confidence: number;
 }
 
 export interface BattleCheckoutInput {

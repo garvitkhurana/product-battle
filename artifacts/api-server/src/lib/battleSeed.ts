@@ -1,5 +1,5 @@
-import { inArray, sql } from "drizzle-orm";
-import { battleParticipantsTable, battlesTable, db, productsTable } from "@workspace/db";
+import { and, eq, inArray, sql } from "drizzle-orm";
+import { battleParticipantsTable, battlesTable, db, perceptionAxesTable, productsTable } from "@workspace/db";
 import {
   curatedBattles,
   curatedCompanies,
@@ -12,20 +12,30 @@ const LEGACY_DEMO_BATTLE_SLUGS = [
   "airbnb-vs-booking",
   "brex-vs-ramp",
   "rippling-vs-gusto",
-  "codecademy-vs-datacamp",
-  "flexport-vs-freightos",
-  "fivestars-vs-square",
-  "ginkgo-bioworks-vs-twist-bioscience",
-  "heap-vs-amplitude",
-  "mixpanel-vs-adobe-analytics",
-  "momentus-vs-rocket-lab",
-  "nurx-vs-hims-and-hers",
-  "odeko-vs-toast",
-  "reddit-vs-discord",
-  "smartasset-vs-nerdwallet",
-  "the-athletic-vs-sports-illustrated",
-  "wave-vs-m-pesa",
 ];
+export const HOUSEHOLD_BATTLE_SLUGS = [
+  "airbnb-vs-vrbo",
+  "doordash-vs-uber-eats",
+  "twitch-vs-youtube",
+  "stripe-vs-adyen",
+  "coinbase-vs-binance",
+  "instacart-vs-amazon-fresh",
+  "dropbox-vs-google-drive",
+  "gitlab-vs-github",
+  "whatnot-vs-tiktok-shop",
+  "goat-vs-stockx",
+  "gusto-vs-adp",
+  "brex-vs-amex",
+  "honeylove-vs-skims",
+  "zepto-vs-blinkit",
+  "scribd-vs-kindle-unlimited",
+] as const;
+
+export const LAUNCH_BATTLE_SLUGS = new Set<string>(HOUSEHOLD_BATTLE_SLUGS);
+export const CURATED_BATTLE_ORDER = [
+  ...new Set([...HOUSEHOLD_BATTLE_SLUGS, ...curatedBattles.map((battle) => battle.slug)]),
+];
+export const PERCEPTION_EXPANDED_BATCH_SIZE = 10;
 
 function usableImageUrl(url: string | null | undefined): string {
   return url?.startsWith("https://") ? url : "";
@@ -152,7 +162,8 @@ export async function seedBattleMatchups(): Promise<void> {
           participantIdsBySlug.get(
             `rival-${curatedCompetitors.find((rival) => rival.id === battle.rival_id)?.slug ?? battle.rival_id}`,
           ) ?? participantIdForRival(battle.rival_id),
-        status: "active",
+        status: LAUNCH_BATTLE_SLUGS.has(battle.slug) ? "active" : "archived",
+        isLaunch: LAUNCH_BATTLE_SLUGS.has(battle.slug),
       })),
     )
     .onConflictDoUpdate({
@@ -164,11 +175,54 @@ export async function seedBattleMatchups(): Promise<void> {
         participantAId: sql`excluded.participant_a_id`,
         participantBId: sql`excluded.participant_b_id`,
         status: sql`excluded.status`,
+        isLaunch: sql`excluded.is_launch`,
       },
     });
 
   await db
     .update(battlesTable)
-    .set({ status: "archived" })
+    .set({ status: "archived", isLaunch: false })
     .where(inArray(battlesTable.slug, LEGACY_DEMO_BATTLE_SLUGS));
+
+  const launchBattles = await db
+    .select()
+    .from(battlesTable)
+    .where(and(eq(battlesTable.isLaunch, true), eq(battlesTable.status, "active")));
+  const launchParticipantIds = [...new Set(launchBattles.flatMap((battle) => [battle.participantAId, battle.participantBId]))];
+  const launchParticipants = launchParticipantIds.length
+    ? await db.select().from(battleParticipantsTable).where(inArray(battleParticipantsTable.id, launchParticipantIds))
+    : [];
+  const axisScores = (participant: typeof battleParticipantsTable.$inferSelect) => {
+    const category = participant.category.toLowerCase();
+    const regulated = /fintech|health|insurance|legal|government|energy/.test(category) ? 1 : 4;
+    const consumer = /consumer|travel|food|marketplace|media|retail/.test(category) ? 5 : 2;
+    const scale = participant.isYcCompany ? 2 : 5;
+    const batchYear = Number(participant.ycBatch?.match(/(19|20)\d{2}/)?.[0] ?? "2020");
+    return {
+      "infra-consumer": consumer,
+      "challenger-incumbent": participant.isYcCompany ? 1 : 5,
+      "craft-scale": scale,
+      "batch-era": batchYear >= 2020 ? 4 : batchYear >= 2015 ? 3 : 2,
+      "regulated-software": regulated,
+    };
+  };
+  const axisRows = launchParticipants.flatMap((participant) =>
+    Object.entries(axisScores(participant)).map(([axisKey, score]) => ({
+      id: `launch-axis-${participant.id}-${axisKey}`,
+      participantId: participant.id,
+      axisKey,
+      score,
+      source: "Curated from public company descriptions",
+      version: "launch-rubric-v1",
+    })),
+  );
+  if (axisRows.length) {
+    await db
+      .insert(perceptionAxesTable)
+      .values(axisRows)
+      .onConflictDoUpdate({
+        target: [perceptionAxesTable.participantId, perceptionAxesTable.axisKey],
+        set: { score: sql`excluded.score`, source: sql`excluded.source`, version: sql`excluded.version` },
+      });
+  }
 }

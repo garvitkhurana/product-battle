@@ -17,7 +17,7 @@ export function Footer() {
                <span className="font-bold text-lg tracking-tight">YC Battle</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-sm">
-               A head-to-head marketplace for backing your favorite YC companies. Every paid battle vote is non-refundable, not investment advice, and not a guarantee of company performance.
+               An independent, free perception engine for comparing companies. Community signals are not endorsements, investment advice, or measures of company performance.
             </p>
           </div>
           <div>
@@ -34,18 +34,16 @@ export function Footer() {
                   }}
                   className="hover:text-primary transition-colors"
                 >
-                  Active Battles
+                  Comparisons
                 </Link>
               </li>
-              <li><Link href="/submit" className="hover:text-primary transition-colors">Add a Battle</Link></li>
+               <li><Link href="/submit" className="hover:text-primary transition-colors">Propose a comparison</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-               <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-               <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-               <li><Link href="/voting-disclosure" className="hover:text-primary transition-colors">Voting Disclosure</Link></li>
+                <li><Link href="/legal" className="hover:text-primary transition-colors">Independence & privacy</Link></li>
             </ul>
           </div>
         </div>

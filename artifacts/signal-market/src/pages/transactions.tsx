@@ -23,7 +23,7 @@ export default function Transactions() {
     return (
       <AuthRequired
         title="Sign in to view your activity"
-        description="Signed-in members can review their battle votes, ratings, and payment receipts here."
+        description="Signed-in members can review historical payments and receipts here."
       />
     );
   }
@@ -45,9 +45,9 @@ export default function Transactions() {
     <div className="container mx-auto py-10 px-4 max-w-4xl">
       <div className="flex items-center gap-3 mb-2">
         <ReceiptText className="h-8 w-8 text-primary" />
-        <h1 className="text-3xl font-extrabold tracking-tight">Your Activity</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">Historical receipts</h1>
       </div>
-      <p className="text-muted-foreground mb-8">Your non-refundable community ratings and battle votes.</p>
+      <p className="text-muted-foreground mb-8">Payments made before YC Battle moved to free community comparisons.</p>
 
       <div className="bg-card rounded-xl border overflow-hidden shadow-sm">
         {transactions && transactions.length > 0 ? (
@@ -72,12 +72,12 @@ export default function Transactions() {
                       </div>
                       <div className="text-muted-foreground text-[10px] uppercase flex items-center gap-1">
                         {tx.kind === "battle" ? <Swords className="h-3 w-3" /> : <Star className="h-3 w-3" />}
-                        {tx.kind === "battle" ? "Non-refundable community battle vote" : "Non-refundable community rating"}
+                        {tx.kind === "battle" ? "Historical paid comparison" : "Historical paid rating"}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right font-mono font-bold">
                       {tx.kind === "battle"
-                        ? `Voted for ${tx.selectedParticipantName ?? "a side"}`
+                          ? `Selected ${tx.selectedParticipantName ?? "a side"}`
                         : tx.rating
                           ? `${tx.rating} / 5`
                           : "Legacy signal"}
@@ -115,10 +115,10 @@ export default function Transactions() {
         ) : (
           <div className="p-12 text-center">
             <ReceiptText className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-semibold mb-2">No activity yet</h3>
-            <p className="text-muted-foreground mb-6">Explore company profiles or cast a vote in an active battle.</p>
+            <h3 className="text-lg font-semibold mb-2">No historical receipts</h3>
+            <p className="text-muted-foreground mb-6">Free comparisons do not create payment receipts.</p>
             <Link href="/battles" className="text-primary font-bold hover:underline">
-              Explore Battles &rarr;
+              Explore comparisons &rarr;
             </Link>
           </div>
         )}

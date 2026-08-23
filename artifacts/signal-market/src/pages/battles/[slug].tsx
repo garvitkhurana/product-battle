@@ -1,437 +1,229 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from 'react';
+import { useRoute } from 'wouter';
+import { getGetBattleQueryKey, useGetBattle, useRecordPerceptionSwipe } from '@workspace/api-client-react';
 import {
-  useCreateBattleCheckout,
-  useGetBattle,
-  BattleParticipant,
-} from "@workspace/api-client-react";
-import { useParams, Link } from "wouter";
-import {
-  ArrowLeft,
-  ChevronRight,
-  Loader2,
-  ShieldAlert,
-  ShieldCheck,
-  Sword,
-  Swords,
-  Zap,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
+  isInvalidPerceptionSessionError,
+  isRecordedPerceptionSwipeError,
+  useSessionToken,
+} from '@/lib/session';
+import { ArrowLeft, Loader2, Check } from 'lucide-react';
+import { Link } from 'wouter';
+import { useToast } from '@/hooks/use-toast';
+import { CompanyMark } from '@/components/CompanyMark';
 
 export default function BattleDetail() {
-  const { slug } = useParams();
+  const [, params] = useRoute('/battles/:slug');
+  const slug = params?.slug || '';
+  const { sessionToken, invalidateSession } = useSessionToken();
   const { toast } = useToast();
-  const { data: battle, isLoading, error } = useGetBattle(slug || "");
-  const createCheckout = useCreateBattleCheckout();
-  const [voteParticipant, setVoteParticipant] = useState<BattleParticipant | null>(null);
-  const [disclosureAccepted, setDisclosureAccepted] = useState(false);
-  const [impactParticipantId, setImpactParticipantId] = useState<string | null>(null);
-  const [knockedOutParticipantId, setKnockedOutParticipantId] = useState<string | null>(null);
-  const impactTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const { data: battle, isLoading, error } = useGetBattle(slug, {
+    query: {
+      enabled: !!slug,
+      queryKey: getGetBattleQueryKey(slug),
+    }
+  });
 
-  useEffect(() => () => {
-    if (impactTimer.current) clearTimeout(impactTimer.current);
-  }, []);
+  const recordSwipe = useRecordPerceptionSwipe();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [alreadyRecorded, setAlreadyRecorded] = useState(false);
+  const [showEntryCue] = useState(() => {
+    const entrySlug = sessionStorage.getItem('yc_battle_entry');
+    if (entrySlug !== slug) return false;
+    sessionStorage.removeItem('yc_battle_entry');
+    return true;
+  });
 
-  const openVoteDialog = (participant: BattleParticipant) => {
-    setVoteParticipant(participant);
-    setDisclosureAccepted(false);
-    setImpactParticipantId(participant.id);
-    setKnockedOutParticipantId(
-      participant.id === battle?.participantA.id ? battle?.participantB.id ?? null : battle?.participantA.id ?? null,
-    );
-    if (impactTimer.current) clearTimeout(impactTimer.current);
-    impactTimer.current = setTimeout(() => {
-      setImpactParticipantId(null);
-      setKnockedOutParticipantId(null);
-    }, 1100);
-  };
-
-  const confirmVote = () => {
-    if (!battle || !voteParticipant || !disclosureAccepted) return;
-    createCheckout.mutate(
-      {
-        data: {
-          battleId: battle.id,
-          participantId: voteParticipant.id,
-          disclosureAccepted: true,
-        },
+  const handleChoice = (participantId: string) => {
+    if (!sessionToken || !battle) return;
+    
+    setSelectedId(participantId);
+    
+    recordSwipe.mutate({
+      data: {
+        sessionToken,
+        battleId: battle.id,
+        winnerParticipantId: participantId,
+        requestId: crypto.randomUUID()
+      }
+    }, {
+      onSuccess: () => {
+        toast({
+          title: "Signal Recorded",
+          description: "Your preference has updated the perception engine.",
+        });
       },
-      {
-        onSuccess: (session) => {
-          window.location.href = session.checkoutUrl;
-        },
-        onError: () => {
+      onError: (error) => {
+        setSelectedId(null);
+        if (isInvalidPerceptionSessionError(error)) {
+          invalidateSession();
           toast({
-            title: "Checkout could not start",
-            description: "Please try again. Your card will only be charged after Stripe confirms payment.",
-            variant: "destructive",
+            title: "Starting a fresh session",
+            description: "Your previous private session is no longer available. Please choose again.",
           });
-        },
-      },
-    );
+          return;
+        }
+        if (isRecordedPerceptionSwipeError(error)) {
+          setAlreadyRecorded(true);
+          toast({
+            title: "Choice already recorded",
+            description: "You have already added a private signal for this comparison in this browser session.",
+          });
+          return;
+        }
+        toast({
+          title: "Error",
+          description: "Could not record choice. Please try again.",
+          variant: "destructive"
+        });
+      }
+    });
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background p-8 flex flex-col items-center justify-center space-y-8">
-        <Skeleton className="h-12 w-3/4 max-w-lg" />
-        <div className="flex gap-4 w-full max-w-4xl h-96">
-          <Skeleton className="flex-1 rounded-2xl" />
-          <Skeleton className="flex-1 rounded-2xl" />
-        </div>
+      <div className="flex-1 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (error || !battle) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center">
-        <ShieldAlert className="h-16 w-16 text-destructive mb-4" />
-        <h1 className="text-3xl font-bold mb-4">Battle Not Found</h1>
-        <Button asChild><Link href="/battles">Back to Battles</Link></Button>
+      <div className="flex-1 container mx-auto px-4 py-12">
+        <div className="max-w-md mx-auto text-center space-y-4">
+          <h2 className="text-2xl font-bold">Comparison not found</h2>
+          <p className="text-muted-foreground font-mono">This comparison may not exist or has been removed.</p>
+          <Link href="/battles" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-foreground text-background font-bold mt-4">
+            <ArrowLeft className="w-4 h-4" />
+            Return to Gallery
+          </Link>
+        </div>
       </div>
     );
   }
 
-  const isCompleted = battle.status === 'completed';
-  const aWins = battle.participantAPercentage > battle.participantBPercentage;
-  const bWins = battle.participantBPercentage > battle.participantAPercentage;
+  const isComplete = selectedId !== null || alreadyRecorded;
 
   return (
-    <div className="min-h-[100dvh] overflow-x-hidden bg-[#f8e9d8] text-[#211b18]">
-      <header className="border-b-2 border-[#f8e9d8]/20 bg-[#211b18] px-5 py-5 text-[#f8e9d8] md:px-10">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Link
-            href="/battles"
-            className="group inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-[#f8e9d8]/75 transition-colors hover:text-[#d9f75b] md:text-xs"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            All battles
+    <div className="flex-1 bg-[#f6e5d2] px-4 py-6 md:px-8 md:py-10">
+      <div className="mx-auto max-w-7xl">
+        <header className="flex items-center justify-between pb-6">
+          <Link href="/battles" className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#625c55] transition-colors hover:text-[#181513]">
+            <ArrowLeft className="h-4 w-4" />
+            Back to board
           </Link>
-          <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em]">
-            <span className={`h-2 w-2 rounded-full ${isCompleted ? "bg-[#ff4f32]" : "animate-pulse bg-[#d9f75b]"}`} />
-            {isCompleted ? "Final results" : "Live now"}
-          </div>
-        </div>
-      </header>
+          <span className="border border-[#181513] bg-[#fff8ef] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
+            {battle.category}
+          </span>
+        </header>
 
-      <div className="relative mx-auto max-w-6xl px-5 pb-4 pt-12 md:px-10 md:pt-16">
-        <div className="absolute right-4 top-3 hidden select-none font-mono text-[9px] font-bold uppercase tracking-[0.28em] text-[#211b18]/35 md:block">
-          YC BATTLE / FIELD {battle.slug.slice(-2).toUpperCase()}
-        </div>
-        <div className="flex items-start justify-between gap-8">
-          <div>
-            <p className="mb-5 flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-[#ff4f32]">
-              <Zap className="h-4 w-4 fill-current" />
-              Head-to-head matchup
-            </p>
-            <h1 className="max-w-3xl font-sans text-5xl font-extrabold leading-[0.88] tracking-[-0.09em] md:text-8xl">
-              {battle.participantA.name} <span className="text-[#ff4f32]">vs.</span>
-              <br />
-              {battle.participantB.name}
-            </h1>
-            <p className="mt-7 max-w-xl text-base font-semibold leading-relaxed text-[#211b18]/70 md:text-lg">
-              {battle.description}
-            </p>
-          </div>
-          <div className="hidden shrink-0 border-2 border-[#211b18] p-3 md:block">
-            <div className="flex h-14 w-14 items-center justify-center bg-[#ff4f32] font-mono text-xl font-bold italic">
-              VS
+        <section className={showEntryCue ? 'battle-arena-entry' : ''}>
+          <div className="border-2 border-[#181513] bg-[#fff8ef]">
+            <div className="flex flex-col justify-between gap-4 border-b-2 border-[#181513] p-5 md:flex-row md:items-end md:p-7">
+              <div>
+                <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#ff5038]">Head-to-head perception</p>
+                <h1 className="mt-2 text-4xl font-bold tracking-[-0.06em] md:text-6xl">
+                  {battle.participantA.name} <span className="text-[#ff5038]">vs.</span> {battle.participantB.name}
+                </h1>
+              </div>
+              <p className="max-w-xs font-mono text-xs leading-relaxed text-[#625c55]">
+                Pick the company you associate more strongly with this category. Your choice is private and helps calibrate aggregate context.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-[1fr_auto_1fr]">
+              <button
+                type="button"
+                data-testid="battle-choice-a"
+                onClick={() => !isComplete && handleChoice(battle.participantA.id)}
+                disabled={isComplete}
+                className={`relative min-h-[390px] bg-[#ff5038] p-7 text-left text-[#181513] transition-all duration-200 md:min-h-[500px] md:p-10 ${
+                  selectedId === battle.participantA.id
+                    ? 'z-10 outline outline-4 outline-offset-[-4px] outline-[#181513]'
+                    : isComplete
+                      ? 'brightness-95'
+                      : 'hover:z-10 hover:-translate-y-1 focus-visible:z-10 focus-visible:outline-4 focus-visible:outline-[#181513]'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="border border-[#181513] bg-[#fff8ef] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em]">A / Side one</span>
+                  {selectedId === battle.participantA.id && (
+                    <span className="flex h-8 w-8 items-center justify-center border-2 border-[#181513] bg-[#fff8ef]"><Check className="h-4 w-4" /></span>
+                  )}
+                </div>
+                <div className="mt-14 max-w-xl space-y-6">
+                  <CompanyMark participant={battle.participantA} tone="neutral" size="lg" />
+                  <h2 className="text-5xl font-bold leading-[0.92] tracking-[-0.07em] md:text-7xl">{battle.participantA.name}</h2>
+                  <p className="font-mono text-sm leading-relaxed md:text-base">{battle.participantA.shortDescription}</p>
+                </div>
+                <div className="absolute bottom-7 left-7 right-7 border-t border-[#181513]/50 pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] md:bottom-10 md:left-10 md:right-10">
+                  {isComplete
+                    ? alreadyRecorded
+                      ? 'Already recorded'
+                      : selectedId === battle.participantA.id
+                        ? 'Your signal'
+                        : 'Not selected'
+                    : 'Choose this side'}
+                </div>
+              </button>
+
+              <div className="relative flex h-12 items-center justify-center border-y-2 border-[#181513] bg-[#fff8ef] md:h-auto md:w-0 md:border-x-2 md:border-y-0">
+                <span className="absolute z-10 border-2 border-[#181513] bg-[#fff8ef] px-2 py-2 font-mono text-xs font-bold">VS</span>
+              </div>
+
+              <button
+                type="button"
+                data-testid="battle-choice-b"
+                onClick={() => !isComplete && handleChoice(battle.participantB.id)}
+                disabled={isComplete}
+                className={`relative min-h-[390px] bg-[#d7ff45] p-7 text-left text-[#181513] transition-all duration-200 md:min-h-[500px] md:p-10 ${
+                  selectedId === battle.participantB.id
+                    ? 'z-10 outline outline-4 outline-offset-[-4px] outline-[#181513]'
+                    : isComplete
+                      ? 'brightness-95'
+                      : 'hover:z-10 hover:-translate-y-1 focus-visible:z-10 focus-visible:outline-4 focus-visible:outline-[#181513]'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="border border-[#181513] bg-[#fff8ef] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.15em]">B / Side two</span>
+                  {selectedId === battle.participantB.id && (
+                    <span className="flex h-8 w-8 items-center justify-center border-2 border-[#181513] bg-[#fff8ef]"><Check className="h-4 w-4" /></span>
+                  )}
+                </div>
+                <div className="mt-14 max-w-xl space-y-6">
+                  <CompanyMark participant={battle.participantB} tone="neutral" size="lg" />
+                  <h2 className="text-5xl font-bold leading-[0.92] tracking-[-0.07em] md:text-7xl">{battle.participantB.name}</h2>
+                  <p className="font-mono text-sm leading-relaxed md:text-base">{battle.participantB.shortDescription}</p>
+                </div>
+                <div className="absolute bottom-7 left-7 right-7 border-t border-[#181513]/50 pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] md:bottom-10 md:left-10 md:right-10">
+                  {isComplete
+                    ? alreadyRecorded
+                      ? 'Already recorded'
+                      : selectedId === battle.participantB.id
+                        ? 'Your signal'
+                        : 'Not selected'
+                    : 'Choose this side'}
+                </div>
+              </button>
             </div>
           </div>
-        </div>
-        <div className="mt-12">
-          <ScoreRail
-            leftName={battle.participantA.name}
-            rightName={battle.participantB.name}
-            left={battle.participantAPercentage}
-            right={battle.participantBPercentage}
-            leftVotes={battle.participantAVotes}
-            rightVotes={battle.participantBVotes}
-            totalVotes={battle.totalVotes}
-          />
-        </div>
-      </div>
+        </section>
 
-      <div className="relative mx-auto mt-5 flex max-w-6xl flex-col border-y-2 border-[#211b18] md:flex-row">
-        {impactParticipantId && (
-          <ClashImpact
-            side={impactParticipantId === battle.participantA.id ? "left" : "right"}
-          />
-        )}
-        <Fighter
-          participant={battle.participantA}
-          percentage={battle.participantAPercentage}
-          votes={battle.participantAVotes}
-          side="left"
-          isCompleted={isCompleted}
-          isWinner={aWins}
-           isSelected={voteParticipant?.id === battle.participantA.id}
-           isKnockedOut={knockedOutParticipantId === battle.participantA.id}
-          onVote={() => openVoteDialog(battle.participantA)}
-           onCancelVote={() => setVoteParticipant(null)}
-           onConfirm={confirmVote}
-           disclosureAccepted={disclosureAccepted}
-           onDisclosureChange={setDisclosureAccepted}
-           isPending={createCheckout.isPending}
-        />
-        <div className="relative z-20 -my-5 flex h-10 items-center justify-center self-center border-2 border-[#211b18] bg-[#f8e9d8] px-3 font-mono text-xs font-bold italic md:-mx-5 md:my-0 md:h-auto md:w-10 md:flex-col md:px-0">
-          <span className="relative z-10">VS</span>
-        </div>
-        <Fighter
-          participant={battle.participantB}
-          percentage={battle.participantBPercentage}
-          votes={battle.participantBVotes}
-          side="right"
-          isCompleted={isCompleted}
-          isWinner={bWins}
-           isSelected={voteParticipant?.id === battle.participantB.id}
-           isKnockedOut={knockedOutParticipantId === battle.participantB.id}
-          onVote={() => openVoteDialog(battle.participantB)}
-           onCancelVote={() => setVoteParticipant(null)}
-           onConfirm={confirmVote}
-           disclosureAccepted={disclosureAccepted}
-           onDisclosureChange={setDisclosureAccepted}
-           isPending={createCheckout.isPending}
-        />
-      </div>
-
-      <footer className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-8 text-[#211b18]/60 md:flex-row md:items-center md:justify-between md:px-10">
-        <p className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.12em]">
-          <ShieldCheck className="h-4 w-4" />
-          Each $0.99 payment adds one community vote · no refunds
-        </p>
-        <Link
-          href="/voting-disclosure"
-          className="flex items-center gap-1 self-start font-mono text-[10px] font-bold uppercase tracking-[0.12em] underline underline-offset-4 hover:text-[#ff4f32] md:self-auto"
-        >
-          How this works <ChevronRight className="h-3 w-3" />
-        </Link>
-      </footer>
-
-    </div>
-  );
-}
-
-function ScoreRail({
-  leftName,
-  rightName,
-  left,
-  right,
-  leftVotes,
-  rightVotes,
-  totalVotes,
-}: {
-  leftName: string;
-  rightName: string;
-  left: number;
-  right: number;
-  leftVotes: number;
-  rightVotes: number;
-  totalVotes: number;
-}) {
-  const leftLeads = left >= right;
-
-  return (
-    <div className="relative mx-auto w-full max-w-5xl px-5 md:px-8">
-      <div className="flex items-end justify-between gap-4 font-mono text-[11px] font-bold uppercase tracking-[0.22em] text-[#211b18]/60">
-        <span className="min-w-0 truncate">{leftName} <b className="text-[#211b18]">{left}%</b></span>
-        <span className="min-w-0 truncate text-right"><b className="text-[#211b18]">{right}%</b> {rightName}</span>
-      </div>
-      <div className="mt-3 flex h-5 gap-1 overflow-hidden rounded-sm border-2 border-[#211b18] bg-[#211b18]">
-        <div className="relative bg-[#ff4f32] transition-[width] duration-700 ease-out" style={{ width: `${left}%` }}>
-          {leftLeads && left >= 12 && (
-            <span className="absolute inset-y-0 right-3 flex items-center font-mono text-[10px] font-bold text-[#211b18]">LEAD</span>
-          )}
-        </div>
-        <div className="relative bg-[#d9f75b] transition-[width] duration-700 ease-out" style={{ width: `${right}%` }}>
-          {!leftLeads && right >= 12 && (
-            <span className="absolute inset-y-0 left-3 flex items-center font-mono text-[10px] font-bold text-[#211b18]">LEAD</span>
-          )}
-        </div>
-      </div>
-      <div className="mt-2 flex justify-between gap-3 font-mono text-[10px] uppercase tracking-widest text-[#211b18]/55">
-        <span>{leftVotes.toLocaleString()} votes</span>
-        <span>{totalVotes.toLocaleString()} total votes</span>
-        <span>{rightVotes.toLocaleString()} votes</span>
-      </div>
-    </div>
-  );
-}
-
-function Fighter({
-  participant,
-  percentage,
-  votes,
-  side,
-  isCompleted,
-  isWinner,
-  isSelected,
-  isKnockedOut,
-  onVote,
-  onCancelVote,
-  onConfirm,
-  disclosureAccepted,
-  onDisclosureChange,
-  isPending,
-}: {
-  participant: BattleParticipant;
-  percentage: number;
-  votes: number;
-  side: "left" | "right";
-  isCompleted: boolean;
-  isWinner: boolean;
-  isSelected: boolean;
-  isKnockedOut: boolean;
-  onVote: () => void;
-  onCancelVote: () => void;
-  onConfirm: () => void;
-  disclosureAccepted: boolean;
-  onDisclosureChange: (accepted: boolean) => void;
-  isPending: boolean;
-}) {
-  const isLeft = side === "left";
-  const initials = participant.name
-    .split(/\s+/)
-    .map((word) => word[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-  const descriptor = participant.ycBatch ? `YC ${participant.ycBatch}` : participant.category;
-
-  return (
-    <section className={`group relative flex min-h-[500px] flex-1 flex-col justify-between overflow-hidden px-6 pb-8 pt-12 transition-opacity md:min-h-[560px] md:px-12 md:pb-12 ${isLeft ? "battle-fighter-left bg-[#ff4f32] text-[#211b18]" : "battle-fighter-right bg-[#d9f75b] text-[#211b18]"} ${isKnockedOut ? "battle-knocked-out" : ""}`}>
-      <div className={`pointer-events-none absolute top-0 h-full w-1/2 border-[#211b18]/10 ${isLeft ? "right-0 border-l" : "left-0 border-r"}`} />
-      <div className={`relative z-[1] flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-[0.25em] ${isLeft ? "" : "flex-row-reverse"}`}>
-        <span className="border-2 border-[#211b18] px-2 py-1">{isLeft ? "01 / challenger" : "02 / challenger"}</span>
-        <span className="max-w-[11rem] truncate opacity-60">{isKnockedOut ? "K.O. / recovering" : descriptor}</span>
-      </div>
-
-      <div className={`relative z-[1] mt-12 ${isLeft ? "md:pl-4" : "md:pr-4"}`}>
-        <div className={`mb-8 flex h-24 w-24 items-center justify-center overflow-hidden border-2 border-[#211b18] bg-[#f8e9d8] shadow-[7px_7px_0_#211b18] md:h-32 md:w-32 ${isLeft ? "" : "ml-auto"}`}>
-          <span className="font-mono text-3xl font-bold tracking-[-0.12em]">{initials}</span>
-        </div>
-        <div className={isLeft ? "" : "text-right"}>
-          <h2 className="font-sans text-6xl font-extrabold leading-[0.85] tracking-[-0.09em] md:text-8xl">{participant.name}</h2>
-          <p className={`mt-5 max-w-sm text-sm font-semibold leading-relaxed md:text-base ${isLeft ? "" : "ml-auto"}`}>
-            {participant.shortDescription || participant.description}
-          </p>
-        </div>
-      </div>
-
-      <div className={`relative z-[1] mt-10 flex items-end justify-between gap-4 ${isLeft ? "" : "flex-row-reverse"}`}>
-        <div className={isLeft ? "" : "text-right"}>
-          <div className={`font-mono text-7xl font-bold leading-none tracking-[-0.12em] md:text-8xl ${isCompleted && !isWinner ? "opacity-60" : ""}`}>
-            {percentage}%
+        {isComplete && (
+          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-2 border-[#181513] bg-[#181513] p-5 text-[#fff8ef] sm:flex-row">
+            <p className="font-mono text-xs">
+              {alreadyRecorded
+                ? 'A signal for this comparison is already recorded in this browser session.'
+                : 'Signal recorded. Continue to add context or inspect your private profile.'}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/swipe" className="bg-[#d7ff45] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-[#181513]">Continuous mode</Link>
+              <Link href="/dna" className="border border-[#fff8ef] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Taste DNA</Link>
+            </div>
           </div>
-          <div className="mt-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] opacity-65">
-            {votes.toLocaleString()} votes in the arena
-          </div>
-        </div>
-        {isCompleted ? (
-          <div className="border-2 border-[#211b18] bg-[#f8e9d8] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.15em]">
-            {isWinner ? "Winner" : "Final result"}
-          </div>
-        ) : (
-          <VoteAction
-            participant={participant}
-            isSelected={isSelected}
-            disclosureAccepted={disclosureAccepted}
-            onDisclosureChange={onDisclosureChange}
-            onVote={onVote}
-            onCancelVote={onCancelVote}
-            onConfirm={onConfirm}
-            isPending={isPending}
-          />
         )}
       </div>
-      {isKnockedOut && (
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-          <span className="rotate-[-8deg] border-4 border-[#211b18] bg-[#f8e9d8] px-5 py-2 font-mono text-2xl font-black uppercase tracking-[0.2em] shadow-[6px_6px_0_#211b18]">K.O.</span>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function ClashImpact({ side }: { side: "left" | "right" }) {
-  return (
-    <div
-      className={`clash-impact pointer-events-none absolute left-1/2 top-1/2 z-30 flex items-center gap-2 font-mono text-sm font-black uppercase tracking-[0.16em] ${side === "left" ? "clash-from-left" : "clash-from-right"}`}
-      aria-hidden="true"
-    >
-      <span className="clash-hit-burst" />
-      <Sword className="clash-sword h-14 w-14 rotate-[-25deg] text-[#f8e9d8] drop-shadow-[4px_4px_0_#211b18]" />
-      <span className="border-2 border-[#211b18] bg-[#f8e9d8] px-2 py-1 shadow-[3px_3px_0_#211b18]">K.O.!</span>
     </div>
-  );
-}
-
-function VoteAction({
-  participant,
-  isSelected,
-  disclosureAccepted,
-  onDisclosureChange,
-  onVote,
-  onCancelVote,
-  onConfirm,
-  isPending,
-}: {
-  participant: BattleParticipant;
-  isSelected: boolean;
-  disclosureAccepted: boolean;
-  onDisclosureChange: (accepted: boolean) => void;
-  onVote: () => void;
-  onCancelVote: () => void;
-  onConfirm: () => void;
-  isPending: boolean;
-}) {
-  if (isSelected) {
-    return (
-      <div className="w-full max-w-[18rem] border-2 border-[#211b18] bg-[#f8e9d8] p-3 text-[#211b18] shadow-[5px_5px_0_rgba(33,27,24,0.3)]" aria-live="polite">
-        <div className="flex items-center justify-between gap-3">
-          <p className="font-mono text-[11px] font-bold uppercase tracking-[0.08em]">Back {participant.name}?</p>
-          <span className="font-mono text-xs font-bold">$0.99</span>
-        </div>
-        <label className="mt-3 flex cursor-pointer items-start gap-2 text-[11px] font-semibold leading-snug">
-          <input
-            type="checkbox"
-            checked={disclosureAccepted}
-            onChange={(event) => onDisclosureChange(event.target.checked)}
-            className="peer sr-only"
-          />
-          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center border-2 border-[#211b18] bg-transparent font-mono text-xs font-black leading-none text-[#211b18] transition-colors peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#ff4f32] peer-checked:bg-[#ff4f32] peer-checked:after:content-['✓']" aria-hidden="true" />
-          <span>Paid community vote — not an investment or endorsement.</span>
-        </label>
-        <div className="mt-3 flex gap-2">
-          <Button
-            type="button"
-            onClick={onConfirm}
-            disabled={!disclosureAccepted || isPending}
-            className="h-9 flex-1 rounded-none border-2 border-[#211b18] bg-[#ff4f32] px-2 font-mono text-[10px] font-bold uppercase text-[#211b18] hover:bg-[#d9f75b]"
-          >
-            {isPending && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
-            Continue
-          </Button>
-          <Button type="button" variant="outline" onClick={onCancelVote} disabled={isPending} className="h-9 rounded-none border-2 border-[#211b18] bg-transparent px-2 font-mono text-[10px] font-bold uppercase">
-            Cancel
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <Button
-      onClick={onVote}
-      aria-label={`Cast a community vote for ${participant.name} for 99 cents`}
-      className="h-auto min-h-14 shrink-0 rounded-none border-2 border-[#211b18] bg-[#211b18] px-4 py-3 text-left font-mono text-[11px] font-bold uppercase leading-tight tracking-wider text-[#f8e9d8] shadow-[5px_5px_0_rgba(33,27,24,0.28)] transition-transform hover:-translate-y-1 hover:bg-[#211b18] hover:text-[#d9f75b] md:px-5"
-    >
-      <Swords className="mr-2 inline h-4 w-4" />
-      Back {participant.name}<br />
-      $0.99 · K.O. strike
-    </Button>
   );
 }

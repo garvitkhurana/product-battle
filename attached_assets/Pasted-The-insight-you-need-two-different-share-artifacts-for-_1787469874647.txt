@@ -1,0 +1,47 @@
+The insight: you need two different share artifacts, for two different people
+
+Your problem all along has been that head-to-head produces losers, and losers don't amplify. Word clouds are non-zero-sum — every company gets its own, nobody gets K.O.'d.
+
+Artifact 1 — for the user. After ~15 swipes, hand them a result about themselves: "You're a contrarian. You backed the underdog in 9 of 15." Or a taste profile: "Your picks skew infra over consumer." People share things that say something about them, not things that say something about a company. This is the mechanic every viral quiz has ever used.
+
+Artifact 2 — for the company. "What 8,400 people say about Linear, in one word." That's an image a founder screenshots and posts themselves, unprompted, for free. You've just recruited the exact distributors you couldn't reach before — and they arrive without you having to email 64 people.
+
+One loop, two amplification channels, both free. That's the whole strategy.
+
+The loop I'd actually build
+
+Land → swipe head-to-heads immediately, no account, no paywall → after ~10 swipes, a soft prompt: "one word for Zepto" → after ~15, your personal result card + share → and every company page carries its live word cloud, permanently, as a shareable object.
+
+Both the swipe and the word are free and instant. The word is the higher-value data and it comes after you've earned engagement.
+
+What this turns your HN post into
+
+Right now you'd be posting "I built a site where you pay a dollar to vote," which gets eaten alive. Instead you'd be posting:
+
+Show HN: 2M pairwise comparisons of YC companies — here's the ranking and the raw data
+
+Methodology writeup, Elo explanation, the surprising results, CSV download. That's a front-page post. HN doesn't upvote games; it upvotes datasets with a defensible method and an author who publishes the ugly parts. You'd also have a genuinely interesting thing to say — pairwise-comparison ranking is a real technique with real failure modes, and explaining how you handled ballot-stuffing and transitivity violations is the post.
+
+Where the money comes from instead
+
+The word cloud is quietly a brand perception tracker, and that's a real business. Companies already pay agencies five figures a year to learn what four adjectives the market associates with them. You'd have it live, longitudinal, and free to collect.
+
+So: consumer side always free; sell the dashboard to the companies. Sentiment over time, word drift after a launch, benchmarking against a competitor set. Also sponsored or custom brackets — a VC firm paying to run its portfolio through the machine.
+
+That's a far better business than $0.99 votes, and it's the identical product. You just stop charging the audience and start charging the subjects.
+
+Two things that will bite you
+
+Moderation. Free-text words about real companies will produce "scam," "fraud," slurs, and coordinated brigading. Elegant fix: a word only enters the cloud at a threshold — say 5+ independent submissions. That auto-filters garbage, makes every visible word actually meaningful, and gives you a clean answer when a company complains. Add a profanity filter and rate limiting on top. Label it "community perception, unverified."
+
+Ballot stuffing. The moment a company notices its cloud, someone will script it. You need per-session limits, basic fingerprinting, and — importantly — publish that you do. HN will ask; having an answer ready is worth more than the answer being perfect.
+
+Build order
+Swipe, free, no account. Elo ranking behind it.
+Personal result card + share (this is the user-side loop).
+One-word prompt with threshold moderation.
+Company word cloud pages with dynamic OG images.
+Then the HN post, framed as data.
+Company dashboard, once you have volume worth selling.
+
+The modal in your screenshot doesn't survive any of this — and that's the point. The disabled CONTINUE sitting behind a disclaimer checkbox is a friction gate protecting a dollar you shouldn't be collecting. Take the money out of the loop and the loop can finally spin.

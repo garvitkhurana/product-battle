@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">YC Battle — Independent company perception</title>
+  <desc id="desc">A free pairwise comparison engine for understanding company perception.</desc>
+  <rect width="1200" height="630" fill="#f6f6f4"/>
+  <path d="M0 500H1200M0 365H1200M0 230H1200M220 0V630M500 0V630M780 0V630M1060 0V630" stroke="#171720" stroke-width="2" opacity=".12"/>
+  <rect x="80" y="78" width="18" height="18" fill="#4c00ff"/>
+  <text x="124" y="95" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="4" fill="#171720">YC BATTLE</text>
+  <text x="80" y="260" font-family="Arial, sans-serif" font-size="75" font-weight="800" fill="#171720">WHO EARNS</text>
+  <text x="80" y="342" font-family="Arial, sans-serif" font-size="75" font-weight="800" fill="#4c00ff">YOUR SIGNAL?</text>
+  <text x="84" y="435" font-family="Arial, sans-serif" font-size="28" fill="#35353e">Free pairwise comparisons for independent company perception.</text>
+  <text x="84" y="536" font-family="monospace" font-size="20" fill="#35353e">NOT AFFILIATED WITH Y COMBINATOR</text>
+  <rect x="936" y="454" width="120" height="120" fill="#dfff00"/>
+  <rect x="1010" y="380" width="110" height="110" fill="#4c00ff"/>
+</svg>
