@@ -12,6 +12,19 @@ const LEGACY_DEMO_BATTLE_SLUGS = [
   "airbnb-vs-booking",
   "brex-vs-ramp",
   "rippling-vs-gusto",
+  "codecademy-vs-datacamp",
+  "flexport-vs-freightos",
+  "fivestars-vs-square",
+  "ginkgo-bioworks-vs-twist-bioscience",
+  "heap-vs-amplitude",
+  "mixpanel-vs-adobe-analytics",
+  "momentus-vs-rocket-lab",
+  "nurx-vs-hims-and-hers",
+  "odeko-vs-toast",
+  "reddit-vs-discord",
+  "smartasset-vs-nerdwallet",
+  "the-athletic-vs-sports-illustrated",
+  "wave-vs-m-pesa",
 ];
 
 function usableImageUrl(url: string | null | undefined): string {

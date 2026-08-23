@@ -8,8 +8,8 @@ Not affiliated with Y Combinator. Picks are opinions, not investment advice.
 
 | | Count |
 | --- | ---: |
-| Non-YC competitors | 74 |
-| Battles | 73 |
+| Non-YC competitors | 60 |
+| Battles | 60 |
 
 ## Files
 
