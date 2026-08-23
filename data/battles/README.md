@@ -4,6 +4,13 @@ Curated **YC vs non-YC** head-to-head matchups. Users pay **$0.99** to pick a si
 
 Not affiliated with Y Combinator. Picks are opinions, not investment advice.
 
+## Counts
+
+| | Count |
+| --- | ---: |
+| Non-YC competitors | 74 |
+| Battles | 73 |
+
 ## Files
 
 | File | Purpose |
