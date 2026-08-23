@@ -9,7 +9,7 @@ import {
 const CURATED_CREATOR_ID = "yc-battle-directory";
 const CURATED_CREATOR_NAME = "YC Battle directory";
 const LEGACY_DEMO_BATTLE_SLUGS = [
-  "airbnb-vs-vrbo",
+  "airbnb-vs-booking",
   "brex-vs-ramp",
   "rippling-vs-gusto",
 ];

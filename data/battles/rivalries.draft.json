@@ -20,19 +20,19 @@
       "logo_url": "https://www.google.com/s2/favicons?domain=adyen.com&sz=128"
     },
     {
-      "id": "ext-booking",
-      "slug": "booking-com",
-      "name": "Booking.com",
-      "one_liner": "Global online travel agency for stays and trips.",
-      "description": "Booking.com is one of the largest OTAs, spanning hotels, homes, and travel inventory worldwide.",
-      "website": "https://www.booking.com",
+      "id": "ext-vrbo",
+      "slug": "vrbo",
+      "name": "Vrbo",
+      "one_liner": "Vacation rentals built around whole homes.",
+      "description": "Vrbo (Expedia Group) is a vacation-rental marketplace focused on entire homes for families and groups, making it Airbnb's closest like-for-like rival.",
+      "website": "https://www.vrbo.com",
       "category": "Consumer",
       "tags": [
         "Travel",
         "Marketplace"
       ],
-      "location": "Amsterdam, Netherlands",
-      "logo_url": "https://www.google.com/s2/favicons?domain=booking.com&sz=128"
+      "location": "Austin, TX",
+      "logo_url": "https://www.google.com/s2/favicons?domain=vrbo.com&sz=128"
     },
     {
       "id": "ext-uber-eats",
@@ -1169,14 +1169,14 @@
       "featured": true
     },
     {
-      "id": "battle-airbnb-booking",
-      "slug": "airbnb-vs-booking",
-      "title": "Airbnb vs Booking.com",
+      "id": "battle-airbnb-vrbo",
+      "slug": "airbnb-vs-vrbo",
+      "title": "Airbnb vs Vrbo",
       "space": "Travel",
       "yc_slug": "airbnb",
-      "rival_id": "ext-booking",
+      "rival_id": "ext-vrbo",
       "left_argument": "Homes and experiences brand with community trust.",
-      "right_argument": "Hotel inventory depth and global OTA distribution.",
+      "right_argument": "Whole-home vacation rentals built for families and groups.",
       "featured": true
     },
     {

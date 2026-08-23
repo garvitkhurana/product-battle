@@ -2042,13 +2042,13 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "Consumer",
-    "description": "Booking.com is one of the largest OTAs, spanning hotels, homes, and travel inventory worldwide.",
-    "id": "ext-booking",
-    "location": "Amsterdam, Netherlands",
-    "logo_url": "https://www.google.com/s2/favicons?domain=booking.com&sz=128",
-    "name": "Booking.com",
-    "one_liner": "Global online travel agency for stays and trips.",
-    "slug": "booking-com",
+    "description": "Vrbo (Expedia Group) is a vacation-rental marketplace focused on entire homes for families and groups, making it Airbnb's closest like-for-like rival.",
+    "id": "ext-vrbo",
+    "location": "Austin, TX",
+    "logo_url": "https://www.google.com/s2/favicons?domain=vrbo.com&sz=128",
+    "name": "Vrbo",
+    "one_liner": "Vacation rentals built around whole homes.",
+    "slug": "vrbo",
     "tags": [
       "Travel",
       "Marketplace"
@@ -3192,13 +3192,13 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": true,
-    "id": "battle-airbnb-booking",
+    "id": "battle-airbnb-vrbo",
     "left_argument": "Homes and experiences brand with community trust.",
-    "right_argument": "Hotel inventory depth and global OTA distribution.",
-    "rival_id": "ext-booking",
-    "slug": "airbnb-vs-booking",
+    "right_argument": "Whole-home vacation rentals built for families and groups.",
+    "rival_id": "ext-vrbo",
+    "slug": "airbnb-vs-vrbo",
     "space": "Travel",
-    "title": "Airbnb vs Booking.com",
+    "title": "Airbnb vs Vrbo",
     "yc_slug": "airbnb"
   },
   {
