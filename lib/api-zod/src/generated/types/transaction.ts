@@ -5,12 +5,15 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { TransactionKind } from './transactionKind';
 import type { TransactionStatus } from './transactionStatus';
 
 export interface Transaction {
   id: string;
-  productId: string;
-  productTitle: string;
+  /** @nullable */
+  productId: string | null;
+  /** @nullable */
+  productTitle: string | null;
   amount: number;
   /**
      * @minimum 1
@@ -23,4 +26,11 @@ export interface Transaction {
   /** @nullable */
   receiptUrl?: string | null;
   createdAt: Date;
+  kind: TransactionKind;
+  /** @nullable */
+  battleId: string | null;
+  /** @nullable */
+  battleTitle: string | null;
+  /** @nullable */
+  selectedParticipantName: string | null;
 }

@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --background: 0 0% 98%;
+  --foreground: 0 0% 9%;
+  --border: 0 0% 88%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 9%;
+  --card-border: 0 0% 88%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 9%;
+  --popover-border: 0 0% 88%;
+
+  --primary: 21 100% 50%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 9%;
+
+  --muted: 0 0% 92%;
+  --muted-foreground: 0 0% 40%;
+
+  --accent: 0 0% 96%;
+  --accent-foreground: 0 0% 9%;
+
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 0 0% 88%;
+  --ring: 21 100% 50%;
+
+  --app-font-sans: 'Plus Jakarta Sans', sans-serif;
+  --app-font-mono: 'Space Mono', monospace;
+  --radius: 0.5rem;
+
+  /* Map to Tailwind v4 theme variables used by the sandbox */
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
+}
+
+@keyframes arena-jitter-left {
+  0%, 76%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  79% { transform: translate3d(2px, -1px, 0) rotate(-1deg); }
+  82% { transform: translate3d(-2px, 1px, 0) rotate(1deg); }
+  85% { transform: translate3d(1px, 0, 0) rotate(-0.5deg); }
+  88% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+@keyframes arena-jitter-right {
+  0%, 76%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  79% { transform: translate3d(-2px, -1px, 0) rotate(1deg); }
+  82% { transform: translate3d(2px, 1px, 0) rotate(-1deg); }
+  85% { transform: translate3d(-1px, 0, 0) rotate(0.5deg); }
+  88% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+@keyframes arena-energy {
+  0%, 100% { opacity: 0.45; transform: scaleY(0.92) rotate(-2deg); }
+  50% { opacity: 1; transform: scaleY(1.08) rotate(2deg); }
+}
+
+@keyframes arena-spark {
+  0%, 100% { opacity: 0.15; transform: scale(0.75); }
+  45% { opacity: 1; transform: scale(1.1); }
+  60% { opacity: 0.25; transform: scale(0.9); }
+}
+
+.arena-fighter-left {
+  animation: arena-jitter-left 4.8s ease-in-out infinite;
+}
+
+.arena-fighter-right {
+  animation: arena-jitter-right 4.8s ease-in-out 0.35s infinite;
+}
+
+.arena-energy {
+  animation: arena-energy 1.1s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(255, 79, 50, 0.35));
+}
+
+.arena-spark {
+  animation: arena-spark 1.4s ease-in-out infinite;
+}
+
+.arena-spark-delay {
+  animation-delay: 0.55s;
+}
+
+@keyframes arena-clash-left {
+  0% { opacity: 0; transform: translate(-190%, -50%) rotate(-28deg) scale(0.65); }
+  20% { opacity: 1; transform: translate(-105%, -50%) rotate(-8deg) scale(1.08); }
+  55% { opacity: 1; transform: translate(-15%, -50%) rotate(9deg) scale(1); }
+  100% { opacity: 0; transform: translate(45%, -50%) rotate(18deg) scale(0.95); }
+}
+
+@keyframes arena-clash-right {
+  0% { opacity: 0; transform: translate(90%, -50%) rotate(28deg) scale(0.65); }
+  20% { opacity: 1; transform: translate(5%, -50%) rotate(8deg) scale(1.08); }
+  55% { opacity: 1; transform: translate(-85%, -50%) rotate(-9deg) scale(1); }
+  100% { opacity: 0; transform: translate(-145%, -50%) rotate(-18deg) scale(0.95); }
+}
+
+@keyframes arena-knockout-left {
+  0%, 100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+  20% { opacity: 1; transform: translateX(12px) rotate(1deg); }
+  65% { opacity: 0.18; transform: translateX(-110px) rotate(-10deg) scale(0.92); }
+  100% { opacity: 0.18; transform: translateX(-125px) rotate(-12deg) scale(0.9); }
+}
+
+@keyframes arena-knockout-right {
+  0%, 100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+  20% { opacity: 1; transform: translateX(-12px) rotate(-1deg); }
+  65% { opacity: 0.18; transform: translateX(110px) rotate(10deg) scale(0.92); }
+  100% { opacity: 0.18; transform: translateX(125px) rotate(12deg) scale(0.9); }
+}
+
+.arena-clash {
+  isolation: isolate;
+  animation-duration: 850ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.arena-clash > * {
+  position: relative;
+  z-index: 1;
+}
+
+.arena-hit-burst {
+  position: absolute;
+  z-index: 0;
+  width: 5rem;
+  height: 5rem;
+  border: 4px solid #f8e9d8;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 6px #211b18, 0 0 0 11px #ff4f32;
+  animation: arena-hit-burst 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms both;
+}
+
+@keyframes arena-hit-burst {
+  0% { opacity: 0; transform: scale(0.25) rotate(-12deg); }
+  35% { opacity: 1; transform: scale(0.75) rotate(4deg); }
+  100% { opacity: 0; transform: scale(1.5) rotate(20deg); }
+}
+
+.arena-clash-sword {
+  animation: arena-clash-sword-hit 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 140ms both;
+}
+
+@keyframes arena-clash-sword-hit {
+  0% { transform: rotate(-55deg) scale(0.7); }
+  40% { transform: rotate(-18deg) scale(1.2); }
+  100% { transform: rotate(12deg) scale(0.95); }
+}
+
+.arena-clash-from-left { animation-name: arena-clash-left; }
+.arena-clash-from-right { animation-name: arena-clash-right; }
+
+.arena-fighter-left.arena-knocked-out {
+  animation: arena-knockout-left 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.arena-fighter-right.arena-knocked-out {
+  animation: arena-knockout-right 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (max-width: 767px) {
+  @keyframes arena-clash-left-mobile {
+    0% { opacity: 0; transform: translate(-50%, -190%) rotate(-28deg) scale(0.65); }
+    20% { opacity: 1; transform: translate(-50%, -105%) rotate(-8deg) scale(1.08); }
+    55% { opacity: 1; transform: translate(-50%, -15%) rotate(9deg) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, 45%) rotate(18deg) scale(0.95); }
+  }
+
+  @keyframes arena-clash-right-mobile {
+    0% { opacity: 0; transform: translate(-50%, 90%) rotate(28deg) scale(0.65); }
+    20% { opacity: 1; transform: translate(-50%, 5%) rotate(8deg) scale(1.08); }
+    55% { opacity: 1; transform: translate(-50%, -85%) rotate(-9deg) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -145%) rotate(-18deg) scale(0.95); }
+  }
+
+  .arena-clash-from-left { animation-name: arena-clash-left-mobile; }
+  .arena-clash-from-right { animation-name: arena-clash-right-mobile; }
+
+  .arena-hit-burst,
+  .arena-clash-sword {
+    animation-duration: 450ms;
+  }
+
+  .arena-fighter-left.arena-knocked-out { animation: arena-knockout-left 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .arena-fighter-right.arena-knocked-out { animation: arena-knockout-right 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arena-fighter-left,
+  .arena-fighter-right,
+  .arena-energy,
+  .arena-spark,
+  .arena-clash,
+  .arena-hit-burst,
+  .arena-clash-sword,
+  .arena-fighter-left.arena-knocked-out,
+  .arena-fighter-right.arena-knocked-out {
+    animation: none;
+  }
+}

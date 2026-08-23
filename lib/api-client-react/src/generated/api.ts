@@ -20,6 +20,10 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  Battle,
+  BattleCheckoutInput,
+  BattleInput,
+  BattleSubmission,
   CheckoutInput,
   CheckoutSession,
   CreatorDashboard,
@@ -819,4 +823,300 @@ export function useGetPayment<TData = Awaited<ReturnType<typeof getPayment>>, TE
 
 
 
+
+export const getListBattlesUrl = () => {
+
+
+
+
+  return `/api/battles`
+}
+
+/**
+ * @summary List public company battles
+ */
+export const listBattles = async ( options?: Parameters<typeof customFetch>[1]): Promise<Battle[]> => {
+
+  return customFetch<Battle[]>(getListBattlesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListBattlesQueryKey = () => {
+    return [
+    `/api/battles`
+    ] as const;
+    }
+
+
+export const getListBattlesQueryOptions = <TData = Awaited<ReturnType<typeof listBattles>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBattles>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListBattlesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listBattles>>> = ({ signal }) => listBattles({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listBattles>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListBattlesQueryResult = NonNullable<Awaited<ReturnType<typeof listBattles>>>
+export type ListBattlesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List public company battles
+ */
+
+export function useListBattles<TData = Awaited<ReturnType<typeof listBattles>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBattles>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListBattlesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateBattleUrl = () => {
+
+
+
+
+  return `/api/battles`
+}
+
+/**
+ * @summary Submit a company battle for review
+ */
+export const createBattle = async (battleInput: BattleInput, options?: Parameters<typeof customFetch>[1]): Promise<BattleSubmission> => {
+
+  return customFetch<BattleSubmission>(getCreateBattleUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(battleInput)
+  }
+);}
+
+
+
+
+
+export const getCreateBattleMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBattle>>, TError,{data: BodyType<BattleInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createBattle>>, TError,{data: BodyType<BattleInput>}, TContext> => {
+
+const mutationKey = ['createBattle'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBattle>>, {data: BodyType<BattleInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createBattle(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateBattleMutationResult = NonNullable<Awaited<ReturnType<typeof createBattle>>>
+    export type CreateBattleMutationBody = BodyType<BattleInput>
+    export type CreateBattleMutationError = ErrorType<void>
+
+    /**
+ * @summary Submit a company battle for review
+ */
+export const useCreateBattle = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBattle>>, TError,{data: BodyType<BattleInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createBattle>>,
+        TError,
+        {data: BodyType<BattleInput>},
+        TContext
+      > => {
+      return useMutation(getCreateBattleMutationOptions(options));
+    }
+
+export const getGetBattleUrl = (slug: string,) => {
+
+
+
+
+  return `/api/battles/${slug}`
+}
+
+/**
+ * @summary Get a head-to-head company battle
+ */
+export const getBattle = async (slug: string, options?: Parameters<typeof customFetch>[1]): Promise<Battle> => {
+
+  return customFetch<Battle>(getGetBattleUrl(slug),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBattleQueryKey = (slug: string,) => {
+    return [
+    `/api/battles/${slug}`
+    ] as const;
+    }
+
+
+export const getGetBattleQueryOptions = <TData = Awaited<ReturnType<typeof getBattle>>, TError = ErrorType<void>>(slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBattle>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBattleQueryKey(slug);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBattle>>> = ({ signal }) => getBattle(slug, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: slug !== null && slug !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBattle>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBattleQueryResult = NonNullable<Awaited<ReturnType<typeof getBattle>>>
+export type GetBattleQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get a head-to-head company battle
+ */
+
+export function useGetBattle<TData = Awaited<ReturnType<typeof getBattle>>, TError = ErrorType<void>>(
+ slug: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBattle>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBattleQueryOptions(slug,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateBattleCheckoutUrl = () => {
+
+
+
+
+  return `/api/battle-checkout`
+}
+
+/**
+ * @summary Create a Stripe Checkout session for a battle vote
+ */
+export const createBattleCheckout = async (battleCheckoutInput: BattleCheckoutInput, options?: Parameters<typeof customFetch>[1]): Promise<CheckoutSession> => {
+
+  return customFetch<CheckoutSession>(getCreateBattleCheckoutUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(battleCheckoutInput)
+  }
+);}
+
+
+
+
+
+export const getCreateBattleCheckoutMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBattleCheckout>>, TError,{data: BodyType<BattleCheckoutInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createBattleCheckout>>, TError,{data: BodyType<BattleCheckoutInput>}, TContext> => {
+
+const mutationKey = ['createBattleCheckout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBattleCheckout>>, {data: BodyType<BattleCheckoutInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createBattleCheckout(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateBattleCheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof createBattleCheckout>>>
+    export type CreateBattleCheckoutMutationBody = BodyType<BattleCheckoutInput>
+    export type CreateBattleCheckoutMutationError = ErrorType<void>
+
+    /**
+ * @summary Create a Stripe Checkout session for a battle vote
+ */
+export const useCreateBattleCheckout = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBattleCheckout>>, TError,{data: BodyType<BattleCheckoutInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createBattleCheckout>>,
+        TError,
+        {data: BodyType<BattleCheckoutInput>},
+        TContext
+      > => {
+      return useMutation(getCreateBattleCheckoutMutationOptions(options));
+    }
 

@@ -100,6 +100,9 @@ async function buildAll() {
       "puppeteer",
       "puppeteer-core",
       "electron",
+      // Stripe Sync loads SQL migration files relative to its installed package.
+      // Keep it external so those files remain available at runtime.
+      "stripe-replit-sync",
     ],
     sourcemap: "linked",
     plugins: [

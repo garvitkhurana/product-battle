@@ -30,8 +30,6 @@ export interface Product {
   ycBatch: string;
   websiteUrl: string;
   location: string;
-  source: 'yc' | 'external';
-  tags: string[];
   creatorName: string;
   creatorId: string;
   voteCount: number;
@@ -109,12 +107,23 @@ export const TransactionStatus = {
   paid: 'paid',
   failed: 'failed',
   refunded: 'refunded',
+  requires_refund: 'requires_refund',
+} as const;
+
+export type TransactionKind = typeof TransactionKind[keyof typeof TransactionKind];
+
+
+export const TransactionKind = {
+  rating: 'rating',
+  battle: 'battle',
 } as const;
 
 export interface Transaction {
   id: string;
-  productId: string;
-  productTitle: string;
+  /** @nullable */
+  productId: string | null;
+  /** @nullable */
+  productTitle: string | null;
   amount: number;
   /**
      * @minimum 1
@@ -127,36 +136,128 @@ export interface Transaction {
   /** @nullable */
   receiptUrl?: string | null;
   createdAt: string;
+  kind: TransactionKind;
+  /** @nullable */
+  battleId: string | null;
+  /** @nullable */
+  battleTitle: string | null;
+  /** @nullable */
+  selectedParticipantName: string | null;
 }
+
+export interface BattleParticipant {
+  id: string;
+  /** @nullable */
+  productId: string | null;
+  slug: string;
+  name: string;
+  shortDescription: string;
+  description: string;
+  imageUrl: string;
+  websiteUrl: string;
+  /** @nullable */
+  ycBatch?: string | null;
+  category: string;
+  location: string;
+  isYcCompany: boolean;
+}
+
+export type BattleStatus = typeof BattleStatus[keyof typeof BattleStatus];
+
+
+export const BattleStatus = {
+  active: 'active',
+  completed: 'completed',
+} as const;
 
 export interface Battle {
   id: string;
   slug: string;
   title: string;
-  space: string;
   description: string;
-  left: Product;
-  right: Product;
-  leftArgument: string;
-  rightArgument: string;
-  leftVoteCount: number;
-  rightVoteCount: number;
-  status: string;
-  featured: boolean;
+  category: string;
+  participantA: BattleParticipant;
+  participantB: BattleParticipant;
+  participantAVotes: number;
+  participantBVotes: number;
+  totalVotes: number;
+  participantAPercentage: number;
+  participantBPercentage: number;
+  status: BattleStatus;
+  /** @nullable */
+  winnerParticipantId: string | null;
+  createdAt: string;
+}
+
+export interface BattleParticipantInput {
+  /**
+     * @minLength 2
+     * @maxLength 80
+     */
+  name: string;
+  /**
+     * @minLength 10
+     * @maxLength 120
+     */
+  shortDescription: string;
+  /**
+     * @minLength 20
+     * @maxLength 1000
+     */
+  description: string;
+  websiteUrl: string;
+  /**
+     * @maxLength 20
+     * @nullable
+     */
+  ycBatch?: string | null;
+  /**
+     * @minLength 2
+     * @maxLength 60
+     */
+  category: string;
+  /**
+     * @minLength 2
+     * @maxLength 80
+     */
+  location: string;
+  isYcCompany: boolean;
+}
+
+export interface BattleInput {
+  /**
+     * @minLength 20
+     * @maxLength 500
+     */
+  description: string;
+  participantA: BattleParticipantInput;
+  participantB: BattleParticipantInput;
+}
+
+export type BattleSubmissionStatus = typeof BattleSubmissionStatus[keyof typeof BattleSubmissionStatus];
+
+
+export const BattleSubmissionStatus = {
+  pending: 'pending',
+} as const;
+
+export interface BattleSubmission {
+  id: string;
+  slug: string;
+  title: string;
+  status: BattleSubmissionStatus;
   createdAt: string;
 }
 
 export interface BattleCheckoutInput {
   battleId: string;
-  side: 'left' | 'right';
+  participantId: string;
   disclosureAccepted: boolean;
 }
 
 export type ListProductsParams = {
 search?: string;
 category?: string;
-tag?: string;
-source?: 'yc' | 'external';
 sort?: ListProductsSort;
 };
 

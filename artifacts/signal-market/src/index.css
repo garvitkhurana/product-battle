@@ -1,5 +1,7 @@
+@layer theme, base, clerk, components, utilities;
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 @import 'tailwindcss';
+@import '@clerk/themes/shadcn.css';
 @import 'tw-animate-css';
 @plugin "@tailwindcss/typography";
 
@@ -90,5 +92,175 @@
   
   h1, h2, h3, h4, h5, h6 {
     @apply tracking-tight font-bold;
+  }
+}
+
+.cl-formFieldInput::placeholder {
+  color: #8a8179;
+  opacity: 1;
+}
+
+@keyframes clash-from-left {
+  0% {
+    opacity: 0;
+    transform: translate(-190%, -50%) rotate(-28deg) scale(0.65);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-105%, -50%) rotate(-8deg) scale(1.08);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-15%, -50%) rotate(9deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(45%, -50%) rotate(18deg) scale(0.95);
+  }
+}
+
+@keyframes clash-from-right {
+  0% {
+    opacity: 0;
+    transform: translate(90%, -50%) rotate(28deg) scale(0.65);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(5%, -50%) rotate(8deg) scale(1.08);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-85%, -50%) rotate(-9deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-145%, -50%) rotate(-18deg) scale(0.95);
+  }
+}
+
+.clash-impact {
+  isolation: isolate;
+  animation-duration: 850ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-fill-mode: both;
+}
+
+.clash-impact > * {
+  position: relative;
+  z-index: 1;
+}
+
+.clash-hit-burst {
+  position: absolute;
+  z-index: 0;
+  width: 5rem;
+  height: 5rem;
+  border: 4px solid #f8e9d8;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 6px #211b18, 0 0 0 11px #ff4f32;
+  animation: clash-hit-burst 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms both;
+}
+
+@keyframes clash-hit-burst {
+  0% { opacity: 0; transform: scale(0.25) rotate(-12deg); }
+  35% { opacity: 1; transform: scale(0.75) rotate(4deg); }
+  100% { opacity: 0; transform: scale(1.5) rotate(20deg); }
+}
+
+.clash-sword {
+  animation: clash-sword-hit 520ms cubic-bezier(0.2, 0.8, 0.2, 1) 140ms both;
+}
+
+@keyframes clash-sword-hit {
+  0% { transform: rotate(-55deg) scale(0.7); }
+  40% { transform: rotate(-18deg) scale(1.2); }
+  100% { transform: rotate(12deg) scale(0.95); }
+}
+
+.clash-from-left {
+  animation-name: clash-from-left;
+}
+
+.clash-from-right {
+  animation-name: clash-from-right;
+}
+
+@keyframes battle-knockout-left {
+  0% { opacity: 1; transform: translateX(0) rotate(0deg); }
+  18% { opacity: 1; transform: translateX(12px) rotate(1deg); }
+  65% { opacity: 0.2; transform: translateX(-100px) rotate(-9deg) scale(0.92); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes battle-knockout-right {
+  0% { opacity: 1; transform: translateX(0) rotate(0deg); }
+  18% { opacity: 1; transform: translateX(-12px) rotate(-1deg); }
+  65% { opacity: 0.2; transform: translateX(100px) rotate(9deg) scale(0.92); }
+  100% { opacity: 1; transform: translateX(0) rotate(0deg); }
+}
+
+.battle-fighter-left.battle-knocked-out {
+  animation: battle-knockout-left 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.battle-fighter-right.battle-knocked-out {
+  animation: battle-knockout-right 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (max-width: 767px) {
+  @keyframes clash-from-left-mobile {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -190%) rotate(-28deg) scale(0.65);
+    }
+    20% {
+      opacity: 1;
+      transform: translate(-50%, -105%) rotate(-8deg) scale(1.08);
+    }
+    55% {
+      opacity: 1;
+      transform: translate(-50%, -15%) rotate(9deg) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, 45%) rotate(18deg) scale(0.95);
+    }
+  }
+
+  @keyframes clash-from-right-mobile {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, 90%) rotate(28deg) scale(0.65);
+    }
+    20% {
+      opacity: 1;
+      transform: translate(-50%, 5%) rotate(8deg) scale(1.08);
+    }
+    55% {
+      opacity: 1;
+      transform: translate(-50%, -85%) rotate(-9deg) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -145%) rotate(-18deg) scale(0.95);
+    }
+  }
+
+  .clash-from-left {
+    animation-name: clash-from-left-mobile;
+  }
+
+  .clash-from-right {
+    animation-name: clash-from-right-mobile;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clash-impact,
+  .clash-hit-burst,
+  .clash-sword,
+  .battle-fighter-left.battle-knocked-out,
+  .battle-fighter-right.battle-knocked-out {
+    animation: none;
   }
 }

@@ -25,8 +25,6 @@ export const listProductsQuerySortDefault = `trending`;
 export const ListProductsQueryParams = zod.object({
   "search": zod.coerce.string().optional(),
   "category": zod.coerce.string().optional(),
-  "tag": zod.coerce.string().optional(),
-  "source": zod.enum(['yc', 'external']).optional(),
   "sort": zod.enum(['trending', 'newest', 'community']).default(listProductsQuerySortDefault)
 })
 
@@ -41,8 +39,6 @@ export const ListProductsResponseItem = zod.object({
   "ycBatch": zod.string(),
   "websiteUrl": zod.string(),
   "location": zod.string(),
-  "source": zod.enum(['yc', 'external']).default('yc'),
-  "tags": zod.array(zod.string()).default([]),
   "creatorName": zod.string(),
   "creatorId": zod.string(),
   "voteCount": zod.int(),
@@ -94,8 +90,6 @@ export const CreateProductResponse = zod.object({
   "ycBatch": zod.string(),
   "websiteUrl": zod.string(),
   "location": zod.string(),
-  "source": zod.enum(['yc', 'external']).default('yc'),
-  "tags": zod.array(zod.string()).default([]),
   "creatorName": zod.string(),
   "creatorId": zod.string(),
   "voteCount": zod.int(),
@@ -125,8 +119,6 @@ export const GetProductResponse = zod.object({
   "ycBatch": zod.string(),
   "websiteUrl": zod.string(),
   "location": zod.string(),
-  "source": zod.enum(['yc', 'external']).default('yc'),
-  "tags": zod.array(zod.string()).default([]),
   "creatorName": zod.string(),
   "creatorId": zod.string(),
   "voteCount": zod.int(),
@@ -160,8 +152,6 @@ export const UpdateProductStatusResponse = zod.object({
   "ycBatch": zod.string(),
   "websiteUrl": zod.string(),
   "location": zod.string(),
-  "source": zod.enum(['yc', 'external']).default('yc'),
-  "tags": zod.array(zod.string()).default([]),
   "creatorName": zod.string(),
   "creatorId": zod.string(),
   "voteCount": zod.int(),
@@ -189,8 +179,6 @@ export const GetRankingsResponseItem = zod.object({
   "ycBatch": zod.string(),
   "websiteUrl": zod.string(),
   "location": zod.string(),
-  "source": zod.enum(['yc', 'external']).default('yc'),
-  "tags": zod.array(zod.string()).default([]),
   "creatorName": zod.string(),
   "creatorId": zod.string(),
   "voteCount": zod.int(),
@@ -223,8 +211,6 @@ export const GetCreatorDashboardResponse = zod.object({
   "ycBatch": zod.string(),
   "websiteUrl": zod.string(),
   "location": zod.string(),
-  "source": zod.enum(['yc', 'external']).default('yc'),
-  "tags": zod.array(zod.string()).default([]),
   "creatorName": zod.string(),
   "creatorId": zod.string(),
   "voteCount": zod.int(),
@@ -246,14 +232,18 @@ export const listTransactionsResponseRatingMax = 5;
 
 export const ListTransactionsResponseItem = zod.object({
   "id": zod.string(),
-  "productId": zod.string(),
-  "productTitle": zod.string(),
+  "productId": zod.string().nullable(),
+  "productTitle": zod.string().nullable(),
   "amount": zod.number(),
   "rating": zod.int().min(1).max(listTransactionsResponseRatingMax).nullable(),
-  "status": zod.enum(['pending', 'paid', 'failed', 'refunded']),
+  "status": zod.enum(['pending', 'paid', 'failed', 'refunded', 'requires_refund']),
   "disclosure": zod.string(),
   "receiptUrl": zod.url().nullish(),
-  "createdAt": zod.coerce.date()
+  "createdAt": zod.coerce.date(),
+  "kind": zod.enum(['rating', 'battle']),
+  "battleId": zod.string().nullable(),
+  "battleTitle": zod.string().nullable(),
+  "selectedParticipantName": zod.string().nullable()
 })
 export const ListTransactionsResponse = zod.array(ListTransactionsResponseItem)
 
@@ -292,14 +282,211 @@ export const getPaymentResponseRatingMax = 5;
 
 export const GetPaymentResponse = zod.object({
   "id": zod.string(),
-  "productId": zod.string(),
-  "productTitle": zod.string(),
+  "productId": zod.string().nullable(),
+  "productTitle": zod.string().nullable(),
   "amount": zod.number(),
   "rating": zod.int().min(1).max(getPaymentResponseRatingMax).nullable(),
-  "status": zod.enum(['pending', 'paid', 'failed', 'refunded']),
+  "status": zod.enum(['pending', 'paid', 'failed', 'refunded', 'requires_refund']),
   "disclosure": zod.string(),
   "receiptUrl": zod.url().nullish(),
+  "createdAt": zod.coerce.date(),
+  "kind": zod.enum(['rating', 'battle']),
+  "battleId": zod.string().nullable(),
+  "battleTitle": zod.string().nullable(),
+  "selectedParticipantName": zod.string().nullable()
+})
+
+
+/**
+ * @summary List public company battles
+ */
+export const ListBattlesResponseItem = zod.object({
+  "id": zod.string(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "category": zod.string(),
+  "participantA": zod.object({
+  "id": zod.string(),
+  "productId": zod.string().nullable(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "shortDescription": zod.string(),
+  "description": zod.string(),
+  "imageUrl": zod.string(),
+  "websiteUrl": zod.string(),
+  "ycBatch": zod.string().nullish(),
+  "category": zod.string(),
+  "location": zod.string(),
+  "isYcCompany": zod.boolean()
+}),
+  "participantB": zod.object({
+  "id": zod.string(),
+  "productId": zod.string().nullable(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "shortDescription": zod.string(),
+  "description": zod.string(),
+  "imageUrl": zod.string(),
+  "websiteUrl": zod.string(),
+  "ycBatch": zod.string().nullish(),
+  "category": zod.string(),
+  "location": zod.string(),
+  "isYcCompany": zod.boolean()
+}),
+  "participantAVotes": zod.int(),
+  "participantBVotes": zod.int(),
+  "totalVotes": zod.int(),
+  "participantAPercentage": zod.number(),
+  "participantBPercentage": zod.number(),
+  "status": zod.enum(['active', 'completed']),
+  "winnerParticipantId": zod.string().nullable(),
   "createdAt": zod.coerce.date()
+})
+export const ListBattlesResponse = zod.array(ListBattlesResponseItem)
+
+
+/**
+ * @summary Submit a company battle for review
+ */
+export const createBattleBodyDescriptionMin = 20;
+export const createBattleBodyDescriptionMax = 500;
+
+export const createBattleBodyParticipantANameMin = 2;
+export const createBattleBodyParticipantANameMax = 80;
+
+export const createBattleBodyParticipantAShortDescriptionMin = 10;
+export const createBattleBodyParticipantAShortDescriptionMax = 120;
+
+export const createBattleBodyParticipantADescriptionMin = 20;
+export const createBattleBodyParticipantADescriptionMax = 1000;
+
+export const createBattleBodyParticipantAYcBatchMax = 20;
+
+export const createBattleBodyParticipantACategoryMin = 2;
+export const createBattleBodyParticipantACategoryMax = 60;
+
+export const createBattleBodyParticipantALocationMin = 2;
+export const createBattleBodyParticipantALocationMax = 80;
+
+export const createBattleBodyParticipantBNameMin = 2;
+export const createBattleBodyParticipantBNameMax = 80;
+
+export const createBattleBodyParticipantBShortDescriptionMin = 10;
+export const createBattleBodyParticipantBShortDescriptionMax = 120;
+
+export const createBattleBodyParticipantBDescriptionMin = 20;
+export const createBattleBodyParticipantBDescriptionMax = 1000;
+
+export const createBattleBodyParticipantBYcBatchMax = 20;
+
+export const createBattleBodyParticipantBCategoryMin = 2;
+export const createBattleBodyParticipantBCategoryMax = 60;
+
+export const createBattleBodyParticipantBLocationMin = 2;
+export const createBattleBodyParticipantBLocationMax = 80;
+
+
+
+export const CreateBattleBody = zod.object({
+  "description": zod.string().min(createBattleBodyDescriptionMin).max(createBattleBodyDescriptionMax),
+  "participantA": zod.object({
+  "name": zod.string().min(createBattleBodyParticipantANameMin).max(createBattleBodyParticipantANameMax),
+  "shortDescription": zod.string().min(createBattleBodyParticipantAShortDescriptionMin).max(createBattleBodyParticipantAShortDescriptionMax),
+  "description": zod.string().min(createBattleBodyParticipantADescriptionMin).max(createBattleBodyParticipantADescriptionMax),
+  "websiteUrl": zod.url(),
+  "ycBatch": zod.string().max(createBattleBodyParticipantAYcBatchMax).nullish(),
+  "category": zod.string().min(createBattleBodyParticipantACategoryMin).max(createBattleBodyParticipantACategoryMax),
+  "location": zod.string().min(createBattleBodyParticipantALocationMin).max(createBattleBodyParticipantALocationMax),
+  "isYcCompany": zod.boolean()
+}),
+  "participantB": zod.object({
+  "name": zod.string().min(createBattleBodyParticipantBNameMin).max(createBattleBodyParticipantBNameMax),
+  "shortDescription": zod.string().min(createBattleBodyParticipantBShortDescriptionMin).max(createBattleBodyParticipantBShortDescriptionMax),
+  "description": zod.string().min(createBattleBodyParticipantBDescriptionMin).max(createBattleBodyParticipantBDescriptionMax),
+  "websiteUrl": zod.url(),
+  "ycBatch": zod.string().max(createBattleBodyParticipantBYcBatchMax).nullish(),
+  "category": zod.string().min(createBattleBodyParticipantBCategoryMin).max(createBattleBodyParticipantBCategoryMax),
+  "location": zod.string().min(createBattleBodyParticipantBLocationMin).max(createBattleBodyParticipantBLocationMax),
+  "isYcCompany": zod.boolean()
+})
+})
+
+export const CreateBattleResponse = zod.object({
+  "id": zod.string(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "status": zod.enum(['pending']),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get a head-to-head company battle
+ */
+export const GetBattleParams = zod.object({
+  "slug": zod.coerce.string()
+})
+
+export const GetBattleResponse = zod.object({
+  "id": zod.string(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "category": zod.string(),
+  "participantA": zod.object({
+  "id": zod.string(),
+  "productId": zod.string().nullable(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "shortDescription": zod.string(),
+  "description": zod.string(),
+  "imageUrl": zod.string(),
+  "websiteUrl": zod.string(),
+  "ycBatch": zod.string().nullish(),
+  "category": zod.string(),
+  "location": zod.string(),
+  "isYcCompany": zod.boolean()
+}),
+  "participantB": zod.object({
+  "id": zod.string(),
+  "productId": zod.string().nullable(),
+  "slug": zod.string(),
+  "name": zod.string(),
+  "shortDescription": zod.string(),
+  "description": zod.string(),
+  "imageUrl": zod.string(),
+  "websiteUrl": zod.string(),
+  "ycBatch": zod.string().nullish(),
+  "category": zod.string(),
+  "location": zod.string(),
+  "isYcCompany": zod.boolean()
+}),
+  "participantAVotes": zod.int(),
+  "participantBVotes": zod.int(),
+  "totalVotes": zod.int(),
+  "participantAPercentage": zod.number(),
+  "participantBPercentage": zod.number(),
+  "status": zod.enum(['active', 'completed']),
+  "winnerParticipantId": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Create a Stripe Checkout session for a battle vote
+ */
+export const CreateBattleCheckoutBody = zod.object({
+  "battleId": zod.string(),
+  "participantId": zod.string(),
+  "disclosureAccepted": zod.boolean()
+})
+
+export const CreateBattleCheckoutResponse = zod.object({
+  "paymentId": zod.string(),
+  "checkoutUrl": zod.url(),
+  "amount": zod.number(),
+  "disclosure": zod.string()
 })
 
 

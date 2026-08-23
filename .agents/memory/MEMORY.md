@@ -1,0 +1,6 @@
+- [GitHub empty repository bootstrap](github-empty-repo-bootstrap.md) — seed empty repos through Contents API before Git database writes.
+- [Managed Stripe sync](managed-stripe-sync.md) — keep Stripe Sync external to preserve packaged migrations; managed credentials use current connection fields.
+- [Guest battle backing](guest-battle-backing.md) — YC Battle accepts anonymous paid backing; each settled payment represents one vote.
+- [Authenticated route gates](authenticated-route-gates.md) — prevent signed-out account pages from firing protected queries and rendering blank states.
+- [Battle entry motion](battle-entry-motion.md) — arena effects fire once when entering from the battle board, not as continuous ambient movement.
+- [Battle submission review](battle-submission-review.md) — community-created matchups wait for review and stay out of public battle routes until approved.

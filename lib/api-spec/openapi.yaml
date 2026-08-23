@@ -12,14 +12,14 @@ tags:
     description: Health operations
   - name: companies
     description: YC company profiles and moderation
-  - name: battles
-    description: Head-to-head YC vs rival paid picks
   - name: rankings
     description: Community rating rankings
   - name: creator
     description: Company profile owner workspace
   - name: payments
     description: Paid ratings and receipts
+  - name: battles
+    description: Head-to-head company battles
 paths:
   /healthz:
     get:
@@ -50,17 +50,6 @@ paths:
           required: false
           schema:
             type: string
-        - name: tag
-          in: query
-          required: false
-          schema:
-            type: string
-        - name: source
-          in: query
-          required: false
-          schema:
-            type: string
-            enum: [yc, external]
         - name: sort
           in: query
           required: false
@@ -94,68 +83,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Product"
-        "401":
-          description: Sign in required
-  /battles:
-    get:
-      operationId: listBattles
-      tags: [battles]
-      summary: List published head-to-head battles
-      parameters:
-        - name: space
-          in: query
-          required: false
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Battles
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Battle"
-  /battles/{slug}:
-    get:
-      operationId: getBattle
-      tags: [battles]
-      summary: Get a battle by slug
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Battle detail
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Battle"
-        "404":
-          description: Battle not found
-  /battles/checkout:
-    post:
-      operationId: createBattleCheckout
-      tags: [battles]
-      summary: Create Stripe Checkout to pick a battle side
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/BattleCheckoutInput"
-      responses:
-        "201":
-          description: Checkout session
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CheckoutSession"
-        "400":
-          description: Disclosure must be accepted
         "401":
           description: Sign in required
   /products/{slug}:
@@ -271,7 +198,7 @@ paths:
         "400":
           description: Disclosure must be accepted
         "401":
-          description: Sign in required
+          description: Authentication is optional; guests may pay for a battle vote
   /payments/{id}:
     get:
       operationId: getPayment
@@ -292,6 +219,83 @@ paths:
                 $ref: "#/components/schemas/Transaction"
         "404":
           description: Payment not found
+  /battles:
+    get:
+      operationId: listBattles
+      tags: [battles]
+      summary: List public company battles
+      responses:
+        "200":
+          description: Public battles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Battle"
+    post:
+      operationId: createBattle
+      tags: [battles]
+      summary: Submit a company battle for review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BattleInput"
+      responses:
+        "201":
+          description: Submitted battle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BattleSubmission"
+        "401":
+          description: Sign in required
+  /battles/{slug}:
+    get:
+      operationId: getBattle
+      tags: [battles]
+      summary: Get a head-to-head company battle
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Battle details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Battle"
+        "404":
+          description: Battle not found
+  /battle-checkout:
+    post:
+      operationId: createBattleCheckout
+      tags: [battles, payments]
+      summary: Create a Stripe Checkout session for a battle vote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BattleCheckoutInput"
+      responses:
+        "201":
+          description: Battle checkout session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutSession"
+        "400":
+          description: Disclosure must be accepted
+        "401":
+          description: Sign in required
+        "404":
+          description: Battle not found
 components:
   schemas:
     HealthStatus:
@@ -303,7 +307,7 @@ components:
         - status
     Product:
       type: object
-      required: [id, slug, title, shortDescription, description, imageUrl, category, ycBatch, websiteUrl, location, source, tags, creatorName, creatorId, voteCount, ratingAverage, totalRaised, status, featured, createdAt]
+      required: [id, slug, title, shortDescription, description, imageUrl, category, ycBatch, websiteUrl, location, creatorName, creatorId, voteCount, ratingAverage, totalRaised, status, featured, createdAt]
       properties:
         id: { type: string }
         slug: { type: string }
@@ -315,12 +319,6 @@ components:
         ycBatch: { type: string }
         websiteUrl: { type: string }
         location: { type: string }
-        source:
-          type: string
-          enum: [yc, external]
-        tags:
-          type: array
-          items: { type: string }
         creatorName: { type: string }
         creatorId: { type: string }
         voteCount: { type: integer }
@@ -331,35 +329,6 @@ components:
           enum: [pending, published, paused, rejected]
         featured: { type: boolean }
         createdAt: { type: string, format: date-time }
-    Battle:
-      type: object
-      required: [id, slug, title, space, description, left, right, leftArgument, rightArgument, leftVoteCount, rightVoteCount, status, featured, createdAt]
-      properties:
-        id: { type: string }
-        slug: { type: string }
-        title: { type: string }
-        space: { type: string }
-        description: { type: string }
-        left:
-          $ref: "#/components/schemas/Product"
-        right:
-          $ref: "#/components/schemas/Product"
-        leftArgument: { type: string }
-        rightArgument: { type: string }
-        leftVoteCount: { type: integer }
-        rightVoteCount: { type: integer }
-        status: { type: string }
-        featured: { type: boolean }
-        createdAt: { type: string, format: date-time }
-    BattleCheckoutInput:
-      type: object
-      required: [battleId, side, disclosureAccepted]
-      properties:
-        battleId: { type: string }
-        side:
-          type: string
-          enum: [left, right]
-        disclosureAccepted: { type: boolean }
     ProductInput:
       type: object
       required: [title, shortDescription, description, imageUrl, category, ycBatch, websiteUrl, location]
@@ -415,17 +384,101 @@ components:
         disclosure: { type: string }
     Transaction:
       type: object
-      required: [id, productId, productTitle, amount, rating, status, disclosure, createdAt]
+      required: [id, productId, productTitle, amount, rating, status, disclosure, createdAt, kind, battleId, battleTitle, selectedParticipantName]
       properties:
         id: { type: string }
-        productId: { type: string }
-        productTitle: { type: string }
+        productId: { type: ["string", "null"] }
+        productTitle: { type: ["string", "null"] }
         amount: { type: number }
         rating: { type: ["integer", "null"], minimum: 1, maximum: 5 }
         status:
           type: string
-          enum: [pending, paid, failed, refunded]
+          enum: [pending, paid, failed, refunded, requires_refund]
         disclosure: { type: string }
         receiptUrl: { type: ["string", "null"], format: uri }
         createdAt: { type: string, format: date-time }
+        kind:
+          type: string
+          enum: [rating, battle]
+        battleId: { type: ["string", "null"] }
+        battleTitle: { type: ["string", "null"] }
+        selectedParticipantName: { type: ["string", "null"] }
+    BattleParticipant:
+      type: object
+      required: [id, name, slug, shortDescription, description, imageUrl, websiteUrl, category, location, isYcCompany, productId]
+      properties:
+        id: { type: string }
+        productId: { type: ["string", "null"] }
+        slug: { type: string }
+        name: { type: string }
+        shortDescription: { type: string }
+        description: { type: string }
+        imageUrl: { type: string }
+        websiteUrl: { type: string }
+        ycBatch: { type: ["string", "null"] }
+        category: { type: string }
+        location: { type: string }
+        isYcCompany: { type: boolean }
+    Battle:
+      type: object
+      required: [id, slug, title, description, category, participantA, participantB, participantAVotes, participantBVotes, totalVotes, participantAPercentage, participantBPercentage, status, winnerParticipantId, createdAt]
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        title: { type: string }
+        description: { type: string }
+        category: { type: string }
+        participantA:
+          $ref: "#/components/schemas/BattleParticipant"
+        participantB:
+          $ref: "#/components/schemas/BattleParticipant"
+        participantAVotes: { type: integer }
+        participantBVotes: { type: integer }
+        totalVotes: { type: integer }
+        participantAPercentage: { type: number }
+        participantBPercentage: { type: number }
+        status:
+          type: string
+          enum: [active, completed]
+        winnerParticipantId: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+    BattleParticipantInput:
+      type: object
+      required: [name, shortDescription, description, websiteUrl, category, location, isYcCompany]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 80 }
+        shortDescription: { type: string, minLength: 10, maxLength: 120 }
+        description: { type: string, minLength: 20, maxLength: 1000 }
+        websiteUrl: { type: string, format: uri }
+        ycBatch: { type: ["string", "null"], maxLength: 20 }
+        category: { type: string, minLength: 2, maxLength: 60 }
+        location: { type: string, minLength: 2, maxLength: 80 }
+        isYcCompany: { type: boolean }
+    BattleInput:
+      type: object
+      required: [description, participantA, participantB]
+      properties:
+        description: { type: string, minLength: 20, maxLength: 500 }
+        participantA:
+          $ref: "#/components/schemas/BattleParticipantInput"
+        participantB:
+          $ref: "#/components/schemas/BattleParticipantInput"
+    BattleSubmission:
+      type: object
+      required: [id, slug, title, status, createdAt]
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        title: { type: string }
+        status:
+          type: string
+          enum: [pending]
+        createdAt: { type: string, format: date-time }
+    BattleCheckoutInput:
+      type: object
+      required: [battleId, participantId, disclosureAccepted]
+      properties:
+        battleId: { type: string }
+        participantId: { type: string }
+        disclosureAccepted: { type: boolean }
 

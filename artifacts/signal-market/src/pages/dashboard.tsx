@@ -8,9 +8,17 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getGetCreatorDashboardQueryKey } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/react";
+import { AuthRequired } from "@/components/auth-required";
 
 export default function Dashboard() {
-  const { data: dashboard, isLoading } = useGetCreatorDashboard();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { data: dashboard, isLoading, isError } = useGetCreatorDashboard({
+    query: {
+      enabled: isLoaded && Boolean(isSignedIn),
+      queryKey: getGetCreatorDashboardQueryKey(),
+    },
+  });
   const updateStatus = useUpdateProductStatus();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -39,11 +47,31 @@ export default function Dashboard() {
     );
   };
 
+  if (!isLoaded) {
+    return <div className="container mx-auto py-10 px-4">Checking account...</div>;
+  }
+
+  if (!isSignedIn) {
+    return (
+      <AuthRequired
+        title="Sign in to manage your profiles"
+        description="Company profile management is available to signed-in members. Your public battles and totals remain open to everyone."
+      />
+    );
+  }
+
   if (isLoading) {
     return <div className="container mx-auto py-10 px-4">Loading dashboard...</div>;
   }
 
-  if (!dashboard) return null;
+  if (isError || !dashboard) {
+    return (
+      <div className="container mx-auto py-16 px-4 text-center">
+        <h1 className="text-2xl font-bold mb-3">Dashboard unavailable</h1>
+        <p className="text-muted-foreground">We could not load your company profiles. Please try again.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -163,7 +191,7 @@ export default function Dashboard() {
             <h3 className="text-lg font-semibold mb-2">No company profiles yet</h3>
             <p className="text-muted-foreground mb-6">Add a public YC company profile for community review.</p>
             <Button asChild>
-              <Link href="/submit">Add a Company</Link>
+              <Link href="/submit">Add a Battle</Link>
             </Button>
           </div>
         )}

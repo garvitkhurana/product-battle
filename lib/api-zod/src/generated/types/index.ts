@@ -6,6 +6,14 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './battle';
+export * from './battleCheckoutInput';
+export * from './battleInput';
+export * from './battleParticipant';
+export * from './battleParticipantInput';
+export * from './battleStatus';
+export * from './battleSubmission';
+export * from './battleSubmissionStatus';
 export * from './checkoutInput';
 export * from './checkoutSession';
 export * from './creatorDashboard';
@@ -19,4 +27,5 @@ export * from './ranking';
 export * from './statusUpdate';
 export * from './statusUpdateStatus';
 export * from './transaction';
+export * from './transactionKind';
 export * from './transactionStatus';

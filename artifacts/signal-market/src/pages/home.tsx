@@ -37,7 +37,7 @@ export default function Home() {
               <Link href="/explore">Explore Companies</Link>
             </Button>
             <Button size="lg" variant="outline" asChild className="w-full sm:w-auto bg-transparent border-muted-foreground/30 text-background hover:bg-background hover:text-foreground font-bold text-base h-14 px-8">
-              <Link href="/submit">Add a Company</Link>
+              <Link href="/submit">Add a Battle</Link>
             </Button>
           </div>
         </div>

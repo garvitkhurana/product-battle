@@ -25,13 +25,13 @@ async function getStripeCredentials(): Promise<{ secretKey: string; webhookSecre
   }
 
   const data = (await response.json()) as {
-    items?: Array<{ settings?: { secret_key?: string; webhook_secret?: string } }>;
+    items?: Array<{ settings?: { secret?: string; webhook_secret?: string } }>;
   };
   const settings = data.items?.[0]?.settings;
-  if (!settings?.secret_key) {
-    throw new Error("Stripe is not connected to this app.");
+  if (!settings?.secret) {
+    throw new Error("Stripe payment credentials are unavailable.");
   }
-  return { secretKey: settings.secret_key, webhookSecret: settings.webhook_secret };
+  return { secretKey: settings.secret, webhookSecret: settings.webhook_secret };
 }
 
 export async function getUncachableStripeClient(): Promise<Stripe> {
@@ -50,9 +50,14 @@ export async function getStripeSync(): Promise<StripeSync> {
   });
 }
 
-export async function constructStripeEvent(payload: Buffer, signature: string): Promise<Stripe.Event> {
-  const stripe = await getUncachableStripeClient();
-  const { webhookSecret } = await getStripeCredentials();
-  if (!webhookSecret) throw new Error("Stripe webhook signing secret is unavailable.");
-  return stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+/**
+ * StripeSync verifies the signature before this is called. The managed webhook
+ * secret lives in StripeSync's private database table, so parsing happens only
+ * after that verification succeeds.
+ */
+export function parseVerifiedStripeEvent(payload: Buffer): Stripe.Event {
+  if (!Buffer.isBuffer(payload)) {
+    throw new Error("Stripe webhook payload must be a raw Buffer.");
+  }
+  return JSON.parse(payload.toString("utf8")) as Stripe.Event;
 }

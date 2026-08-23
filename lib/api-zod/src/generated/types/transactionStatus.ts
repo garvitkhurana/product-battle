@@ -14,4 +14,5 @@ export const TransactionStatus = {
   paid: 'paid',
   failed: 'failed',
   refunded: 'refunded',
+  requires_refund: 'requires_refund',
 } as const;

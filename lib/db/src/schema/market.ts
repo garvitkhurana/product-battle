@@ -14,7 +14,7 @@ import { z } from "zod/v4";
 export const usersTable = pgTable("users", {
   id: text("id").primaryKey(),
   email: text("email"),
-  displayName: text("display_name").notNull().default("Signal member"),
+  displayName: text("display_name").notNull().default("YC Battle member"),
   stripeCustomerId: text("stripe_customer_id"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -27,14 +27,9 @@ export const productsTable = pgTable("market_products", {
   description: text("description").notNull(),
   imageUrl: text("image_url").notNull(),
   category: text("category").notNull(),
-  /** YC top-level industry when known; free-form for external rivals. */
   ycBatch: text("yc_batch").notNull().default("Unknown"),
   websiteUrl: text("website_url").notNull().default(""),
   location: text("location").notNull().default(""),
-  /** "yc" for Y Combinator companies; "external" for non-YC rivals. */
-  source: text("source").notNull().default("yc"),
-  /** Free-form tags (AI, Developer Tools, Marketplace, etc.). */
-  tags: text("tags").array().notNull().default(sql`ARRAY[]::text[]`),
   creatorId: text("creator_id").notNull(),
   creatorName: text("creator_name").notNull(),
   status: text("status").notNull().default("pending"),
@@ -46,55 +41,14 @@ export const productsTable = pgTable("market_products", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-/**
- * Head-to-head battles: usually a YC company vs a non-YC rival in the same space.
- * Users pay $0.99 to pick a side (opinion signal, not investment advice).
- */
-export const battlesTable = pgTable("battles", {
-  id: text("id").primaryKey(),
-  slug: text("slug").notNull().unique(),
-  title: text("title").notNull(),
-  space: text("space").notNull(),
-  description: text("description").notNull(),
-  leftProductId: text("left_product_id").notNull(),
-  rightProductId: text("right_product_id").notNull(),
-  leftArgument: text("left_argument").notNull().default(""),
-  rightArgument: text("right_argument").notNull().default(""),
-  leftVoteCount: integer("left_vote_count").notNull().default(0),
-  rightVoteCount: integer("right_vote_count").notNull().default(0),
-  status: text("status").notNull().default("published"),
-  featured: boolean("featured").notNull().default(false),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const battleVotesTable = pgTable(
-  "battle_votes",
-  {
-    id: text("id").primaryKey(),
-    battleId: text("battle_id").notNull(),
-    userId: text("user_id").notNull(),
-    paymentId: text("payment_id").notNull().unique(),
-    side: text("side").notNull(),
-    stripeEventId: text("stripe_event_id").unique(),
-    amount: numeric("amount", { precision: 12, scale: 2 }).notNull().default("0.99"),
-    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  },
-  (table) => ({
-    userBattleIdx: uniqueIndex("battle_votes_user_battle_idx").on(table.userId, table.battleId),
-  }),
-);
-
 export const paymentsTable = pgTable("payments", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull(),
-  /** Company rating payments set productId; battle payments may leave this null. */
+  userId: text("user_id"),
   productId: text("product_id"),
-  battleId: text("battle_id"),
-  /** For battles: "left" or "right". */
-  battleSide: text("battle_side"),
-  kind: text("kind").notNull().default("rating"),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
+  battleId: text("battle_id"),
+  selectedParticipantId: text("selected_participant_id"),
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull().default("0.99"),
   rating: integer("rating").notNull().default(0),
   status: text("status").notNull().default("pending"),
@@ -102,12 +56,12 @@ export const paymentsTable = pgTable("payments", {
   receiptUrl: text("receipt_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (table) => ({
-  pendingUserProductIdx: uniqueIndex("payments_pending_user_product_idx")
+  pendingRatingUserProductIdx: uniqueIndex("payments_pending_rating_user_product_idx")
     .on(table.userId, table.productId)
-    .where(sql`${table.status} = 'pending' AND ${table.kind} = 'rating'`),
-  pendingUserBattleIdx: uniqueIndex("payments_pending_user_battle_idx")
+    .where(sql`${table.status} = 'pending' AND ${table.battleId} IS NULL`),
+  pendingBattleUserIdx: uniqueIndex("payments_pending_battle_user_idx")
     .on(table.userId, table.battleId)
-    .where(sql`${table.status} = 'pending' AND ${table.kind} = 'battle'`),
+    .where(sql`${table.status} = 'pending' AND ${table.battleId} IS NOT NULL`),
 }));
 
 export const votesTable = pgTable(
@@ -125,6 +79,48 @@ export const votesTable = pgTable(
   (table) => ({
     userProductIdx: uniqueIndex("votes_user_product_idx").on(table.userId, table.productId),
   }),
+);
+
+export const battleParticipantsTable = pgTable("battle_participants", {
+  id: text("id").primaryKey(),
+  productId: text("product_id"),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  shortDescription: text("short_description").notNull(),
+  description: text("description").notNull().default(""),
+  imageUrl: text("image_url").notNull().default(""),
+  websiteUrl: text("website_url").notNull().default(""),
+  ycBatch: text("yc_batch"),
+  category: text("category").notNull().default(""),
+  location: text("location").notNull().default(""),
+  isYcCompany: boolean("is_yc_company").notNull().default(false),
+});
+
+export const battlesTable = pgTable("battles", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  category: text("category").notNull().default("Community matchup"),
+  participantAId: text("participant_a_id").notNull(),
+  participantBId: text("participant_b_id").notNull(),
+  status: text("status").notNull().default("active"),
+  winnerParticipantId: text("winner_participant_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const battleVotesTable = pgTable(
+  "battle_votes",
+  {
+    id: text("id").primaryKey(),
+    battleId: text("battle_id").notNull(),
+    userId: text("user_id"),
+    participantId: text("participant_id").notNull(),
+    paymentId: text("payment_id").notNull().unique(),
+    stripeEventId: text("stripe_event_id").unique(),
+    amount: numeric("amount", { precision: 12, scale: 2 }).notNull().default("0.99"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
 );
 
 export const webhookEventsTable = pgTable("webhook_events", {
@@ -149,5 +145,6 @@ export const insertProductSchema = createInsertSchema(productsTable).omit({
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Product = typeof productsTable.$inferSelect;
 export type Payment = typeof paymentsTable.$inferSelect;
+export type BattleParticipant = typeof battleParticipantsTable.$inferSelect;
 export type Battle = typeof battlesTable.$inferSelect;
 export type BattleVote = typeof battleVotesTable.$inferSelect;

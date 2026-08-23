@@ -11,9 +11,8 @@ import {
   getClerkProxyHost,
 } from "./middlewares/clerkProxyMiddleware";
 import { WebhookHandlers } from "./webhookHandlers";
-import { constructStripeEvent } from "./stripeClient";
+import { parseVerifiedStripeEvent } from "./stripeClient";
 import { handleFailedPayment, handlePaidCheckout } from "./routes/market";
-import { handlePaidBattleCheckout } from "./routes/battles";
 
 const app: Express = express();
 
@@ -48,9 +47,8 @@ app.post(
     }
     try {
       await WebhookHandlers.processWebhook(req.body as Buffer, signature);
-      const event = await constructStripeEvent(req.body as Buffer, signature);
+      const event = parseVerifiedStripeEvent(req.body as Buffer);
       await handlePaidCheckout(event);
-      await handlePaidBattleCheckout(event);
       await handleFailedPayment(event);
       res.status(200).json({ received: true });
     } catch (error) {
@@ -59,7 +57,12 @@ app.post(
     }
   },
 );
-app.use(cors());
+// Keep the deployment probe independent from Clerk's host-based key resolution.
+// Replit's health checker may omit the Host header while the app is starting.
+app.get("/api/healthz", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+app.use(cors({ credentials: true, origin: true }));
 app.use(
   clerkMiddleware((req) => ({
     publishableKey: publishableKeyFromHost(getClerkProxyHost(req) ?? "", process.env.CLERK_PUBLISHABLE_KEY),

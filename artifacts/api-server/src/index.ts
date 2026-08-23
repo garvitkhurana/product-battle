@@ -2,6 +2,7 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { runMigrations } from "stripe-replit-sync";
 import { getStripeSync } from "./stripeClient";
+import { seedBattleMatchups } from "./lib/battleSeed";
 
 const rawPort = process.env["PORT"];
 
@@ -28,6 +29,14 @@ async function initStripe(): Promise<void> {
   await stripeSync.findOrCreateManagedWebhook(`${baseUrl}/api/stripe/webhook`);
   await stripeSync.syncBackfill();
   logger.info("Stripe sync initialized");
+}
+
+try {
+  await seedBattleMatchups();
+  logger.info("Battle matchups provisioned");
+} catch (error) {
+  logger.error({ err: error }, "Battle matchup provisioning failed");
+  process.exit(1);
 }
 
 try {

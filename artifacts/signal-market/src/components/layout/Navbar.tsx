@@ -1,6 +1,6 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Show, useClerk, useUser } from "@clerk/react";
-import { Activity, Plus, LayoutDashboard, ReceiptText, Search, Swords } from "lucide-react";
+import { Activity, Plus, ReceiptText, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
@@ -12,17 +12,10 @@ export function Navbar() {
             <div className="bg-primary text-primary-foreground p-1.5 rounded-md">
               <Activity className="h-5 w-5" />
             </div>
-            <span className="font-bold text-lg tracking-tight">YC Signal</span>
+            <span className="font-bold text-lg tracking-tight">YC Battle</span>
           </Link>
           <nav className="hidden md:flex gap-1">
-            <Link href="/explore" className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-md transition-colors hover:bg-accent flex items-center gap-2">
-              <Search className="h-4 w-4" />
-              Explore
-            </Link>
-            <Link href="/battles" className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-md transition-colors hover:bg-accent flex items-center gap-2">
-              <Swords className="h-4 w-4" />
-              Battles
-            </Link>
+            <BattleBoardLink />
           </nav>
         </div>
 
@@ -30,12 +23,9 @@ export function Navbar() {
           <Show when="signed-in">
             <Link href="/submit" className="hidden sm:inline-flex text-sm font-medium hover:text-primary transition-colors flex items-center gap-1.5 mr-2">
               <Plus className="h-4 w-4" />
-              Add Company
+              Add a Battle
             </Link>
             <div className="h-4 w-px bg-border hidden sm:block"></div>
-            <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground p-2 rounded-md hover:bg-accent transition-colors" title="Dashboard">
-              <LayoutDashboard className="h-4 w-4" />
-            </Link>
             <Link href="/transactions" className="text-sm font-medium text-muted-foreground hover:text-foreground p-2 rounded-md hover:bg-accent transition-colors mr-2" title="Transactions">
               <ReceiptText className="h-4 w-4" />
             </Link>
@@ -52,6 +42,26 @@ export function Navbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+function BattleBoardLink() {
+  const [location] = useLocation();
+
+  return (
+    <Link
+      href="/battles#active-battles"
+      onClick={(event) => {
+        if (location !== "/" && location !== "/battles") return;
+        event.preventDefault();
+        window.history.replaceState(null, "", `${window.location.pathname}#active-battles`);
+        document.getElementById("active-battles")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+      className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+    >
+      <Swords className="h-4 w-4" />
+      Battles
+    </Link>
   );
 }
 
