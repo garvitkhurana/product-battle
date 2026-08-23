@@ -81,6 +81,8 @@ function toProduct(row: typeof productsTable.$inferSelect) {
     ycBatch: row.ycBatch,
     websiteUrl: row.websiteUrl,
     location: row.location,
+    source: (row.source === "external" ? "external" : "yc") as "yc" | "external",
+    tags: row.tags ?? [],
     creatorName: row.creatorName,
     creatorId: row.creatorId,
     voteCount: row.ratingCount,
@@ -108,8 +110,12 @@ router.get("/products", async (req, res): Promise<void> => {
     return;
   }
   const { search, category, sort } = parsed.data;
+  const tag = typeof req.query.tag === "string" ? req.query.tag : undefined;
+  const source = typeof req.query.source === "string" ? req.query.source : undefined;
   const filters = [eq(productsTable.status, "published")];
   if (category && category !== "all") filters.push(eq(productsTable.category, category));
+  if (source === "yc" || source === "external") filters.push(eq(productsTable.source, source));
+  if (tag) filters.push(sql`${tag} = ANY(${productsTable.tags})`);
   if (search) {
     filters.push(
       or(
@@ -123,9 +129,9 @@ router.get("/products", async (req, res): Promise<void> => {
   const orderBy =
     sort === "newest"
       ? desc(productsTable.createdAt)
-        : sort === "community"
-          ? desc(productsTable.ratingCount)
-          : desc(sql`${productsTable.ratingCount} * 0.7 + ${productsTable.totalRaised} * 0.3`);
+      : sort === "community"
+        ? desc(productsTable.ratingCount)
+        : desc(sql`${productsTable.ratingCount} * 0.7 + ${productsTable.totalRaised} * 0.3`);
   const rows = await db.select().from(productsTable).where(and(...filters)).orderBy(orderBy);
   res.json(ListProductsResponse.parse(rows.map(toProduct)));
 });
@@ -233,15 +239,15 @@ router.get("/transactions", requireAuth, async (req, res): Promise<void> => {
   const rows = await db
     .select({ payment: paymentsTable, productTitle: productsTable.title })
     .from(paymentsTable)
-    .innerJoin(productsTable, eq(paymentsTable.productId, productsTable.id))
+    .leftJoin(productsTable, eq(paymentsTable.productId, productsTable.id))
     .where(eq(paymentsTable.userId, userId))
     .orderBy(desc(paymentsTable.createdAt));
   res.json(
     ListTransactionsResponse.parse(
       rows.map(({ payment, productTitle }) => ({
         id: payment.id,
-        productId: payment.productId,
-        productTitle,
+        productId: payment.productId ?? payment.battleId ?? "",
+        productTitle: productTitle ?? (payment.kind === "battle" ? "Battle pick" : "Payment"),
         amount: Number(payment.amount),
         rating: payment.rating > 0 ? payment.rating : null,
         status: payment.status,
@@ -318,6 +324,7 @@ router.post("/checkout", requireAuth, rateLimit, async (req, res): Promise<void>
       rating: parsed.data.rating,
       status: "pending",
       disclosure: DISCLOSURE,
+      kind: "rating",
     })
     .onConflictDoNothing()
     .returning({ id: paymentsTable.id });
@@ -352,8 +359,8 @@ router.post("/checkout", requireAuth, rateLimit, async (req, res): Promise<void>
       success_url: `${publicAppOrigin}/payment/success?payment_id=${paymentId}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${publicAppOrigin}/payment/cancel?payment_id=${paymentId}`,
       client_reference_id: paymentId,
-      metadata: { paymentId, productId: product.id, userId, rating: String(parsed.data.rating) },
-      payment_intent_data: { metadata: { paymentId, productId: product.id, userId, rating: String(parsed.data.rating) } },
+      metadata: { paymentId, productId: product.id, userId, rating: String(parsed.data.rating), kind: "rating" },
+      payment_intent_data: { metadata: { paymentId, productId: product.id, userId, rating: String(parsed.data.rating), kind: "rating" } },
       custom_text: { submit: { message: DISCLOSURE } },
     });
   } catch (error) {
@@ -383,7 +390,7 @@ router.get("/payments/:id", requireAuth, async (req, res): Promise<void> => {
   const [row] = await db
     .select({ payment: paymentsTable, productTitle: productsTable.title })
     .from(paymentsTable)
-    .innerJoin(productsTable, eq(paymentsTable.productId, productsTable.id))
+    .leftJoin(productsTable, eq(paymentsTable.productId, productsTable.id))
     .where(and(eq(paymentsTable.id, params.data.id), eq(paymentsTable.userId, userId)));
   if (!row) {
     res.status(404).json({ error: "Payment not found." });
@@ -392,8 +399,8 @@ router.get("/payments/:id", requireAuth, async (req, res): Promise<void> => {
   res.json(
     GetPaymentResponse.parse({
       id: row.payment.id,
-      productId: row.payment.productId,
-      productTitle: row.productTitle,
+      productId: row.payment.productId ?? row.payment.battleId ?? "",
+      productTitle: row.productTitle ?? (row.payment.kind === "battle" ? "Battle pick" : "Payment"),
       amount: Number(row.payment.amount),
         rating: row.payment.rating > 0 ? row.payment.rating : null,
       status: row.payment.status,
@@ -410,9 +417,10 @@ export async function handlePaidCheckout(event: { id: string; type: string; data
     payment_status?: string;
     id?: string;
     payment_intent?: string;
-    metadata?: { paymentId?: string; productId?: string; userId?: string; rating?: string };
+    metadata?: { paymentId?: string; productId?: string; userId?: string; rating?: string; kind?: string };
   };
   const metadata = session.metadata;
+  if (metadata?.kind === "battle") return;
   if (session.payment_status !== "paid" || !metadata?.paymentId || !metadata.productId || !metadata.userId) return;
   const paymentId = metadata.paymentId;
   const productId = metadata.productId;

@@ -22,6 +22,8 @@ import Dashboard from '@/pages/dashboard';
 import Transactions from '@/pages/transactions';
 import { PaymentSuccess, PaymentCancel } from '@/pages/payment-outcome';
 import { SignInPage, SignUpPage } from '@/pages/auth';
+import Battles from '@/pages/battles';
+import BattleDetail from '@/pages/battle-detail';
 
 const queryClient = new QueryClient();
 
@@ -39,6 +41,8 @@ function Router() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/explore" component={Explore} />
+          <Route path="/battles" component={Battles} />
+          <Route path="/battles/:slug" component={BattleDetail} />
           <Route path="/companies/:slug" component={ProductDetail} />
           
           <Route path="/submit" component={Submit} />

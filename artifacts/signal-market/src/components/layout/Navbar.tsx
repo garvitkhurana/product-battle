@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Show, useClerk, useUser } from "@clerk/react";
-import { Activity, Plus, LayoutDashboard, ReceiptText, Search } from "lucide-react";
+import { Activity, Plus, LayoutDashboard, ReceiptText, Search, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
@@ -18,6 +18,10 @@ export function Navbar() {
             <Link href="/explore" className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-md transition-colors hover:bg-accent flex items-center gap-2">
               <Search className="h-4 w-4" />
               Explore
+            </Link>
+            <Link href="/battles" className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-2 rounded-md transition-colors hover:bg-accent flex items-center gap-2">
+              <Swords className="h-4 w-4" />
+              Battles
             </Link>
           </nav>
         </div>

@@ -1,0 +1,275 @@
+{
+  "meta": {
+    "note": "Curated YC vs non-YC head-to-head rivalries. Opinions only — not investment advice. Not affiliated with Y Combinator.",
+    "vote_price_usd": 0.99
+  },
+  "competitors": [
+    {
+      "id": "ext-adyen",
+      "slug": "adyen",
+      "name": "Adyen",
+      "one_liner": "Global payments platform for enterprise checkout.",
+      "description": "Adyen is a Netherlands-based payments company used by large global merchants for online and in-person checkout.",
+      "website": "https://www.adyen.com",
+      "category": "Fintech",
+      "tags": ["Payments", "Fintech"],
+      "location": "Amsterdam, Netherlands",
+      "logo_url": "https://www.google.com/s2/favicons?domain=adyen.com&sz=128"
+    },
+    {
+      "id": "ext-booking",
+      "slug": "booking-com",
+      "name": "Booking.com",
+      "one_liner": "Global online travel agency for stays and trips.",
+      "description": "Booking.com is one of the largest OTAs, spanning hotels, homes, and travel inventory worldwide.",
+      "website": "https://www.booking.com",
+      "category": "Consumer",
+      "tags": ["Travel", "Marketplace"],
+      "location": "Amsterdam, Netherlands",
+      "logo_url": "https://www.google.com/s2/favicons?domain=booking.com&sz=128"
+    },
+    {
+      "id": "ext-uber-eats",
+      "slug": "uber-eats",
+      "name": "Uber Eats",
+      "one_liner": "Food delivery network built on Uber's logistics.",
+      "description": "Uber Eats competes in on-demand restaurant delivery across most major cities.",
+      "website": "https://www.ubereats.com",
+      "category": "Consumer",
+      "tags": ["Food Delivery", "Marketplace"],
+      "location": "San Francisco, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=ubereats.com&sz=128"
+    },
+    {
+      "id": "ext-binance",
+      "slug": "binance",
+      "name": "Binance",
+      "one_liner": "High-volume global crypto exchange.",
+      "description": "Binance is a major cryptocurrency exchange known for deep liquidity and a wide asset list.",
+      "website": "https://www.binance.com",
+      "category": "Fintech",
+      "tags": ["Crypto / Web3", "Fintech"],
+      "location": "Global",
+      "logo_url": "https://www.google.com/s2/favicons?domain=binance.com&sz=128"
+    },
+    {
+      "id": "ext-google-drive",
+      "slug": "google-drive",
+      "name": "Google Drive",
+      "one_liner": "Cloud storage bundled with Google Workspace.",
+      "description": "Google Drive is the default cloud file system for many teams already on Gmail/Docs.",
+      "website": "https://drive.google.com",
+      "category": "B2B",
+      "tags": ["SaaS", "Productivity"],
+      "location": "Mountain View, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=google.com&sz=128"
+    },
+    {
+      "id": "ext-amazon-fresh",
+      "slug": "amazon-fresh",
+      "name": "Amazon Fresh",
+      "one_liner": "Grocery delivery from Amazon's logistics stack.",
+      "description": "Amazon Fresh brings grocery delivery into Amazon's Prime membership and fulfillment network.",
+      "website": "https://www.amazon.com/fresh",
+      "category": "Consumer",
+      "tags": ["Grocery", "Marketplace"],
+      "location": "Seattle, WA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=amazon.com&sz=128"
+    },
+    {
+      "id": "ext-adp",
+      "slug": "adp",
+      "name": "ADP",
+      "one_liner": "Incumbent payroll and HR platform for enterprises.",
+      "description": "ADP is a long-running payroll and HCM provider for SMBs through large enterprises.",
+      "website": "https://www.adp.com",
+      "category": "B2B",
+      "tags": ["HR", "Payroll"],
+      "location": "Roseland, NJ",
+      "logo_url": "https://www.google.com/s2/favicons?domain=adp.com&sz=128"
+    },
+    {
+      "id": "ext-amex",
+      "slug": "american-express",
+      "name": "American Express",
+      "one_liner": "Premium cards and corporate spend brand.",
+      "description": "American Express dominates premium consumer and corporate card spend with rewards and charge products.",
+      "website": "https://www.americanexpress.com",
+      "category": "Fintech",
+      "tags": ["Payments", "Fintech"],
+      "location": "New York, NY",
+      "logo_url": "https://www.google.com/s2/favicons?domain=americanexpress.com&sz=128"
+    },
+    {
+      "id": "ext-youtube",
+      "slug": "youtube",
+      "name": "YouTube",
+      "one_liner": "Dominant video platform with live streaming.",
+      "description": "YouTube is the default destination for on-demand and live video creators and audiences.",
+      "website": "https://www.youtube.com",
+      "category": "Consumer",
+      "tags": ["Content", "Video"],
+      "location": "San Bruno, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=youtube.com&sz=128"
+    },
+    {
+      "id": "ext-jira",
+      "slug": "jira",
+      "name": "Jira",
+      "one_liner": "Atlassian's default issue tracker for engineering teams.",
+      "description": "Jira is the incumbent project and issue tracking suite for software organizations.",
+      "website": "https://www.atlassian.com/software/jira",
+      "category": "B2B",
+      "tags": ["Developer Tools", "Productivity"],
+      "location": "Sydney, Australia",
+      "logo_url": "https://www.google.com/s2/favicons?domain=atlassian.com&sz=128"
+    },
+    {
+      "id": "ext-labelbox",
+      "slug": "labelbox",
+      "name": "Labelbox",
+      "one_liner": "Data labeling and training-data platform for ML teams.",
+      "description": "Labelbox helps teams create and manage labeled datasets for machine learning.",
+      "website": "https://labelbox.com",
+      "category": "B2B",
+      "tags": ["AI", "Machine Learning"],
+      "location": "San Francisco, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=labelbox.com&sz=128"
+    },
+    {
+      "id": "ext-render",
+      "slug": "render",
+      "name": "Render",
+      "one_liner": "Modern cloud host for web apps and services.",
+      "description": "Render competes as a developer-friendly alternative to classic PaaS for deploying web services.",
+      "website": "https://render.com",
+      "category": "B2B",
+      "tags": ["Developer Tools", "Infrastructure"],
+      "location": "San Francisco, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=render.com&sz=128"
+    }
+  ],
+  "battles": [
+    {
+      "id": "battle-stripe-adyen",
+      "slug": "stripe-vs-adyen",
+      "title": "Stripe vs Adyen",
+      "space": "Payments",
+      "yc_slug": "stripe",
+      "rival_id": "ext-adyen",
+      "left_argument": "Developer-first APIs, docs, and startup default.",
+      "right_argument": "Enterprise global acquiring and unified commerce at scale.",
+      "featured": true
+    },
+    {
+      "id": "battle-airbnb-booking",
+      "slug": "airbnb-vs-booking",
+      "title": "Airbnb vs Booking.com",
+      "space": "Travel",
+      "yc_slug": "airbnb",
+      "rival_id": "ext-booking",
+      "left_argument": "Homes and experiences brand with community trust.",
+      "right_argument": "Hotel inventory depth and global OTA distribution.",
+      "featured": true
+    },
+    {
+      "id": "battle-doordash-ubereats",
+      "slug": "doordash-vs-uber-eats",
+      "title": "DoorDash vs Uber Eats",
+      "space": "Food Delivery",
+      "yc_slug": "doordash",
+      "rival_id": "ext-uber-eats",
+      "left_argument": "US density and merchant tooling focus.",
+      "right_argument": "Global Uber network and multi-vertical logistics.",
+      "featured": true
+    },
+    {
+      "id": "battle-coinbase-binance",
+      "slug": "coinbase-vs-binance",
+      "title": "Coinbase vs Binance",
+      "space": "Crypto",
+      "yc_slug": "coinbase",
+      "rival_id": "ext-binance",
+      "left_argument": "US-regulated brand and retail trust.",
+      "right_argument": "Liquidity, listings, and global volume.",
+      "featured": false
+    },
+    {
+      "id": "battle-dropbox-gdrive",
+      "slug": "dropbox-vs-google-drive",
+      "title": "Dropbox vs Google Drive",
+      "space": "Cloud Storage",
+      "yc_slug": "dropbox",
+      "rival_id": "ext-google-drive",
+      "left_argument": "Focused sync product and cross-platform files.",
+      "right_argument": "Free bundling with Google account and Docs.",
+      "featured": false
+    },
+    {
+      "id": "battle-instacart-amazon",
+      "slug": "instacart-vs-amazon-fresh",
+      "title": "Instacart vs Amazon Fresh",
+      "space": "Grocery",
+      "yc_slug": "instacart",
+      "rival_id": "ext-amazon-fresh",
+      "left_argument": "Retailer marketplace and local shopper network.",
+      "right_argument": "Prime logistics and Amazon retail gravity.",
+      "featured": false
+    },
+    {
+      "id": "battle-gusto-adp",
+      "slug": "gusto-vs-adp",
+      "title": "Gusto vs ADP",
+      "space": "Payroll",
+      "yc_slug": "gusto",
+      "rival_id": "ext-adp",
+      "left_argument": "SMB-friendly UX and modern benefits stack.",
+      "right_argument": "Enterprise compliance breadth and incumbency.",
+      "featured": false
+    },
+    {
+      "id": "battle-brex-amex",
+      "slug": "brex-vs-amex",
+      "title": "Brex vs American Express",
+      "space": "Corporate Cards",
+      "yc_slug": "brex",
+      "rival_id": "ext-amex",
+      "left_argument": "Startup spend controls and software-native cards.",
+      "right_argument": "Rewards brand and corporate charge network.",
+      "featured": false
+    },
+    {
+      "id": "battle-twitch-youtube",
+      "slug": "twitch-vs-youtube",
+      "title": "Twitch vs YouTube",
+      "space": "Live Video",
+      "yc_slug": "twitch",
+      "rival_id": "ext-youtube",
+      "left_argument": "Live community culture and gaming identity.",
+      "right_argument": "Audience scale and creator monetization surface.",
+      "featured": true
+    },
+    {
+      "id": "battle-heroku-render",
+      "slug": "heroku-vs-render",
+      "title": "Heroku vs Render",
+      "space": "PaaS",
+      "yc_slug": "heroku",
+      "rival_id": "ext-render",
+      "left_argument": "Original developer PaaS with add-on ecosystem.",
+      "right_argument": "Modern pricing and DX without legacy baggage.",
+      "featured": false
+    },
+    {
+      "id": "battle-scale-labelbox",
+      "slug": "scale-ai-vs-labelbox",
+      "title": "Scale AI vs Labelbox",
+      "space": "AI Data",
+      "yc_slug": "scale-ai",
+      "rival_id": "ext-labelbox",
+      "left_argument": "Full-stack data engine for frontier AI labs.",
+      "right_argument": "Self-serve labeling workflows for ML teams.",
+      "featured": true
+    }
+  ]
+}
