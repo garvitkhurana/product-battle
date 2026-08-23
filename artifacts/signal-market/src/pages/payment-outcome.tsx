@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { ArrowRight, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { getGetPaymentQueryKey, useGetPayment } from "@workspace/api-client-react";
+import { getGetPaymentQueryKey, useGetPayment, useListBattles, type Battle } from "@workspace/api-client-react";
 import { useUser } from "@clerk/react";
+import { nextHouseholdBattles } from "@/lib/household-battles";
 
 export function PaymentSuccess() {
   const { toast } = useToast();
@@ -19,9 +20,13 @@ export function PaymentSuccess() {
       refetchInterval: 2_000,
     },
   });
+  const { data: battles } = useListBattles({
+    query: { enabled: isBattle },
+  });
   const isPending = Boolean(paymentId) && (!payment || payment.status === "pending");
   const isPaid = payment?.status === "paid";
   const activity = isBattle ? "vote" : "rating";
+  const nextBattles = isBattle ? nextHouseholdBattles(battles ?? [], payment?.battleId) : [];
   
   useEffect(() => {
     toast({
@@ -62,7 +67,41 @@ export function PaymentSuccess() {
           </Button>
         </div>
       </div>
+      {nextBattles.length > 0 && (
+        <section className="mt-8 w-full max-w-md">
+          <p className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#211b18]/55">
+            Next famous matchup
+          </p>
+          <div className="flex flex-col gap-3">
+            {nextBattles.map((battle) => (
+              <NextBattleLink key={battle.id} battle={battle} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
+  );
+}
+
+function NextBattleLink({ battle }: { battle: Battle }) {
+  return (
+    <Link
+      href={`/battles/${battle.slug}`}
+      className="group flex items-center overflow-hidden border-2 border-[#211b18] bg-[#f8e9d8] shadow-[4px_4px_0_#211b18] transition-transform hover:-translate-y-0.5"
+    >
+      <span className="flex min-w-0 flex-1 items-center gap-2 bg-[#ff4f32] px-3 py-3">
+        <span className="truncate text-sm font-extrabold tracking-[-0.03em]">{battle.participantA.name}</span>
+      </span>
+      <span className="shrink-0 border-x-2 border-[#211b18] bg-[#f8e9d8] px-2 py-3 font-mono text-[10px] font-bold italic">
+        VS
+      </span>
+      <span className="flex min-w-0 flex-1 items-center justify-end gap-2 bg-[#d9f75b] px-3 py-3">
+        <span className="truncate text-sm font-extrabold tracking-[-0.03em]">{battle.participantB.name}</span>
+      </span>
+      <span className="shrink-0 bg-[#211b18] px-2 py-3 text-[#f8e9d8]">
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      </span>
+    </Link>
   );
 }
 

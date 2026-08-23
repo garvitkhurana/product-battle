@@ -14,6 +14,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { rankBattlesForClicks } from "@/lib/household-battles";
 
 type LanePreset = {
   label: string;
@@ -91,10 +92,7 @@ export default function BattlesList() {
     });
   }, [activeBattles, query, selectedCategory, selectedPreset]);
   const featuredBattles = useMemo(
-    () =>
-      [...activeBattles]
-        .sort((a, b) => b.totalVotes - a.totalVotes || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-        .slice(0, 6),
+    () => rankBattlesForClicks(activeBattles).slice(0, 10),
     [activeBattles],
   );
 
@@ -265,7 +263,7 @@ export default function BattlesList() {
                     ? `Showing ${visibleBattles.length} matching battle${visibleBattles.length === 1 ? "" : "s"}`
                     : showAllBattles
                       ? `Showing all ${activeBattles.length} active matchups`
-                      : `Top ${displayedBattles.length} by community heat`}
+                      : `Top ${displayedBattles.length} household matchups`}
                 </p>
                 {!hasFilters && (
                   <button
