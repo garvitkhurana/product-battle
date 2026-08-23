@@ -1,0 +1,8 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" fill="#FFF7ED"/>
+<circle cx="604" cy="404" r="240" fill="#FDBA74"/>
+<path d="M435 270H733V540C733 606 679 660 584 660C489 660 435 606 435 540V270Z" fill="#7C2D12"/>
+<path d="M733 340H814C880 340 914 385 914 444C914 503 880 548 814 548H733" stroke="#7C2D12" stroke-width="44"/>
+<path d="M493 208C483 150 540 120 552 79M591 208C581 150 638 120 650 79" stroke="#EA580C" stroke-width="26" stroke-linecap="round"/>
+<text x="90" y="116" fill="#7C2D12" font-family="Arial, sans-serif" font-size="42" font-weight="700">DOORDASH</text>
+</svg>

@@ -1,0 +1,8 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" fill="#EFF6FF"/>
+<rect x="276" y="162" width="648" height="476" rx="42" fill="#1E3A8A"/>
+<path d="M370 520L490 404L584 476L712 286L833 385" stroke="#FDE68A" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="370" cy="520" r="21" fill="#FDE68A"/>
+<circle cx="833" cy="385" r="21" fill="#FDE68A"/>
+<text x="90" y="116" fill="#1E3A8A" font-family="Arial, sans-serif" font-size="42" font-weight="700">RIPPLING</text>
+</svg>

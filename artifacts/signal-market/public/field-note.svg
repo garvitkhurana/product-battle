@@ -1,0 +1,8 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="800" fill="#F0FDF4"/>
+<path d="M219 522C330 274 536 158 790 243C920 286 981 400 960 535C919 666 741 709 573 681C419 655 294 619 219 522Z" fill="#86EFAC"/>
+<path d="M421 509L612 294L794 439L604 605L421 509Z" fill="#166534"/>
+<path d="M444 489L603 365L747 449" stroke="#DCFCE7" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="782" cy="273" r="56" fill="#FACC15"/>
+<text x="90" y="116" fill="#14532D" font-family="Arial, sans-serif" font-size="42" font-weight="700">BREX</text>
+</svg>

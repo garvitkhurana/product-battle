@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Signal Market"
+description = "A demand-validation marketplace where people discover product ideas and cast explicitly non-refundable $0.99 votes, while creators track interest and moderation status."
+version = "1.0.0"
+id = "artifacts/signal-market"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19449
+
+[services.development]
+run = "pnpm --filter @workspace/signal-market run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/signal-market", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/signal-market/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19449"
+BASE_PATH = "/"

@@ -1,0 +1,67 @@
+Got it — head-to-head rivalries. Here they are with what each side actually argues:
+**Tech & devices**
+- **iPhone vs. Android** — "it just works, privacy, ecosystem" vs. "freedom, customization, you're paying for a logo"
+- **PlayStation vs. Xbox** — "exclusives and single-player craft" vs. "Game Pass value and backward compatibility"
+- **PC vs. Console** — "frames, mods, ownership" vs. "plug in and play, no tinkering tax"
+- **Mac vs. Windows** — "design and Unix underneath" vs. "you can actually upgrade it and it costs half as much"
+- **Nintendo vs. everyone** — "joy and design genius" vs. "underpowered, overpriced, no online"
+- **AMD vs. Nvidia** — "price/perf, open standards" vs. "DLSS, ray tracing, drivers that work"
+- **iPad vs. Surface** — "best tablet" vs. "actual computer"
+- **AirPods vs. Sony XM series** — "seamless" vs. "better sound and ANC"
+**Developer wars**
+- **Vim vs. Emacs** — the ur-conflict
+- **Tabs vs. spaces**
+- **VS Code vs. JetBrains** — "fast, free, extensible" vs. "the IDE actually understands your code"
+- **React vs. Vue** — "ecosystem and jobs" vs. "sane API, less ceremony"
+- **Python vs. JavaScript**, **Rust vs. Go** — "safety and expressiveness" vs. "simplicity and compile times"
+- **AWS vs. GCP vs. Azure** — everyone hates their own the most
+**Cars & bikes**
+- **Ford F-150 vs. Chevy Silverado vs. Ram** — American truck loyalty is inherited, not chosen
+- **BMW vs. Mercedes** — "driver's car" vs. "passenger's car"
+- **Porsche 911 vs. Corvette** — "engineering heritage" vs. "same performance, half the price"
+- **Toyota vs. Honda** — reliability sects with slightly different scriptures
+- **Harley vs. Japanese sportbikes** — "soul and sound" vs. "it actually turns and stops"
+- **Jeep Wrangler vs. Toyota 4Runner/Land Cruiser** — "capability and community" vs. "it'll start every morning"
+- **Tesla vs. legacy EVs** — "software company that makes cars" vs. "panel gaps and no CarPlay"
+- **Manual vs. automatic** — "engagement" vs. "a modern DCT is faster and you know it"
+**Coffee, food, drink**
+- **Coke vs. Pepsi** — the classic
+- **Nespresso vs. espresso machine vs. pour-over** — "consistent and easy" vs. "you don't actually like coffee"
+- **Starbucks vs. Dunkin'** vs. local third-wave — class and regional identity as much as taste
+- **In-N-Out vs. Five Guys vs. Shake Shack** — West Coast, value, and East Coast camps
+- **Chicago deep dish vs. NY thin crust** — "it's a casserole" vs. "it's a cracker with sauce"
+- **Texas vs. Carolina vs. Kansas City BBQ** — regional wars with real stakes
+- **Charcoal vs. gas vs. pellet grills** — "flavor" vs. "convenience" vs. "it's a smoker with training wheels"
+**Knives & cookware**
+- **Japanese vs. German knives** — "sharper, thinner, harder" vs. "won't chip when you hit a bone"
+- **Le Creuset vs. Lodge** — "heirloom" vs. "identical physics for $30"
+- **Cast iron vs. nonstick vs. carbon steel** — the seasoning faithful vs. the pragmatists
+- **Gas vs. induction** — "visual control and wok hei" vs. "faster, cleaner, safer"
+**Fitness**
+- **CrossFit vs. traditional lifting** — "community and intensity" vs. "rhabdo and bad form under fatigue"
+- **Peloton vs. real bike** — "consistency and instructors" vs. "go outside"
+- **Nike vs. Adidas**, **Hoka vs. barefoot/Vibram** — "cushioning is protection" vs. "cushioning is why you're injured"
+- **Free weights vs. machines**, **Planet Fitness vs. serious gyms**
+**Outdoor gear**
+- **Yeti vs. RTIC** — "buy it for life" vs. "same cooler, no logo tax"
+- **Patagonia vs. The North Face vs. Arc'teryx** — ethics, mass-market, and technical purism
+- **Stanley vs. Hydro Flask vs. Yeti tumbler** — the great water bottle schism
+- **Osprey vs. ultralight cottage brands** (Zpacks, Hyperlite) — "comfort and warranty" vs. "every gram is a choice"
+**Cameras**
+- **Canon vs. Nikon vs. Sony** — the oldest three-way; now "colors and ergonomics" vs. "sensors and autofocus"
+- **Fujifilm vs. full-frame** — "film sim and the joy of shooting" vs. "physics doesn't care about your dials"
+- **Leica vs. literally anything else** — the purest luxury-justification argument in existence
+**Music gear**
+- **Gibson vs. Fender** — Les Paul warmth vs. Strat/Tele bite
+- **Tube vs. solid state vs. digital modelers** — "feel and breakup" vs. "blind tests exist"
+- **Vinyl vs. streaming** — "ritual and warmth" vs. "you're hearing a digital master anyway"
+**Money & retail**
+- **Costco vs. Sam's Club** — tribal in a way that surprises outsiders
+- **Vanguard/Bogleheads vs. active investing** — an actual doctrine with named heretics
+- **Bitcoin vs. everything else** — "sound money" vs. "greater fool"
+- **Amex vs. Chase Sapphire** — lounge access vs. transfer partners
+- **Target vs. Walmart** — a class signifier disguised as a shopping preference
+**Parenting**
+- **Snoo vs. regular bassinet** — "sleep is worth $1,700" vs. "or you could just hold the baby"
+- **UPPAbaby vs. Bugaboo vs. Doona** — stroller status warfare is very real
+If you want, I can go deeper on any one pair — the actual technical merits versus the tribal signaling usually diverge more than people admit. 

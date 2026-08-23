@@ -1,0 +1,321 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: companies
+    description: YC company profiles and moderation
+  - name: rankings
+    description: Community rating rankings
+  - name: creator
+    description: Company profile owner workspace
+  - name: payments
+    description: Paid ratings and receipts
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /products:
+    get:
+      operationId: listProducts
+      tags: [companies]
+      summary: List published YC companies
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [trending, newest, community]
+            default: trending
+      responses:
+        "200":
+          description: YC companies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [companies]
+      summary: Submit a YC company profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Submitted company
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "401":
+          description: Sign in required
+  /products/{slug}:
+    get:
+      operationId: getProduct
+      tags: [companies]
+      summary: Get a YC company profile
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Company profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Company not found
+  /products/{id}/status:
+    patch:
+      operationId: updateProductStatus
+      tags: [companies]
+      summary: Update company profile status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StatusUpdate"
+      responses:
+        "200":
+          description: Updated company profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "401":
+          description: Sign in required
+        "403":
+          description: Not allowed
+  /rankings:
+    get:
+      operationId: getRankings
+      tags: [rankings]
+      summary: Get community rating rankings
+      responses:
+        "200":
+          description: Ranked company profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ranking"
+  /creator/dashboard:
+    get:
+      operationId: getCreatorDashboard
+      tags: [creator]
+      summary: Get owner metrics and company profiles
+      responses:
+        "200":
+          description: Creator dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatorDashboard"
+        "401":
+          description: Sign in required
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [payments]
+      summary: List rating receipts and payment history
+      responses:
+        "200":
+          description: Transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+        "401":
+          description: Sign in required
+  /checkout:
+    post:
+      operationId: createCheckout
+      tags: [payments]
+      summary: Create a Stripe Checkout session for one company rating
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutInput"
+      responses:
+        "201":
+          description: Checkout session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutSession"
+        "400":
+          description: Disclosure must be accepted
+        "401":
+          description: Sign in required
+  /payments/{id}:
+    get:
+      operationId: getPayment
+      tags: [payments]
+      summary: Get payment state and receipt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paid rating
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Payment not found
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Product:
+      type: object
+      required: [id, slug, title, shortDescription, description, imageUrl, category, ycBatch, websiteUrl, location, creatorName, creatorId, voteCount, ratingAverage, totalRaised, status, featured, createdAt]
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        title: { type: string }
+        shortDescription: { type: string }
+        description: { type: string }
+        imageUrl: { type: string }
+        category: { type: string }
+        ycBatch: { type: string }
+        websiteUrl: { type: string }
+        location: { type: string }
+        creatorName: { type: string }
+        creatorId: { type: string }
+        voteCount: { type: integer }
+        ratingAverage: { type: number }
+        totalRaised: { type: number }
+        status:
+          type: string
+          enum: [pending, published, paused, rejected]
+        featured: { type: boolean }
+        createdAt: { type: string, format: date-time }
+    ProductInput:
+      type: object
+      required: [title, shortDescription, description, imageUrl, category, ycBatch, websiteUrl, location]
+      properties:
+        title: { type: string, minLength: 3 }
+        shortDescription: { type: string, minLength: 10 }
+        description: { type: string, minLength: 20 }
+        imageUrl: { type: string, format: uri }
+        category: { type: string, minLength: 2 }
+        ycBatch: { type: string, minLength: 2 }
+        websiteUrl: { type: string, format: uri }
+        location: { type: string, minLength: 2 }
+    StatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, paused]
+    Ranking:
+      type: object
+      required: [rank, product]
+      properties:
+        rank: { type: integer }
+        product:
+          $ref: "#/components/schemas/Product"
+    CreatorDashboard:
+      type: object
+      required: [totalVotes, totalRaised, publishedCount, pendingCount, products]
+      properties:
+        totalVotes: { type: integer }
+        totalRaised: { type: number }
+        publishedCount: { type: integer }
+        pendingCount: { type: integer }
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+    CheckoutInput:
+      type: object
+      required: [productId, rating, disclosureAccepted]
+      properties:
+        productId: { type: string }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        disclosureAccepted: { type: boolean }
+    CheckoutSession:
+      type: object
+      required: [paymentId, checkoutUrl, amount, disclosure]
+      properties:
+        paymentId: { type: string }
+        checkoutUrl: { type: string, format: uri }
+        amount: { type: number }
+        disclosure: { type: string }
+    Transaction:
+      type: object
+      required: [id, productId, productTitle, amount, rating, status, disclosure, createdAt]
+      properties:
+        id: { type: string }
+        productId: { type: string }
+        productTitle: { type: string }
+        amount: { type: number }
+        rating: { type: ["integer", "null"], minimum: 1, maximum: 5 }
+        status:
+          type: string
+          enum: [pending, paid, failed, refunded]
+        disclosure: { type: string }
+        receiptUrl: { type: ["string", "null"], format: uri }
+        createdAt: { type: string, format: date-time }
+
