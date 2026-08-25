@@ -7,3 +7,4 @@
 - [GitHub publication path](github-publication-path.md) — this workspace’s shell remote is Replit backup; publish public commits through the managed GitHub connection.
 - [Perception session lifecycle](perception-session-lifecycle.md) — private session creation needs a synchronous in-flight guard under React development remounts.
 - [Ecosystem queue expansion](ecosystem-queue-expansion.md) — extra comparison batches are session-bound, sequential, and never expose session capabilities in URLs.
+- [Code execution workspace path](code-execution-workspace-path.md) — resolve workspace roots with shell pwd before impure binary writes.

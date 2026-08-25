@@ -1,15 +1,16 @@
 import { useMemo } from 'react';
 import { useGetPerceptionMap, useListBattles } from '@workspace/api-client-react';
 import { Copy, Loader2, Map as MapIcon, Share2 } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
 import { AddNextBatchCta } from '@/components/AddNextBatchCta';
+import { Seo } from '@/components/Seo';
 
 const REGION_COLORS = ['#ff5038', '#d7ff45', '#8f5cff', '#57c3ff', '#ffb347', '#7ddea2'];
 
 export default function EcosystemMap() {
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
   const { data: points, isLoading, error } = useGetPerceptionMap();
   const { data: battles } = useListBattles();
   const { toast } = useToast();
@@ -110,7 +111,21 @@ export default function EcosystemMap() {
   };
 
   return (
-    <div className="flex-1 bg-[#f6e5d2] px-4 py-10 md:px-8 md:py-16">
+    <>
+      <Seo
+        title="YC Ecosystem Map — Company Perception | YC Battle"
+        description="Explore how YC companies cluster by co-voting affinity and word overlap in the YC Battle ecosystem map."
+        path="/map"
+        imagePath="/api/og/map.png"
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'YC Ecosystem Map',
+          url: 'https://ycbattle.com/map',
+          isPartOf: { '@id': 'https://ycbattle.com/#website' },
+        }}
+      />
+      <div className="flex-1 bg-[#f6e5d2] px-4 py-10 md:px-8 md:py-16">
       <div className="mx-auto flex w-full max-w-6xl flex-col">
         <header className="flex flex-col justify-between gap-5 border-b-2 border-[#181513] pb-6 md:flex-row md:items-end">
           <div className="max-w-2xl">
@@ -214,9 +229,9 @@ export default function EcosystemMap() {
                 })}
 
                 {plottedPoints.map(({ point, left, top, size }) => (
-                  <button
+                  <Link
                     key={point.participant.id}
-                    onClick={() => setLocation(`/companies/${point.participant.slug}`)}
+                    href={`/companies/${point.participant.slug}`}
                     aria-label={`Open ${point.participant.name}`}
                     className="group absolute z-20 -translate-x-1/2 -translate-y-1/2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#181513]"
                     style={{ left: `${left}%`, top: `${top}%` }}
@@ -235,7 +250,7 @@ export default function EcosystemMap() {
                         className="!border-[1.5px]"
                       />
                     </span>
-                  </button>
+                  </Link>
                 ))}
               </div>
             )}
@@ -250,6 +265,7 @@ export default function EcosystemMap() {
           className={`mt-5 ${hasNextBatchIntent ? '!bg-[#d7ff45]' : ''}`}
         />
       </div>
-    </div>
+      </div>
+    </>
   );
 }

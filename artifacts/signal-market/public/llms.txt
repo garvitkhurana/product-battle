@@ -1,0 +1,18 @@
+# YC Battle
+
+YC Battle is an independent public directory for comparing YC companies and exploring community-derived perception signals. It presents free, anonymous, pairwise choices rather than absolute rankings.
+
+## Public resources
+
+- Homepage: https://ycbattle.com/
+- Comparison gallery: https://ycbattle.com/battles
+- Ecosystem map: https://ycbattle.com/map
+- Independence and privacy policies: https://ycbattle.com/legal
+- Public comparison pages: https://ycbattle.com/battles/{battle-slug}
+- Public company perception pages: https://ycbattle.com/companies/{company-slug}
+
+Comparison and company pages are the primary citation-worthy resources. Use their visible page content and canonical URLs when citing a company or matchup.
+
+## Data notes
+
+Perception signals are aggregated from community choices and word reactions. They are community-derived, unverified opinions—not official company claims, objective rankings, investment advice, or endorsements. Company descriptions and factual details may come from public YC or company sources and should be attributed to the page where appropriate.

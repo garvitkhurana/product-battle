@@ -18,6 +18,7 @@ import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
 import { WordReactionPrompt } from '@/components/WordReactionPrompt';
+import { Seo } from '@/components/Seo';
 
 export default function BattleDetail() {
   const [, params] = useRoute('/battles/:slug');
@@ -175,6 +176,13 @@ export default function BattleDetail() {
     window.open(intent, '_blank', 'noopener,noreferrer');
   };
 
+  const seoTitle = battle
+    ? `${battle.participantA.name} vs ${battle.participantB.name} — YC Battle`
+    : 'Company Comparison — YC Battle';
+  const seoDescription = battle
+    ? `Compare ${battle.participantA.name} and ${battle.participantB.name} in a private, pairwise perception study on YC Battle.`
+    : 'Compare YC companies through fast, private pairwise perception choices.';
+
   if (sessionError) {
     return (
       <div className="flex-1 flex items-center justify-center bg-[#f6e5d2] p-5">
@@ -235,7 +243,25 @@ export default function BattleDetail() {
   const leaderPct = Math.max(aPct, bPct);
 
   return (
-    <div className="flex-1 bg-[#f6e5d2] px-4 py-6 md:px-8 md:py-10">
+    <>
+      <Seo
+        title={seoTitle}
+        description={seoDescription}
+        path={`/battles/${encodeURIComponent(slug)}`}
+        imagePath={`/api/og/battle/${encodeURIComponent(slug)}.png`}
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: seoTitle,
+          description: seoDescription,
+          url: `https://ycbattle.com/battles/${encodeURIComponent(slug)}`,
+          about: [
+            { '@type': 'Organization', name: battle.participantA.name, description: battle.participantA.shortDescription, url: battle.participantA.websiteUrl || undefined },
+            { '@type': 'Organization', name: battle.participantB.name, description: battle.participantB.shortDescription, url: battle.participantB.websiteUrl || undefined },
+          ],
+        }}
+      />
+      <div className="flex-1 bg-[#f6e5d2] px-4 py-6 md:px-8 md:py-10">
       <div className="mx-auto max-w-7xl">
         <header className="flex flex-wrap items-center justify-between gap-3 pb-6">
           <Link href="/battles" className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#625c55] transition-colors hover:text-[#181513]">
@@ -421,6 +447,7 @@ export default function BattleDetail() {
         onClose={() => setWordPrompt(null)}
         onSessionInvalid={invalidateSession}
       />
-    </div>
+      </div>
+    </>
   );
 }

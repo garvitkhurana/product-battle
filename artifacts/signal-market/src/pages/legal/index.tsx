@@ -1,9 +1,23 @@
 import { Link } from 'wouter';
 import { FileText, MessageSquare, Shield, UserX } from 'lucide-react';
+import { Seo } from '@/components/Seo';
 
 export default function Legal() {
   return (
-    <div className="flex-1 bg-background">
+    <>
+      <Seo
+        title="Independence & Privacy — YC Battle"
+        description="Read YC Battle's independence, privacy, anonymous session, and community perception policies."
+        path="/legal"
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: 'Independence & Privacy',
+          url: 'https://ycbattle.com/legal',
+          isPartOf: { '@id': 'https://ycbattle.com/#website' },
+        }}
+      />
+      <div className="flex-1 bg-background">
       <div className="container mx-auto px-4 py-16 md:py-24 max-w-3xl space-y-16">
         
         <header className="space-y-6">
@@ -86,6 +100,7 @@ export default function Legal() {
           </Link>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

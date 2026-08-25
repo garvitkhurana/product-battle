@@ -4,6 +4,7 @@ import { Loader2, AlertCircle, BarChart3, Database, Copy, Share2 } from 'lucide-
 import { type FormEvent, useMemo, useState } from 'react';
 import { useAuth } from '@clerk/react';
 import { useToast } from '@/hooks/use-toast';
+import { Seo } from '@/components/Seo';
 
 export default function CompanyProfile() {
   const [, params] = useRoute('/companies/:slug');
@@ -77,7 +78,22 @@ export default function CompanyProfile() {
   };
 
   return (
-    <div className="flex-1 bg-background text-foreground">
+    <>
+      <Seo
+        title={`${profile.participant.name} — Company Perception | YC Battle`}
+        description={`${profile.participant.shortDescription} Explore community perception signals for ${profile.participant.name} on YC Battle.`}
+        path={`/companies/${encodeURIComponent(slug)}`}
+        imagePath={`/api/og/company/${encodeURIComponent(slug)}.png`}
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: profile.participant.name,
+          description: profile.participant.description || profile.participant.shortDescription,
+          url: profile.participant.websiteUrl || undefined,
+          knowsAbout: profile.participant.category || undefined,
+        }}
+      />
+      <div className="flex-1 bg-background text-foreground">
       <header className="border-b border-border bg-card relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-5">
            <div className="w-full h-full" style={{ backgroundImage: 'linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 10px 10px' }} />
@@ -253,7 +269,11 @@ export default function CompanyProfile() {
               </p>
             ) : claimOpen ? (
               <form onSubmit={submitClaim} className="space-y-3">
+                <label htmlFor="company-claim-message" className="block font-mono text-xs font-bold uppercase tracking-widest">
+                  Relationship to this company
+                </label>
                 <textarea
+                  id="company-claim-message"
                   value={claimMessage}
                   onChange={(event) => setClaimMessage(event.target.value)}
                   minLength={10}
@@ -279,6 +299,7 @@ export default function CompanyProfile() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

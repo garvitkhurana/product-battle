@@ -3,12 +3,25 @@ import { useListBattles } from '@workspace/api-client-react';
 import { Activity, ArrowRight, ShieldAlert } from 'lucide-react';
 import { CompanyMark } from '@/components/CompanyMark';
 import { AddNextBatchCta } from '@/components/AddNextBatchCta';
+import { Seo } from '@/components/Seo';
 
 export default function BattlesList() {
   const { data: battles, isLoading, error } = useListBattles();
 
   return (
     <div className="flex-1 bg-[#f6e5d2]">
+      <Seo
+        title="YC Company Comparisons — YC Battle"
+        description="Browse live YC company comparisons and make private pairwise choices that reveal community perception."
+        path="/battles"
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: 'YC Company Comparisons',
+          url: 'https://ycbattle.com/battles',
+          isPartOf: { '@id': 'https://ycbattle.com/#website' },
+        }}
+      />
       <div className="container mx-auto flex max-w-6xl flex-col px-4 py-12 md:px-8 md:py-20">
         <header className="border-b-2 border-[#181513] pb-7">
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-[#ff5038]">The board / live cohort</p>

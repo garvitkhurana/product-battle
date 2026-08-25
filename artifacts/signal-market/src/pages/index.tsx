@@ -3,12 +3,25 @@ import { useListBattles } from '@workspace/api-client-react';
 import { ArrowRight, Activity, Zap } from 'lucide-react';
 import { CompanyMark } from '@/components/CompanyMark';
 import { AddNextBatchCta } from '@/components/AddNextBatchCta';
+import { Seo } from '@/components/Seo';
 
 export default function Index() {
   const { data: battles, isLoading } = useListBattles();
 
   return (
     <div className="flex-1 flex flex-col">
+      <Seo
+        title="YC Battle — Independent company perception"
+        description="Make fast, free pairwise choices and explore a confidence-aware map of how the community perceives YC companies."
+        path="/"
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@graph': [
+            { '@type': 'WebSite', '@id': 'https://ycbattle.com/#website', name: 'YC Battle', url: 'https://ycbattle.com/' },
+            { '@type': 'Organization', '@id': 'https://ycbattle.com/#organization', name: 'YC Battle', url: 'https://ycbattle.com/' },
+          ],
+        }}
+      />
       {/* Hero Section */}
       <section className="border-b border-border">
         <div className="container mx-auto px-4 py-20 md:py-32 flex flex-col md:flex-row gap-12 items-start justify-between">
@@ -19,7 +32,7 @@ export default function Index() {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.1] tracking-tight">
-              Signal through <span className="text-primary">contrast.</span>
+              Compare YC startups through <span className="text-primary">community perception signals.</span>
             </h1>
             
             <p className="text-lg text-muted-foreground font-mono leading-relaxed max-w-xl">

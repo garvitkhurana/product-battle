@@ -17,6 +17,7 @@ import { Loader2 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import Index from '@/pages/index';
 import { PerceptionSessionProvider } from '@/lib/session';
+import { Seo } from '@/components/Seo';
 
 const BattlesList = lazy(() => import('@/pages/battles/index'));
 const BattleDetail = lazy(() => import('@/pages/battles/[slug]'));
@@ -103,6 +104,7 @@ function RouteFallback() {
 function Router() {
   return (
     <Layout>
+      <RouteMetadata />
       <RoutedErrorBoundary>
         <Suspense fallback={<RouteFallback />}>
           <Switch>
@@ -124,6 +126,21 @@ function Router() {
         </Suspense>
       </RoutedErrorBoundary>
     </Layout>
+  );
+}
+
+function RouteMetadata() {
+  const [location] = useLocation();
+  const path = location.split('?')[0] ?? '/';
+  const noindexRoutes = ['/swipe', '/dna', '/transactions', '/submit', '/sign-in', '/sign-up', '/ecosystem'];
+  if (!noindexRoutes.some((route) => path === route || path.startsWith(`${route}/`))) return null;
+  return (
+    <Seo
+      title="Private tools — YC Battle"
+      description="Private YC Battle tools for comparing companies and reviewing your perception profile."
+      path={path}
+      noindex
+    />
   );
 }
 

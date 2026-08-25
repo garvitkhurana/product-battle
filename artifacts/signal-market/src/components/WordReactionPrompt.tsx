@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { useCreatePerceptionWord } from '@workspace/api-client-react';
 import { isInvalidPerceptionSessionError } from '@/lib/session';
 import { useToast } from '@/hooks/use-toast';
@@ -20,6 +20,24 @@ export function WordReactionPrompt({ open, sessionToken, target, onClose, onSess
   const createWord = useCreatePerceptionWord();
   const { toast } = useToast();
   const [word, setWord] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
+  const wasOpenRef = useRef(false);
+
+  useEffect(() => {
+    if (open && target && !wasOpenRef.current) {
+      restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      wasOpenRef.current = true;
+      inputRef.current?.focus();
+      return;
+    }
+
+    if (!open && wasOpenRef.current) {
+      wasOpenRef.current = false;
+      restoreFocusRef.current?.focus();
+      restoreFocusRef.current = null;
+    }
+  }, [open, target]);
 
   if (!open || !target) return null;
 
@@ -67,17 +85,53 @@ export function WordReactionPrompt({ open, sessionToken, target, onClose, onSess
     );
   };
 
+  const handleDialogKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setWord('');
+      onClose();
+      return;
+    }
+    if (event.key !== 'Tab') return;
+
+    const focusable = Array.from(
+      event.currentTarget.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), [href], select:not([disabled]), textarea:not([disabled])',
+      ),
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#181513]/45 p-4 sm:items-center">
-      <div className="w-full max-w-md border-2 border-[#181513] bg-[#fff8ef] p-5 shadow-[8px_8px_0_#181513]">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="word-reaction-title"
+        onKeyDown={handleDialogKeyDown}
+        className="w-full max-w-md border-2 border-[#181513] bg-[#fff8ef] p-5 shadow-[8px_8px_0_#181513]"
+      >
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5038]">One-word reaction</p>
-        <h2 className="mt-2 text-2xl font-bold tracking-tight">Sum up {target.participantName} in one word.</h2>
+        <h2 id="word-reaction-title" className="mt-2 text-2xl font-bold tracking-tight">Sum up {target.participantName} in one word.</h2>
         <p className="mt-2 font-mono text-xs leading-relaxed text-[#625c55]">
           Shows up once 5 people agree with you.
         </p>
         <form onSubmit={submit} className="mt-5 space-y-3">
+          <label htmlFor="word-reaction-input" className="font-mono text-xs font-bold uppercase tracking-widest">
+            Your one-word reaction
+          </label>
           <input
-            autoFocus
+            ref={inputRef}
+            id="word-reaction-input"
             value={word}
             onChange={(event) => setWord(event.target.value.replace(/[^a-zA-Z-]/g, '').slice(0, 32))}
             placeholder="e.g. reliable"

@@ -287,7 +287,7 @@ export default function SwipeFlow() {
               data-testid="battle-choice-a"
               onClick={() => handleChoice(activeBattle.participantA.id, 'left')}
               disabled={!!direction}
-              className="min-h-[420px] flex-1 border-2 border-[#181513] bg-[#ff5038] p-7 text-left text-[#181513] transition-transform duration-200 hover:z-10 hover:-translate-y-1 focus-visible:z-10 focus-visible:outline-none md:min-h-[500px] md:border-r-0 md:p-12"
+              className="min-h-[420px] flex-1 border-2 border-[#181513] bg-[#ff5038] p-7 text-left text-[#181513] transition-transform duration-200 hover:z-10 hover:-translate-y-1 focus-visible:z-10 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[#181513] md:min-h-[500px] md:border-r-0 md:p-12"
             >
               <div className="flex items-center justify-between">
                 <span className="border border-[#181513] bg-[#fff8ef] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">A / Challenger</span>
@@ -319,7 +319,7 @@ export default function SwipeFlow() {
               data-testid="battle-choice-b"
               onClick={() => handleChoice(activeBattle.participantB.id, 'right')}
               disabled={!!direction}
-              className="min-h-[420px] flex-1 border-2 border-[#181513] bg-[#d7ff45] p-7 text-left text-[#181513] transition-transform duration-200 hover:z-10 hover:-translate-y-1 focus-visible:z-10 focus-visible:outline-none md:min-h-[500px] md:border-l-0 md:p-12"
+              className="min-h-[420px] flex-1 border-2 border-[#181513] bg-[#d7ff45] p-7 text-left text-[#181513] transition-transform duration-200 hover:z-10 hover:-translate-y-1 focus-visible:z-10 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-[#181513] md:min-h-[500px] md:border-l-0 md:p-12"
             >
               <div className="flex items-center justify-between">
                 <span className="border border-[#181513] bg-[#fff8ef] px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">B / Challenger</span>
