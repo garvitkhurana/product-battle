@@ -11,6 +11,7 @@ import { ArrowLeft, Check, Copy, Link2, Loader2, Share2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
+import { WordReactionPrompt } from '@/components/WordReactionPrompt';
 
 export default function BattleDetail() {
   const [, params] = useRoute('/battles/:slug');
@@ -29,6 +30,7 @@ export default function BattleDetail() {
   const recordSwipe = useRecordPerceptionSwipe();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [alreadyRecorded, setAlreadyRecorded] = useState(false);
+  const [wordPrompt, setWordPrompt] = useState<{ participantId: string; participantName: string } | null>(null);
   const [showEntryCue] = useState(() => {
     const entrySlug = sessionStorage.getItem('yc_battle_entry');
     if (entrySlug !== slug) return false;
@@ -45,6 +47,8 @@ export default function BattleDetail() {
     if (!sessionToken || !battle) return;
 
     setSelectedId(participantId);
+    const selected =
+      battle.participantA.id === participantId ? battle.participantA : battle.participantB;
 
     recordSwipe.mutate(
       {
@@ -56,12 +60,15 @@ export default function BattleDetail() {
         },
       },
       {
-        onSuccess: async () => {
+        onSuccess: async (result) => {
           await refreshSplit();
           toast({
             title: 'Signal recorded',
             description: 'Live community split updated for this comparison.',
           });
+          if ((result.comparisonCount ?? result.tasteDna?.comparisonCount ?? 0) >= 10) {
+            setWordPrompt({ participantId: selected.id, participantName: selected.name });
+          }
         },
         onError: async (err) => {
           setSelectedId(null);
@@ -92,7 +99,10 @@ export default function BattleDetail() {
     );
   };
 
-  const shareUrl = typeof window !== 'undefined' ? window.location.href : `https://ycbattle.com/battles/${slug}`;
+  const shareUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/api/card/battle/${encodeURIComponent(slug)}`
+      : `https://ycbattle.com/api/card/battle/${encodeURIComponent(slug)}`;
 
   const copyLink = async () => {
     try {
@@ -317,6 +327,14 @@ export default function BattleDetail() {
           </div>
         )}
       </div>
+
+      <WordReactionPrompt
+        open={!!wordPrompt}
+        sessionToken={sessionToken}
+        target={wordPrompt}
+        onClose={() => setWordPrompt(null)}
+        onSessionInvalid={invalidateSession}
+      />
     </div>
   );
 }

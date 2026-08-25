@@ -9,6 +9,7 @@ import { Loader2, Activity, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
+import { WordReactionPrompt } from '@/components/WordReactionPrompt';
 import { readExpandedBattles } from '@/lib/expandedQueue';
 
 export default function SwipeFlow() {
@@ -19,6 +20,7 @@ export default function SwipeFlow() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<'left' | 'right' | null>(null);
   const [newlyCompletedBattleIds, setNewlyCompletedBattleIds] = useState<string[]>([]);
+  const [wordPrompt, setWordPrompt] = useState<{ participantId: string; participantName: string } | null>(null);
   const expandedBattles = useMemo(() => readExpandedBattles(sessionToken), [sessionToken]);
   const dnaRequestSession = useRef<string | null>(null);
   
@@ -30,6 +32,7 @@ export default function SwipeFlow() {
     setCurrentIndex(0);
     setNewlyCompletedBattleIds([]);
     setDirection(null);
+    setWordPrompt(null);
     invalidateSession();
   }, [invalidateSession, tasteDna]);
 
@@ -96,6 +99,9 @@ export default function SwipeFlow() {
     if (!sessionToken || !activeBattle) return;
 
     const selectedBattleId = activeBattle.id;
+    const selectedParticipant =
+      activeBattle.participantA.id === participantId ? activeBattle.participantA : activeBattle.participantB;
+    const nextCompletedCount = completedCount + (completedBattleIds.has(selectedBattleId) ? 0 : 1);
     setDirection(dir);
     setNewlyCompletedBattleIds((ids) => ids.includes(selectedBattleId) ? ids : [...ids, selectedBattleId]);
     window.setTimeout(() => setDirection(null), 250);
@@ -108,7 +114,14 @@ export default function SwipeFlow() {
         requestId: crypto.randomUUID()
       }
     }, {
-      onSuccess: () => undefined,
+      onSuccess: (result) => {
+        if ((result.comparisonCount ?? result.tasteDna?.comparisonCount ?? nextCompletedCount) >= 10) {
+          setWordPrompt({
+            participantId: selectedParticipant.id,
+            participantName: selectedParticipant.name,
+          });
+        }
+      },
       onError: (error) => {
         setDirection(null);
         if (isInvalidPerceptionSessionError(error)) {
@@ -329,6 +342,14 @@ export default function SwipeFlow() {
       <footer className="pb-6 text-center font-mono text-xs text-muted-foreground">
         Tap a side to record your perception. Keyboard navigation available via Tab & Enter.
       </footer>
+
+      <WordReactionPrompt
+        open={!!wordPrompt}
+        sessionToken={sessionToken}
+        target={wordPrompt}
+        onClose={() => setWordPrompt(null)}
+        onSessionInvalid={recoverSession}
+      />
     </div>
   );
 }

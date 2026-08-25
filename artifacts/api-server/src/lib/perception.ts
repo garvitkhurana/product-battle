@@ -31,7 +31,23 @@ const MAX_SWIPES_PER_MINUTE = 30;
 const MAX_SESSIONS_PER_MINUTE = 30;
 const MIN_SWIPES_FOR_WORDS = 10;
 const MIN_WORD_COUNT = 5;
-const BLOCKED_WORDS = new Set(["test", "asdf", "qwerty", "fuck", "shit", "bitch", "asshole"]);
+const MAX_WORDS_PER_MINUTE = 8;
+const BLOCKED_WORDS = new Set([
+  "test",
+  "asdf",
+  "qwerty",
+  "fuck",
+  "shit",
+  "bitch",
+  "asshole",
+  "cunt",
+  "dick",
+  "piss",
+  "slut",
+  "whore",
+  "nigger",
+  "faggot",
+]);
 
 function expandedBattleSlugsForCount(comparisonCount: number): Set<string> {
   if (comparisonCount < HOUSEHOLD_BATTLE_SLUGS.length) return new Set();
@@ -491,6 +507,20 @@ export async function createPerceptionWord(input: { sessionToken: string; partic
   if (Number(countRow?.count ?? 0) < MIN_SWIPES_FOR_WORDS) {
     throw new PerceptionError(400, `Add ${MIN_SWIPES_FOR_WORDS} comparisons before adding a one-word reaction.`);
   }
+
+  const recentWords = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(perceptionWordsTable)
+    .where(
+      and(
+        eq(perceptionWordsTable.sessionId, session.id),
+        gt(perceptionWordsTable.createdAt, new Date(Date.now() - 60_000)),
+      ),
+    );
+  if (Number(recentWords[0]?.count ?? 0) >= MAX_WORDS_PER_MINUTE) {
+    throw new PerceptionError(429, "Too many words from this session. Try again shortly.");
+  }
+
   const word = input.word.trim().toLowerCase();
   if (!/^[a-z][a-z-]{1,31}$/.test(word) || BLOCKED_WORDS.has(word)) {
     throw new PerceptionError(400, "Use one useful, family-friendly word.");
@@ -511,34 +541,158 @@ export async function createPerceptionWord(input: { sessionToken: string; partic
   return { word, count: Number(countRowAfter?.count ?? 0) };
 }
 
+function territoryNameForCategory(category: string): string {
+  const value = category.toLowerCase();
+  if (/deliver|food|grocery|quick commerce|cafe|restaurant/.test(value)) return "Delivery Coast";
+  if (/infra|developer|devops|data|cloud|search|paas|api|security|incident/.test(value)) return "Infra Highlands";
+  if (/pay|fintech|bank|card|payroll|broker|remittance|money/.test(value)) return "Payments Bay";
+  if (/health|biotech|telehealth|ehr|patient|nuclear|quantum/.test(value)) return "Health Range";
+  if (/travel|market|retail|consumer|media|community|reading|sneaker|fragrance/.test(value)) return "Consumer Lowlands";
+  if (/hr|recruit|learning|education|workforce/.test(value)) return "People Plains";
+  if (/freight|logistics|fulfill|construction|property|equipment/.test(value)) return "Ops Ridge";
+  return `${category.split(/[/\s]/)[0] || "Signal"} Territory`;
+}
+
 export async function getPerceptionMapPoints() {
-  const launchBattles = await db
+  const activeBattles = await db
     .select()
     .from(battlesTable)
-    .where(and(eq(battlesTable.isLaunch, true), eq(battlesTable.status, "active")));
-  const participantIds = [...new Set(launchBattles.flatMap((battle) => [battle.participantAId, battle.participantBId]))];
+    .where(eq(battlesTable.status, "active"));
+  const participantIds = [...new Set(activeBattles.flatMap((battle) => [battle.participantAId, battle.participantBId]))];
   if (!participantIds.length) return [];
-  const [participants, axes, signals] = await Promise.all([
+
+  const [participants, signals, comparisons, wordRows] = await Promise.all([
     db.select().from(battleParticipantsTable).where(inArray(battleParticipantsTable.id, participantIds)),
-    db.select().from(perceptionAxesTable).where(inArray(perceptionAxesTable.participantId, participantIds)),
     db.select().from(perceptionSignalsTable).where(inArray(perceptionSignalsTable.participantId, participantIds)),
+    db
+      .select({
+        sessionId: perceptionComparisonsTable.sessionId,
+        winnerParticipantId: perceptionComparisonsTable.winnerParticipantId,
+        battleId: perceptionComparisonsTable.battleId,
+      })
+      .from(perceptionComparisonsTable)
+      .limit(8000),
+    db
+      .select({
+        participantId: perceptionWordsTable.participantId,
+        word: perceptionWordsTable.word,
+      })
+      .from(perceptionWordsTable)
+      .where(inArray(perceptionWordsTable.participantId, participantIds))
+      .limit(4000),
   ]);
-  const axisByParticipant = new Map<string, Map<string, number>>();
-  for (const axis of axes) {
-    const values = axisByParticipant.get(axis.participantId) ?? new Map<string, number>();
-    values.set(axis.axisKey, axis.score);
-    axisByParticipant.set(axis.participantId, values);
-  }
+
   const signalByParticipant = new Map(signals.map((signal) => [signal.participantId, signal]));
+  const winsBySession = new Map<string, string[]>();
+  for (const row of comparisons) {
+    if (!participantIds.includes(row.winnerParticipantId)) continue;
+    const list = winsBySession.get(row.sessionId) ?? [];
+    list.push(row.winnerParticipantId);
+    winsBySession.set(row.sessionId, list);
+  }
+
+  const affinity = new Map<string, number>();
+  const bump = (a: string, b: string, weight = 1) => {
+    if (a === b) return;
+    const key = a < b ? `${a}|${b}` : `${b}|${a}`;
+    affinity.set(key, (affinity.get(key) ?? 0) + weight);
+  };
+  for (const winners of winsBySession.values()) {
+    const unique = [...new Set(winners)];
+    for (let i = 0; i < unique.length; i++) {
+      for (let j = i + 1; j < unique.length; j++) bump(unique[i]!, unique[j]!, 2);
+    }
+  }
+  for (const battle of activeBattles) bump(battle.participantAId, battle.participantBId, 1);
+
+  const wordsByParticipant = new Map<string, Set<string>>();
+  for (const row of wordRows) {
+    const set = wordsByParticipant.get(row.participantId) ?? new Set<string>();
+    set.add(row.word);
+    wordsByParticipant.set(row.participantId, set);
+  }
+  for (let i = 0; i < participants.length; i++) {
+    for (let j = i + 1; j < participants.length; j++) {
+      const a = participants[i]!;
+      const b = participants[j]!;
+      const wa = wordsByParticipant.get(a.id);
+      const wb = wordsByParticipant.get(b.id);
+      if (!wa?.size || !wb?.size) continue;
+      let overlap = 0;
+      for (const word of wa) if (wb.has(word)) overlap += 1;
+      if (overlap) bump(a.id, b.id, overlap);
+    }
+  }
+
+  const regionCenters = new Map<string, { x: number; y: number }>();
+  const regions = [...new Set(participants.map((participant) => territoryNameForCategory(participant.category)))].sort();
+  regions.forEach((region, index) => {
+    const angle = (Math.PI * 2 * index) / Math.max(regions.length, 1) - Math.PI / 2;
+    const radius = regions.length <= 2 ? 18 : 42;
+    regionCenters.set(region, { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius });
+  });
+
+  type Node = { id: string; x: number; y: number; region: string };
+  const nodes: Node[] = participants.map((participant, index) => {
+    const region = territoryNameForCategory(participant.category);
+    const center = regionCenters.get(region) ?? { x: 0, y: 0 };
+    const angle = (Math.PI * 2 * index) / Math.max(participants.length, 1);
+    return {
+      id: participant.id,
+      region,
+      x: center.x + Math.cos(angle) * 10,
+      y: center.y + Math.sin(angle) * 10,
+    };
+  });
+  const byId = new Map(nodes.map((node) => [node.id, node]));
+
+  for (let iter = 0; iter < 12; iter++) {
+    for (const [key, weight] of affinity.entries()) {
+      const [aId, bId] = key.split("|");
+      const a = byId.get(aId!);
+      const b = byId.get(bId!);
+      if (!a || !b) continue;
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const pull = Math.min(0.35, weight * 0.04) * (dist > 18 ? 1 : 0.25);
+      const ox = (dx / dist) * pull;
+      const oy = (dy / dist) * pull;
+      a.x += ox;
+      a.y += oy;
+      b.x -= ox;
+      b.y -= oy;
+    }
+    for (const node of nodes) {
+      const center = regionCenters.get(node.region) ?? { x: 0, y: 0 };
+      node.x += (center.x - node.x) * 0.08;
+      node.y += (center.y - node.y) * 0.08;
+    }
+  }
+
   return participants.map((participant) => {
-    const values = axisByParticipant.get(participant.id);
+    const node = byId.get(participant.id)!;
     const signal = signalByParticipant.get(participant.id);
     return {
       participant: toParticipant(participant),
-      x: ((values?.get("infra-consumer") ?? 3) - 3) * 50,
-      y: ((values?.get("challenger-incumbent") ?? 3) - 3) * -50,
-      cluster: participant.category,
+      x: Number(node.x.toFixed(2)),
+      y: Number(node.y.toFixed(2)),
+      cluster: node.region,
       confidence: confidenceFor(signal?.comparisonCount ?? 0),
     };
   });
+}
+
+export async function getMapOgPayload() {
+  const points = await getPerceptionMapPoints();
+  const regionCounts = new Map<string, number>();
+  for (const point of points) {
+    regionCounts.set(point.cluster, (regionCounts.get(point.cluster) ?? 0) + 1);
+  }
+  return {
+    companyCount: points.length,
+    regions: [...regionCounts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, count]) => ({ name, count })),
+  };
 }

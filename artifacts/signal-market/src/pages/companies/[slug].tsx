@@ -1,14 +1,16 @@
 import { Link, useRoute } from 'wouter';
 import { getGetCompanyPerceptionQueryKey, useCreateCompanyClaim, useGetCompanyPerception } from '@workspace/api-client-react';
-import { Loader2, AlertCircle, BarChart3, Database } from 'lucide-react';
-import { type FormEvent, useState } from 'react';
+import { Loader2, AlertCircle, BarChart3, Database, Copy, Share2 } from 'lucide-react';
+import { type FormEvent, useMemo, useState } from 'react';
 import { useAuth } from '@clerk/react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function CompanyProfile() {
   const [, params] = useRoute('/companies/:slug');
   const slug = params?.slug || '';
   const { isSignedIn } = useAuth();
   const createClaim = useCreateCompanyClaim();
+  const { toast } = useToast();
   const [claimOpen, setClaimOpen] = useState(false);
   const [claimMessage, setClaimMessage] = useState('');
   const [claimSubmitted, setClaimSubmitted] = useState(false);
@@ -16,6 +18,16 @@ export default function CompanyProfile() {
   const { data: profile, isLoading, error } = useGetCompanyPerception(slug, {
     query: { enabled: !!slug, queryKey: getGetCompanyPerceptionQueryKey(slug) }
   });
+
+  const shareUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/api/card/company/${encodeURIComponent(slug)}`
+      : `https://ycbattle.com/api/card/company/${encodeURIComponent(slug)}`;
+
+  const maxWordCount = useMemo(
+    () => Math.max(1, ...(profile?.words ?? []).map((word) => word.count)),
+    [profile?.words],
+  );
 
   if (isLoading) {
     return (
@@ -46,9 +58,26 @@ export default function CompanyProfile() {
     );
   };
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({ title: 'Link copied', description: 'Company share card URL is on your clipboard.' });
+    } catch {
+      toast({ title: 'Copy failed', description: 'Copy the URL from your browser bar instead.', variant: 'destructive' });
+    }
+  };
+
+  const shareCompany = () => {
+    const top = (profile.words ?? []).slice(0, 3).map((word) => word.word).join(', ');
+    const text = top
+      ? `${profile.participant.name} on YC Battle — community perception, unverified: ${top}`
+      : `${profile.participant.name} on YC Battle — community perception`;
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(intent, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="flex-1 bg-background text-foreground">
-      {/* Profile Header */}
       <header className="border-b border-border bg-card relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-5">
            <div className="w-full h-full" style={{ backgroundImage: 'linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 10px 10px' }} />
@@ -73,12 +102,28 @@ export default function CompanyProfile() {
               </p>
             </div>
             
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
               {profile.participant.websiteUrl && (
                 <a href={profile.participant.websiteUrl} target="_blank" rel="noreferrer" className="inline-flex px-6 py-2 border border-foreground font-bold text-sm hover:bg-foreground hover:text-background transition-colors">
                   External Domain
                 </a>
               )}
+              <button
+                type="button"
+                onClick={copyLink}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-foreground font-bold text-sm hover:bg-[#d7ff45] transition-colors"
+              >
+                <Copy className="h-4 w-4" />
+                Copy link
+              </button>
+              <button
+                type="button"
+                onClick={shareCompany}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-foreground text-background font-bold text-sm hover:bg-primary transition-colors"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </button>
             </div>
           </div>
           
@@ -102,10 +147,7 @@ export default function CompanyProfile() {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="container mx-auto px-4 py-16 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
-        
-        {/* Left Column */}
         <div className="space-y-16">
           <section className="space-y-6">
             <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -116,7 +158,37 @@ export default function CompanyProfile() {
             </div>
           </section>
 
-          {/* Perception Axes */}
+          <section className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold">Word cloud</h2>
+              <p className="mt-2 font-mono text-xs text-muted-foreground">
+                Community perception, unverified. Words appear only after 5+ independent submissions.
+              </p>
+            </div>
+            {!profile.words?.length ? (
+              <div className="border border-dashed border-border bg-muted/20 p-8 text-center font-mono text-sm text-muted-foreground">
+                Not enough signals yet — check back soon.
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-end gap-x-4 gap-y-3 border border-border bg-card p-6 md:p-8">
+                {profile.words.map((entry) => {
+                  const weight = entry.count / maxWordCount;
+                  const fontSize = 0.85 + weight * 1.9;
+                  return (
+                    <span
+                      key={entry.word}
+                      title={`${entry.count} independent submissions`}
+                      className="font-bold tracking-tight text-[#181513] transition-transform hover:-translate-y-0.5"
+                      style={{ fontSize: `${fontSize}rem`, opacity: 0.55 + weight * 0.45 }}
+                    >
+                      {entry.word}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
           <section className="space-y-8">
             <h2 className="text-2xl font-bold flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-primary" /> Sentiment Vectors
@@ -140,7 +212,6 @@ export default function CompanyProfile() {
                     </div>
                     <div className="h-4 w-full bg-muted relative border border-border/50">
                       <div className="absolute top-0 bottom-0 left-0 bg-primary/20 border-r border-primary" style={{ width: `${(axis.score/5)*100}%` }} />
-                      {/* Mark the mean/neutral point */}
                       <div className="absolute top-0 bottom-0 left-[50%] w-px bg-foreground/20" />
                     </div>
                   </div>
@@ -150,26 +221,7 @@ export default function CompanyProfile() {
           </section>
         </div>
 
-        {/* Right Column / Sidebar */}
         <div className="space-y-8">
-          {/* Associated Lexicon */}
-          <div className="border border-border bg-card p-6 space-y-6">
-            <h3 className="font-bold uppercase tracking-widest text-sm">Associated Lexicon</h3>
-            {profile.confidence < 30 ? (
-              <p className="font-mono text-xs text-muted-foreground">Awaiting volume threshold.</p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {profile.words?.map((w, i) => (
-                  <span key={i} className="px-2 py-1 bg-muted/50 border border-border font-mono text-xs text-muted-foreground hover:bg-foreground hover:text-background transition-colors cursor-default" title={`Count: ${w.count}`}>
-                    {w.word}
-                  </span>
-                ))}
-                {!profile.words?.length && <span className="font-mono text-xs text-muted-foreground">No recurring patterns extracted.</span>}
-              </div>
-            )}
-          </div>
-
-          {/* Affinities */}
           <div className="border border-border bg-card p-6 space-y-6">
             <h3 className="font-bold uppercase tracking-widest text-sm">Nearest Neighbors</h3>
             {profile.confidence < 40 ? (
@@ -186,7 +238,6 @@ export default function CompanyProfile() {
             )}
           </div>
           
-          {/* Claim Box */}
           <div className="p-6 bg-muted/30 border border-border space-y-4">
             <h3 className="font-bold text-sm uppercase tracking-widest">Founder Access</h3>
             <p className="font-mono text-xs text-muted-foreground leading-relaxed">
