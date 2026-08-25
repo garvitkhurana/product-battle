@@ -39,4 +39,4 @@ pnpm --filter @workspace/api-spec run codegen
 
 ## Contact
 
-Footer uses `hello@ycbattle.com` (mailbox setup is a separate ops task).
+`hello@ycbattle.com`
