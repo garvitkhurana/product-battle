@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useRoute } from 'wouter';
+import { useQueryClient } from '@tanstack/react-query';
 import { getGetBattleQueryKey, useGetBattle, useRecordPerceptionSwipe } from '@workspace/api-client-react';
 import {
   isInvalidPerceptionSessionError,
   isRecordedPerceptionSwipeError,
   useSessionToken,
 } from '@/lib/session';
-import { ArrowLeft, Loader2, Check } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Link2, Loader2, Share2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
@@ -16,12 +17,13 @@ export default function BattleDetail() {
   const slug = params?.slug || '';
   const { sessionToken, invalidateSession } = useSessionToken();
   const { toast } = useToast();
-  
-  const { data: battle, isLoading, error } = useGetBattle(slug, {
+  const queryClient = useQueryClient();
+
+  const { data: battle, isLoading, error, refetch } = useGetBattle(slug, {
     query: {
       enabled: !!slug,
       queryKey: getGetBattleQueryKey(slug),
-    }
+    },
   });
 
   const recordSwipe = useRecordPerceptionSwipe();
@@ -34,50 +36,78 @@ export default function BattleDetail() {
     return true;
   });
 
+  const refreshSplit = async () => {
+    await queryClient.invalidateQueries({ queryKey: getGetBattleQueryKey(slug) });
+    await refetch();
+  };
+
   const handleChoice = (participantId: string) => {
     if (!sessionToken || !battle) return;
-    
+
     setSelectedId(participantId);
-    
-    recordSwipe.mutate({
-      data: {
-        sessionToken,
-        battleId: battle.id,
-        winnerParticipantId: participantId,
-        requestId: crypto.randomUUID()
-      }
-    }, {
-      onSuccess: () => {
-        toast({
-          title: "Signal Recorded",
-          description: "Your preference has updated the perception engine.",
-        });
+
+    recordSwipe.mutate(
+      {
+        data: {
+          sessionToken,
+          battleId: battle.id,
+          winnerParticipantId: participantId,
+          requestId: crypto.randomUUID(),
+        },
       },
-      onError: (error) => {
-        setSelectedId(null);
-        if (isInvalidPerceptionSessionError(error)) {
-          invalidateSession();
+      {
+        onSuccess: async () => {
+          await refreshSplit();
           toast({
-            title: "Starting a fresh session",
-            description: "Your previous private session is no longer available. Please choose again.",
+            title: 'Signal recorded',
+            description: 'Live community split updated for this comparison.',
           });
-          return;
-        }
-        if (isRecordedPerceptionSwipeError(error)) {
-          setAlreadyRecorded(true);
+        },
+        onError: async (err) => {
+          setSelectedId(null);
+          if (isInvalidPerceptionSessionError(err)) {
+            invalidateSession();
+            toast({
+              title: 'Starting a fresh session',
+              description: 'Your previous private session is no longer available. Please choose again.',
+            });
+            return;
+          }
+          if (isRecordedPerceptionSwipeError(err)) {
+            setAlreadyRecorded(true);
+            await refreshSplit();
+            toast({
+              title: 'Choice already recorded',
+              description: 'You already signaled this comparison. Here is the live community split.',
+            });
+            return;
+          }
           toast({
-            title: "Choice already recorded",
-            description: "You have already added a private signal for this comparison in this browser session.",
+            title: 'Error',
+            description: 'Could not record choice. Please try again.',
+            variant: 'destructive',
           });
-          return;
-        }
-        toast({
-          title: "Error",
-          description: "Could not record choice. Please try again.",
-          variant: "destructive"
-        });
-      }
-    });
+        },
+      },
+    );
+  };
+
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : `https://ycbattle.com/battles/${slug}`;
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({ title: 'Link copied', description: 'Comparison URL is on your clipboard.' });
+    } catch {
+      toast({ title: 'Copy failed', description: 'Copy the URL from your browser bar instead.', variant: 'destructive' });
+    }
+  };
+
+  const shareComparison = () => {
+    if (!battle) return;
+    const text = `${battle.participantA.name} vs ${battle.participantB.name} — who earns your signal?`;
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+    window.open(intent, '_blank', 'noopener,noreferrer');
   };
 
   if (isLoading) {
@@ -104,18 +134,45 @@ export default function BattleDetail() {
   }
 
   const isComplete = selectedId !== null || alreadyRecorded;
+  const aPct = battle.participantAPercentage;
+  const bPct = battle.participantBPercentage;
+  const leader =
+    aPct === bPct
+      ? null
+      : aPct > bPct
+        ? battle.participantA
+        : battle.participantB;
+  const leaderPct = Math.max(aPct, bPct);
 
   return (
     <div className="flex-1 bg-[#f6e5d2] px-4 py-6 md:px-8 md:py-10">
       <div className="mx-auto max-w-7xl">
-        <header className="flex items-center justify-between pb-6">
+        <header className="flex flex-wrap items-center justify-between gap-3 pb-6">
           <Link href="/battles" className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-[0.14em] text-[#625c55] transition-colors hover:text-[#181513]">
             <ArrowLeft className="h-4 w-4" />
             Back to board
           </Link>
-          <span className="border border-[#181513] bg-[#fff8ef] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
-            {battle.category}
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={copyLink}
+              className="inline-flex items-center gap-2 border border-[#181513] bg-[#fff8ef] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] hover:bg-[#d7ff45]"
+            >
+              <Copy className="h-3.5 w-3.5" />
+              Copy link
+            </button>
+            <button
+              type="button"
+              onClick={shareComparison}
+              className="inline-flex items-center gap-2 border border-[#181513] bg-[#181513] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#fff8ef] hover:bg-[#ff5038]"
+            >
+              <Share2 className="h-3.5 w-3.5" />
+              Share
+            </button>
+            <span className="border border-[#181513] bg-[#fff8ef] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
+              {battle.category}
+            </span>
+          </div>
         </header>
 
         <section className={showEntryCue ? 'battle-arena-entry' : ''}>
@@ -137,7 +194,7 @@ export default function BattleDetail() {
                 type="button"
                 data-testid="battle-choice-a"
                 onClick={() => !isComplete && handleChoice(battle.participantA.id)}
-                disabled={isComplete}
+                disabled={isComplete || recordSwipe.isPending}
                 className={`relative min-h-[390px] bg-[#ff5038] p-7 text-left text-[#181513] transition-all duration-200 md:min-h-[500px] md:p-10 ${
                   selectedId === battle.participantA.id
                     ? 'z-10 outline outline-4 outline-offset-[-4px] outline-[#181513]'
@@ -156,6 +213,9 @@ export default function BattleDetail() {
                   <CompanyMark participant={battle.participantA} tone="neutral" size="lg" />
                   <h2 className="text-5xl font-bold leading-[0.92] tracking-[-0.07em] md:text-7xl">{battle.participantA.name}</h2>
                   <p className="font-mono text-sm leading-relaxed md:text-base">{battle.participantA.shortDescription}</p>
+                  {isComplete && (
+                    <p className="font-mono text-4xl font-bold tracking-[-0.08em] md:text-5xl">{aPct}%</p>
+                  )}
                 </div>
                 <div className="absolute bottom-7 left-7 right-7 border-t border-[#181513]/50 pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] md:bottom-10 md:left-10 md:right-10">
                   {isComplete
@@ -176,7 +236,7 @@ export default function BattleDetail() {
                 type="button"
                 data-testid="battle-choice-b"
                 onClick={() => !isComplete && handleChoice(battle.participantB.id)}
-                disabled={isComplete}
+                disabled={isComplete || recordSwipe.isPending}
                 className={`relative min-h-[390px] bg-[#d7ff45] p-7 text-left text-[#181513] transition-all duration-200 md:min-h-[500px] md:p-10 ${
                   selectedId === battle.participantB.id
                     ? 'z-10 outline outline-4 outline-offset-[-4px] outline-[#181513]'
@@ -195,6 +255,9 @@ export default function BattleDetail() {
                   <CompanyMark participant={battle.participantB} tone="neutral" size="lg" />
                   <h2 className="text-5xl font-bold leading-[0.92] tracking-[-0.07em] md:text-7xl">{battle.participantB.name}</h2>
                   <p className="font-mono text-sm leading-relaxed md:text-base">{battle.participantB.shortDescription}</p>
+                  {isComplete && (
+                    <p className="font-mono text-4xl font-bold tracking-[-0.08em] md:text-5xl">{bPct}%</p>
+                  )}
                 </div>
                 <div className="absolute bottom-7 left-7 right-7 border-t border-[#181513]/50 pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] md:bottom-10 md:left-10 md:right-10">
                   {isComplete
@@ -211,15 +274,45 @@ export default function BattleDetail() {
         </section>
 
         {isComplete && (
-          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-2 border-[#181513] bg-[#181513] p-5 text-[#fff8ef] sm:flex-row">
-            <p className="font-mono text-xs">
-              {alreadyRecorded
-                ? 'A signal for this comparison is already recorded in this browser session.'
-                : 'Signal recorded. Continue to add context or inspect your private profile.'}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/swipe" className="bg-[#d7ff45] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-[#181513]">Continuous mode</Link>
-              <Link href="/dna" className="border border-[#fff8ef] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Taste DNA</Link>
+          <div className="mt-6 space-y-4">
+            <div className="border-2 border-[#181513] bg-[#fff8ef] p-5 shadow-[6px_6px_0_#181513]">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5038]">Live community split</p>
+              <p className="mt-2 text-2xl font-bold tracking-[-0.04em] md:text-3xl">
+                {battle.comparisonCount === 0
+                  ? 'You are first — more signals will sharpen this split.'
+                  : leader
+                    ? `${leaderPct}% picked ${leader.name}`
+                    : `Tied at ${aPct}% · ${battle.comparisonCount} signals`}
+              </p>
+              <div className="mt-4 flex h-3 overflow-hidden border-2 border-[#181513]">
+                <div className="bg-[#ff5038]" style={{ width: `${aPct}%` }} />
+                <div className="bg-[#d7ff45]" style={{ width: `${bPct}%` }} />
+              </div>
+              <div className="mt-3 flex justify-between font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-[#625c55]">
+                <span>{battle.participantA.name} {aPct}%</span>
+                <span>{battle.comparisonCount} total</span>
+                <span>{battle.participantB.name} {bPct}%</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center justify-between gap-4 border-2 border-[#181513] bg-[#181513] p-5 text-[#fff8ef] sm:flex-row">
+              <p className="font-mono text-xs">
+                {alreadyRecorded
+                  ? 'A signal for this comparison is already recorded in this browser session.'
+                  : 'Signal recorded. Continue to add context or inspect your private profile.'}
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={copyLink}
+                  className="inline-flex items-center gap-2 border border-[#fff8ef] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest"
+                >
+                  <Link2 className="h-3.5 w-3.5" />
+                  Copy link
+                </button>
+                <Link href="/swipe" className="bg-[#d7ff45] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-[#181513]">Continuous mode</Link>
+                <Link href="/dna" className="border border-[#fff8ef] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Taste DNA</Link>
+              </div>
             </div>
           </div>
         )}

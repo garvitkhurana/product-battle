@@ -81,6 +81,26 @@ function toAxis(key: string, score: number, confidence: number) {
   return { key, label: AXIS_LABELS[key] ?? key, score, confidence };
 }
 
+const ARCHETYPE_BY_AXIS: Record<string, { low: string; high: string }> = {
+  "infra-consumer": { low: "THE INFRASTRUCTURE MAXIMALIST", high: "THE CONSUMER CONTRARIAN" },
+  "challenger-incumbent": { low: "THE CHALLENGER BETTOR", high: "THE INCUMBENT REALIST" },
+  "craft-scale": { low: "THE CRAFT PURIST", high: "THE SCALE OPERATOR" },
+  "batch-era": { low: "THE EARLY-BATCH HISTORIAN", high: "THE NEW-BATCH SCOUT" },
+  "regulated-software": { low: "THE REGULATED BUILDER", high: "THE PURE-SOFTWARE BETTOR" },
+};
+
+function archetypeFor(axes: Array<{ key: string; score: number }>) {
+  const strongest = [...axes].sort((a, b) => Math.abs(b.score - 3) - Math.abs(a.score - 3))[0];
+  if (!strongest || Math.abs(strongest.score - 3) < 0.75) {
+    return { archetype: "THE UNSETTLED SIGNAL", rarityPercent: 40 };
+  }
+  const names = ARCHETYPE_BY_AXIS[strongest.key];
+  const archetype = strongest.score <= 2 ? names?.low ?? "THE SIGNAL SCOUT" : names?.high ?? "THE SIGNAL SCOUT";
+  const extremity = Math.abs(strongest.score - 3);
+  const rarityPercent = Math.max(3, Math.min(45, Math.round(48 - extremity * 18)));
+  return { archetype, rarityPercent };
+}
+
 function toParticipant(row: typeof battleParticipantsTable.$inferSelect) {
   return {
     id: row.id,
@@ -216,6 +236,8 @@ export async function getTasteDnaForSession(sessionId: string) {
       confidence,
       canShare: false,
       headline: "Your taste DNA is still taking shape.",
+      archetype: null,
+      rarityPercent: null,
       axes: AXIS_KEYS.map((key) => toAxis(key, 3, confidence)),
       closestCompanies: [],
       completedBattleIds: [],
@@ -234,38 +256,81 @@ export async function getTasteDnaForSession(sessionId: string) {
     return toAxis(key, Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length), confidence);
   });
   const strongest = [...axes].sort((a, b) => Math.abs(b.score - 3) - Math.abs(a.score - 3))[0];
+  const { archetype, rarityPercent } = archetypeFor(axes);
   const headline =
     comparisonCount < 5
       ? "Keep swiping—your signal is beginning to emerge."
       : `You lean ${strongest.score <= 2 ? "toward" : "away from"} ${strongest.label.split(" ↔ ")[0].toLowerCase()}.`;
 
-  const [participants, allAxisRows] = await Promise.all([
-    db.select().from(battleParticipantsTable),
-    db.select().from(perceptionAxesTable),
-  ]);
-  const axisByParticipant = new Map<string, Map<string, number>>();
-  for (const axis of allAxisRows) {
-    const values = axisByParticipant.get(axis.participantId) ?? new Map<string, number>();
-    values.set(axis.axisKey, axis.score);
-    axisByParticipant.set(axis.participantId, values);
+  // Exclude every company the user already faced (winner or loser) so aligned
+  // entities are not a mirror of their own clicks.
+  const facedBattleIds = events.map((event) => event.battleId);
+  const facedBattles = facedBattleIds.length
+    ? await db.select().from(battlesTable).where(inArray(battlesTable.id, facedBattleIds))
+    : [];
+  const facedParticipantIds = new Set<string>();
+  for (const battle of facedBattles) {
+    facedParticipantIds.add(battle.participantAId);
+    facedParticipantIds.add(battle.participantBId);
   }
-  const selected = new Set(winnerIds);
-  const closestCompanies = participants
-    .filter((participant) => !selected.has(participant.id))
-    .map((participant) => {
-      const values = axisByParticipant.get(participant.id);
-      const distance = axes.reduce((total, axis) => total + Math.abs(axis.score - (values?.get(axis.key) ?? 3)), 0);
-      return { name: participant.name, distance };
+
+  // Prefer companies that similar sessions also picked (co-voting), when volume exists.
+  const otherWins = await db
+    .select({
+      winnerParticipantId: perceptionComparisonsTable.winnerParticipantId,
+      sessionId: perceptionComparisonsTable.sessionId,
     })
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 3)
-    .map((item) => item.name);
+    .from(perceptionComparisonsTable)
+    .where(sql`${perceptionComparisonsTable.sessionId} <> ${sessionId}`)
+    .limit(2000);
+
+  const winCounts = new Map<string, number>();
+  for (const row of otherWins) {
+    if (facedParticipantIds.has(row.winnerParticipantId)) continue;
+    winCounts.set(row.winnerParticipantId, (winCounts.get(row.winnerParticipantId) ?? 0) + 1);
+  }
+
+  let closestCompanies: string[] = [];
+  if (comparisonCount >= 8 && winCounts.size > 0) {
+    const rankedIds = [...winCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([id]) => id);
+    if (rankedIds.length) {
+      const rows = await db.select().from(battleParticipantsTable).where(inArray(battleParticipantsTable.id, rankedIds));
+      const byId = new Map(rows.map((row) => [row.id, row.name]));
+      closestCompanies = rankedIds.map((id) => byId.get(id)).filter((name): name is string => Boolean(name));
+    }
+  }
+
+  // Fallback only when there is still no co-vote signal: axis-neighbors the user never saw.
+  if (!closestCompanies.length && comparisonCount >= 12) {
+    const [participants, allAxisRows] = await Promise.all([
+      db.select().from(battleParticipantsTable),
+      db.select().from(perceptionAxesTable),
+    ]);
+    const axisByParticipant = new Map<string, Map<string, number>>();
+    for (const axis of allAxisRows) {
+      const values = axisByParticipant.get(axis.participantId) ?? new Map<string, number>();
+      values.set(axis.axisKey, axis.score);
+      axisByParticipant.set(axis.participantId, values);
+    }
+    closestCompanies = participants
+      .filter((participant) => !facedParticipantIds.has(participant.id))
+      .map((participant) => {
+        const values = axisByParticipant.get(participant.id);
+        const distance = axes.reduce((total, axis) => total + Math.abs(axis.score - (values?.get(axis.key) ?? 3)), 0);
+        return { name: participant.name, distance };
+      })
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 3)
+      .map((item) => item.name);
+  }
 
   return {
     comparisonCount,
     confidence,
-    canShare: comparisonCount >= 20,
+    canShare: comparisonCount >= 5,
     headline,
+    archetype,
+    rarityPercent,
     axes,
     closestCompanies,
     completedBattleIds: events.map((event) => event.battleId),

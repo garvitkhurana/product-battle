@@ -93,12 +93,12 @@ export default function SwipeFlow() {
   const currentPosition = battleCount ? Math.min(completedCount + 1, battleCount) : 0;
 
   const handleChoice = (participantId: string, dir: 'left' | 'right') => {
-    if (!sessionToken || !activeBattle || recordSwipe.isPending) return;
+    if (!sessionToken || !activeBattle) return;
 
     const selectedBattleId = activeBattle.id;
     setDirection(dir);
     setNewlyCompletedBattleIds((ids) => ids.includes(selectedBattleId) ? ids : [...ids, selectedBattleId]);
-    window.setTimeout(() => setDirection(null), 180);
+    window.setTimeout(() => setDirection(null), 250);
     
     recordSwipe.mutate({
       data: {
@@ -249,21 +249,21 @@ export default function SwipeFlow() {
           <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#ff5038]">Signal queue</p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight">Continuous Mode</h1>
           <p className="mt-2 font-mono text-xs text-[#625c55]">
-            {battleCount} comparisons in this private queue · {remainingCount - 1} after this choice
+            {currentPosition} of {battleCount} · {Math.max(0, remainingCount - 1)} remaining
           </p>
         </div>
         <div className="min-w-36 border-2 border-[#181513] bg-[#fff8ef] px-4 py-3 font-mono text-left">
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#625c55]">Current comparison</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#625c55]">Queue</p>
           <p className="mt-1 text-lg font-bold">{currentPosition} <span className="text-sm text-[#625c55]">of {battleCount}</span></p>
-          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#ff5038]">{remainingCount} in queue</p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[#ff5038]">{Math.max(0, remainingCount - 1)} remaining</p>
         </div>
       </header>
 
       <div className="flex-1 flex items-center justify-center px-5 py-8 md:px-8">
         <div className="relative min-h-[842px] w-full max-w-6xl perspective-[1000px] md:min-h-[504px]">
-          <div className={`absolute inset-0 flex flex-col md:flex-row transition-transform duration-500 ease-[cubic-bezier(0.2,0.8,0.2,1)]
-            ${direction === 'left' ? '-translate-x-[120%] rotate-[-10deg] opacity-0' : ''}
-            ${direction === 'right' ? 'translate-x-[120%] rotate-[10deg] opacity-0' : ''}
+          <div className={`absolute inset-0 flex flex-col md:flex-row transition-all duration-[250ms] ease-[cubic-bezier(0.2,0.8,0.2,1)]
+            ${direction === 'left' ? '-translate-x-[120%] rotate-[-8deg] opacity-0' : ''}
+            ${direction === 'right' ? 'translate-x-[120%] rotate-[8deg] opacity-0' : ''}
           `}>
             {/* Left Choice */}
             <button

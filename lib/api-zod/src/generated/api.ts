@@ -465,6 +465,8 @@ export const RecordPerceptionSwipeResponse = zod.object({
   "confidence": zod.int().min(recordPerceptionSwipeResponseTasteDnaConfidenceMin).max(recordPerceptionSwipeResponseTasteDnaConfidenceMax),
   "canShare": zod.boolean(),
   "headline": zod.string(),
+  "archetype": zod.string().nullish(),
+  "rarityPercent": zod.int().min(0).max(100).nullish(),
   "axes": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),
@@ -503,6 +505,8 @@ export const GetTasteDnaResponse = zod.object({
   "confidence": zod.int().min(getTasteDnaResponseConfidenceMin).max(getTasteDnaResponseConfidenceMax),
   "canShare": zod.boolean(),
   "headline": zod.string(),
+  "archetype": zod.string().nullish(),
+  "rarityPercent": zod.int().min(0).max(100).nullish(),
   "axes": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),

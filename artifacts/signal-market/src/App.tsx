@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ToastProvider, Toaster } from '@/hooks/use-toast';
@@ -104,6 +104,7 @@ function Router() {
           
           <Route path="/companies/:slug" component={CompanyProfile} />
           <Route path="/map" component={EcosystemMap} />
+          <Route path="/ecosystem" component={EcosystemRedirect} />
           
           <Route path="/submit" component={Submit} />
           <Route path="/transactions" component={Transactions} />
@@ -117,6 +118,14 @@ function Router() {
       </RoutedErrorBoundary>
     </Layout>
   );
+}
+
+function EcosystemRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation('/map');
+  }, [setLocation]);
+  return null;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {

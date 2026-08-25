@@ -16,6 +16,14 @@ export interface TasteDna {
   confidence: number;
   canShare: boolean;
   headline: string;
+  /** @nullable */
+  archetype?: string | null;
+  /**
+     * @minimum 0
+     * @maximum 100
+     * @nullable
+     */
+  rarityPercent?: number | null;
   axes: PerceptionAxis[];
   closestCompanies: string[];
   completedBattleIds: string[];

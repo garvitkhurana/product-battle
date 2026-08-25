@@ -1,12 +1,14 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useGetTasteDna } from '@workspace/api-client-react';
 import { isInvalidPerceptionSessionError, useSessionToken } from '@/lib/session';
 import { Loader2, Fingerprint, Lock, Share2 } from 'lucide-react';
 import { Link } from 'wouter';
+import { useToast } from '@/hooks/use-toast';
 
 export default function TasteDna() {
   const { sessionToken, sessionError, isCreatingSession, invalidateSession, retrySession } = useSessionToken();
-  
+  const { toast } = useToast();
+
   const tasteDna = useGetTasteDna();
   const dnaRequestSession = useRef<string | null>(null);
   const recoverSession = useCallback(() => {
@@ -50,6 +52,35 @@ export default function TasteDna() {
   }, [loadTasteDna, retrySession, sessionError, tasteDna]);
 
   const { data: dna, isPending: isLoading, error } = tasteDna;
+
+  const meaningfulAxes = useMemo(
+    () => (dna?.axes ?? []).filter((axis) => Math.abs(axis.score - 3) >= 0.75 && axis.confidence >= 25),
+    [dna?.axes],
+  );
+  const topAxis = meaningfulAxes[0] ?? dna?.axes?.slice().sort((a, b) => Math.abs(b.score - 3) - Math.abs(a.score - 3))[0];
+
+  const shareDna = () => {
+    if (!dna) return;
+    const archetype = dna.archetype || 'TASTE DNA';
+    const rarity = dna.rarityPercent != null ? ` · rarest ${dna.rarityPercent}%` : '';
+    const axisBit = topAxis ? ` · ${topAxis.label}` : '';
+    const text = `${archetype}${rarity}${axisBit}\n${dna.headline}\nConfidence ${dna.confidence}%`;
+    const url = typeof window !== 'undefined' ? `${window.location.origin}/dna` : 'https://ycbattle.com/dna';
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(intent, '_blank', 'noopener,noreferrer');
+  };
+
+  const copyDna = async () => {
+    if (!dna) return;
+    const archetype = dna.archetype || 'Taste DNA';
+    const rarity = dna.rarityPercent != null ? ` (rarest ${dna.rarityPercent}%)` : '';
+    try {
+      await navigator.clipboard.writeText(`${archetype}${rarity}: ${dna.headline} [Confidence: ${dna.confidence}%]`);
+      toast({ title: 'Copied', description: 'Taste DNA blurb is on your clipboard.' });
+    } catch {
+      toast({ title: 'Copy failed', description: 'Try the share button instead.', variant: 'destructive' });
+    }
+  };
 
   if ((!sessionToken && !sessionError) || isCreatingSession || isLoading) {
     return (
@@ -122,69 +153,83 @@ export default function TasteDna() {
         </div>
       ) : (
         <div className="space-y-12">
-          {/* Headline Report */}
           <div className="bg-[#fff8ef] border-2 border-[#181513] p-8 md:p-12 relative overflow-hidden shadow-[8px_8px_0_#181513]">
             <div className="absolute top-0 right-0 border-b-2 border-l-2 border-[#181513] bg-[#d7ff45] p-4 font-mono text-xs font-bold text-[#181513] flex flex-col items-end">
               <span>CONFIDENCE</span>
               <span className="text-[#181513] text-lg">{dna.confidence}%</span>
             </div>
-            
+
+            {dna.archetype && (
+              <p className="mb-3 max-w-[70%] font-mono text-xs font-bold uppercase tracking-[0.2em] text-[#ff5038]">
+                {dna.archetype}
+                {dna.rarityPercent != null ? ` · rarest ${dna.rarityPercent}%` : ''}
+              </p>
+            )}
+
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight pr-24 leading-tight mb-8">
-              {dna.headline || "Your preferences skew heavily towards contrarian technical infrastructure."}
+              {dna.headline || 'Your preferences skew heavily towards contrarian technical infrastructure.'}
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t-2 border-[#181513]">
-              {/* Axes */}
               <div className="space-y-6">
                 <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-[#625c55] mb-4">Dominant Axes</h3>
-                {dna.axes?.map((axis) => (
-                  <div key={axis.key} className="space-y-2">
-                    <div className="flex justify-between font-mono text-sm">
-                      <span className="font-bold">{axis.label}</span>
-                      <span className="text-[#625c55]">{axis.score.toFixed(1)}</span>
+                {(dna.axes ?? []).map((axis) => {
+                  const meaningful = Math.abs(axis.score - 3) >= 0.75 && axis.confidence >= 25;
+                  return (
+                    <div key={axis.key} className={`space-y-2 ${meaningful ? '' : 'opacity-35'}`}>
+                      <div className="flex justify-between font-mono text-sm">
+                        <span className="font-bold">{axis.label}</span>
+                        <span className="text-[#625c55]">
+                          {meaningful ? axis.score.toFixed(1) : 'no signal yet'}
+                        </span>
+                      </div>
+                      <div className="h-2 w-full bg-[#e8d5c1] relative">
+                        <div
+                          className={`absolute top-0 bottom-0 left-0 ${meaningful ? 'bg-[#ff5038]' : 'bg-[#181513]/20'}`}
+                          style={{ width: `${(axis.score / 5) * 100}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-2 w-full bg-[#e8d5c1] relative">
-                      <div 
-                        className="absolute top-0 bottom-0 left-0 bg-[#ff5038]"
-                        style={{ width: `${(axis.score / 5) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-              
-              {/* Closest Matches */}
+
               <div>
                 <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-[#625c55] mb-4">Aligned Entities</h3>
                 <ul className="space-y-3">
                   {dna.closestCompanies?.map((company, i) => (
                     <li key={i} className="flex items-center gap-3 p-3 bg-[#d7ff45] border border-[#181513] font-bold">
-                      <span className="font-mono text-xs text-[#625c55]">0{i+1}</span>
+                      <span className="font-mono text-xs text-[#625c55]">0{i + 1}</span>
                       {company}
                     </li>
                   ))}
                   {!dna.closestCompanies?.length && (
-                    <li className="text-sm font-mono text-[#625c55]">No strong alignments detected yet.</li>
+                    <li className="text-sm font-mono text-[#625c55]">
+                      Not enough community co-signal yet. Keep comparing — alignments unlock from people with a similar profile, not from your own clicks.
+                    </li>
                   )}
                 </ul>
               </div>
             </div>
           </div>
-          
-          {/* Share Action */}
-          {dna.canShare && (
-            <div className="flex justify-center">
-              <button 
-                onClick={() => {
-                  navigator.clipboard.writeText(`My Taste DNA: ${dna.headline} [Confidence: ${dna.confidence}%]`);
-                }}
-                className="flex items-center gap-2 px-6 py-3 border-2 border-[#181513] bg-[#fff8ef] font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#d7ff45] transition-colors"
-              >
-                <Share2 className="w-4 h-4" />
-                Copy Raw Export
-              </button>
-            </div>
-          )}
+
+          <div className="flex flex-wrap justify-center gap-3">
+            <button
+              type="button"
+              onClick={shareDna}
+              className="flex items-center gap-2 px-6 py-3 border-2 border-[#181513] bg-[#181513] text-[#fff8ef] font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#ff5038] transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+              Share your Taste DNA
+            </button>
+            <button
+              type="button"
+              onClick={copyDna}
+              className="flex items-center gap-2 px-6 py-3 border-2 border-[#181513] bg-[#fff8ef] font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#d7ff45] transition-colors"
+            >
+              Copy blurb
+            </button>
+          </div>
         </div>
       )}
       </div>
