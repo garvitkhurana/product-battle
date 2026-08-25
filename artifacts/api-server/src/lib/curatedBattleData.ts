@@ -747,33 +747,6 @@ export const curatedCompanies: CuratedCompany[] = [
   },
   {
     "batch": "Summer 2012",
-    "id": 445,
-    "industries": [
-      "B2B"
-    ],
-    "industry": "B2B",
-    "is_hiring": false,
-    "launched_at": 1336096997,
-    "location": "San Francisco, CA, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/56dfbb621883fb62890bd66d7bd967984b974c12.png",
-    "long_description": "Biotechnology is rewriting life as we know it, from the medicines we take, to the crops we grow, the materials we wear, and the household goods that we rely on every day. Biotech R&D is radically transforming our world, but to move at the new speed of science, scientists need better technology.\r\n\r\nBenchling’s mission is to unlock the power of biotechnology. The world’s biotech leaders and innovators use our R&D Cloud to power the development of breakthrough products and accelerate time to milestone and market.",
-    "name": "Benchling",
-    "one_liner": "Unlocking the power of biotech with modern software for modern science",
-    "slug": "benchling",
-    "status": "Active",
-    "subindustry": "B2B",
-    "tags": [
-      "SaaS",
-      "B2B",
-      "Biotech"
-    ],
-    "team_size": 750,
-    "top_company": true,
-    "website": "http://benchling.com",
-    "yc_url": "https://www.ycombinator.com/companies/benchling"
-  },
-  {
-    "batch": "Summer 2012",
     "id": 468,
     "industries": [
       "Consumer",
@@ -799,35 +772,6 @@ export const curatedCompanies: CuratedCompany[] = [
     "top_company": true,
     "website": "https://www.instacart.com",
     "yc_url": "https://www.ycombinator.com/companies/instacart"
-  },
-  {
-    "batch": "Winter 2013",
-    "id": 482,
-    "industries": [
-      "B2B",
-      "Infrastructure"
-    ],
-    "industry": "B2B",
-    "is_hiring": false,
-    "launched_at": 1354492705,
-    "location": "San Francisco, CA, USA; Oakland, CA, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/d6b5710a13038fe1daa1421a986e1f4a7839a65a.png",
-    "long_description": "Fivetran automates data movement out of, into and across cloud data platforms. We automate the most time-consuming parts of the ELT process from extracts to schema drift handling to transformations, so data engineers can focus on higher-impact projects with total pipeline peace of mind. With 99.9% uptime and self-healing pipelines, Fivetran enables hundreds of leading brands across the globe, including Autodesk, Conagra Brands, JetBlue, Lionsgate, Morgan Stanley, and Ziff Davis, to accelerate data-driven decisions and drive business growth. Fivetran is headquartered in Oakland, California, with offices around the world. ",
-    "name": "Fivetran",
-    "one_liner": "The leader in automated data movement",
-    "slug": "fivetran",
-    "status": "Active",
-    "subindustry": "B2B -> Infrastructure",
-    "tags": [
-      "SaaS",
-      "B2B",
-      "Analytics",
-      "Data Engineering"
-    ],
-    "team_size": 1200,
-    "top_company": true,
-    "website": "http://fivetran.com",
-    "yc_url": "https://www.ycombinator.com/companies/fivetran"
   },
   {
     "batch": "Winter 2013",
@@ -1053,59 +997,6 @@ export const curatedCompanies: CuratedCompany[] = [
   },
   {
     "batch": "Summer 2014",
-    "id": 700,
-    "industries": [
-      "Industrials",
-      "Manufacturing and Robotics"
-    ],
-    "industry": "Industrials",
-    "is_hiring": false,
-    "launched_at": 1398907961,
-    "location": "San Francisco, CA, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/d917bc9763d052f49ea938f71c94205dabf1ec83.png",
-    "long_description": "Rigetti Computing is building the world’s most powerful computers to help solve humanity’s most pressing and important problems. These systems will perform computations that today’s fastest supercomputers are incapable of — unlocking entirely new classes of problems and offering a direct path to solutions. We are scientists, engineers, builders, and visionaries. We believe quantum computing is going to significantly affect health care, how we treat disease, how we generate energy, and how we feed humanity. Rigetti is the only company deploying full-stack solutions for hybrid classical/quantum computing. Our 19-qubit quantum computer is available online through our Forest platform, and the first commercially useful applications are already under exploration.\r\n\r\nWe were founded in 2013 by Chad Rigetti, and are located Berkeley and Fremont, California.",
-    "name": "Rigetti Computing",
-    "one_liner": "Quantum coherent supercomputing.",
-    "slug": "rigetti-computing",
-    "status": "Public",
-    "subindustry": "Industrials -> Manufacturing and Robotics",
-    "tags": [
-      "Quantum Computing"
-    ],
-    "team_size": 51,
-    "top_company": true,
-    "website": "http://rigetti.com",
-    "yc_url": "https://www.ycombinator.com/companies/rigetti-computing"
-  },
-  {
-    "batch": "Summer 2014",
-    "id": 705,
-    "industries": [
-      "B2B",
-      "Supply Chain and Logistics"
-    ],
-    "industry": "B2B",
-    "is_hiring": true,
-    "launched_at": 1398907999,
-    "location": "Chicago, IL, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/a7fe6af4f0d7680132345ae356f0c1abe1939e2a.png",
-    "long_description": "ShipBob is a leading global fulfillment and supply chain platform designed for SMB and Mid-Market ecommerce brands. ShipBob provides brands a single view of their business and customers across sales channels to manage products, inventory, orders, and shipments, leveraging real-time analytics and reporting, dedicated support, and access to hundreds of technology and retail partners. ShipBob enables brands to improve the operations in their own facilities with ShipBob WMS (ShipBob's proprietary warehouse management system), and/or outsource fulfillment to have their orders picked, packed, and shipped from any of ShipBob’s 50+ fulfillment centers across the United States, Canada, Europe, and Australia. Founded in 2014, ShipBob launched through Y Combinator by co-founders Dhruv Saxena and Divey Gulati, two ecommerce entrepreneurs who saw a need for more efficient SMB supply chain services. Learn more by visiting shipbob.com. ",
-    "name": "ShipBob",
-    "one_liner": "Providing Amazon level logistics to e-commerce businesses. ",
-    "slug": "shipbob",
-    "status": "Active",
-    "subindustry": "B2B -> Supply Chain and Logistics",
-    "tags": [
-      "Logistics",
-      "E-commerce"
-    ],
-    "team_size": 1,
-    "top_company": true,
-    "website": "http://shipbob.com",
-    "yc_url": "https://www.ycombinator.com/companies/shipbob"
-  },
-  {
-    "batch": "Summer 2014",
     "id": 729,
     "industries": [
       "Healthcare",
@@ -1131,88 +1022,6 @@ export const curatedCompanies: CuratedCompany[] = [
     "top_company": true,
     "website": "http://ginkgobioworks.com",
     "yc_url": "https://www.ycombinator.com/companies/ginkgo-bioworks"
-  },
-  {
-    "batch": "Summer 2014",
-    "id": 731,
-    "industries": [
-      "Industrials",
-      "Energy"
-    ],
-    "industry": "Industrials",
-    "is_hiring": false,
-    "launched_at": 1400930834,
-    "location": "San Francisco, CA, USA; Sunnyvale, CA, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/7296c0e632938afdac098d754da89730bfc674b7.png",
-    "long_description": "About Oklo Inc.: \r\n\r\nOklo Inc. (Oklo) is developing advanced fission power plants to provide emission-free, reliable, and affordable energy. \r\n\r\nOklo received a Site Use Permit from the U.S Department of Energy, has performed successful prototypic fuel fabrication, was awarded fuel material from Idaho National Laboratory, developed the first advanced fission combined license application accepted and docketed by the U.S. Nuclear Regulatory Commission, and is developing advanced fuel recycling technologies in collaboration with the U.S. Department of Energy and national laboratories.\r\n\r\nOklo has been featured in Time, Newsweek, Wall Street Journal, CNBC, Popular Mechanics, Wired, Architectural Digest, Hyperallergic, POWER Magazine, has been the subject of a Harvard Business School case, and is featured in the Oliver Stone documentary Nuclear, among other features.",
-    "name": "Oklo",
-    "one_liner": "Emission free, always on power from advanced fission power plants.",
-    "slug": "oklo",
-    "status": "Public",
-    "subindustry": "Industrials -> Energy",
-    "tags": [
-      "Small Modular Reactors",
-      "Climate"
-    ],
-    "team_size": 50,
-    "top_company": true,
-    "website": "http://oklo.com",
-    "yc_url": "https://www.ycombinator.com/companies/oklo"
-  },
-  {
-    "batch": "Winter 2015",
-    "id": 767,
-    "industries": [
-      "B2B",
-      "Supply Chain and Logistics"
-    ],
-    "industry": "B2B",
-    "is_hiring": false,
-    "launched_at": 1416220249,
-    "location": "San Francisco, CA, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/a10cd6dd027a6f9927f0c0574be6404d3ed0c014.png",
-    "long_description": "GrubMarket is the AI-powered technology enabler and digital transformer of American Food Supply Chain industry. Our mission is to build and provide the eCommerce and software technologies to this industry, to transform this completely offline and highly manual industry into modernized online industry powered by software technologies, and improve the efficiency of American food supply chain.\r\n",
-    "name": "GrubMarket",
-    "one_liner": "AI-powered technology enabler and digital transformer of American…",
-    "slug": "grubmarket",
-    "status": "Active",
-    "subindustry": "B2B -> Supply Chain and Logistics",
-    "tags": [
-      "E-commerce",
-      "Supply Chain",
-      "Food Tech",
-      "Agriculture"
-    ],
-    "team_size": 4548,
-    "top_company": true,
-    "website": "http://grubmarket.com",
-    "yc_url": "https://www.ycombinator.com/companies/grubmarket"
-  },
-  {
-    "batch": "Winter 2015",
-    "id": 809,
-    "industries": [
-      "Real Estate and Construction",
-      "Construction"
-    ],
-    "industry": "Real Estate and Construction",
-    "is_hiring": true,
-    "launched_at": 1416306934,
-    "location": "Columbia, MO, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/ad05853522c217d92c372ba8883ff6b45dd83d99.png",
-    "long_description": "EquipmentShare delivers cloud solutions for the construction industry. We provide a better equipment rental experience, fleet tracking software and hardware security solutions to help contractors work smarter. ",
-    "name": "EquipmentShare",
-    "one_liner": "Cloud solutions for the construction industry.",
-    "slug": "equipmentshare",
-    "status": "Public",
-    "subindustry": "Real Estate and Construction -> Construction",
-    "tags": [
-      "Construction"
-    ],
-    "team_size": 5400,
-    "top_company": true,
-    "website": "https://www.equipmentshare.com",
-    "yc_url": "https://www.ycombinator.com/companies/equipmentshare"
   },
   {
     "batch": "Winter 2015",
@@ -1404,35 +1213,6 @@ export const curatedCompanies: CuratedCompany[] = [
   },
   {
     "batch": "Winter 2016",
-    "id": 1058,
-    "industries": [
-      "B2B",
-      "Retail"
-    ],
-    "industry": "B2B",
-    "is_hiring": false,
-    "launched_at": 1447654816,
-    "location": "",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/45034c22d81491a4e49c2c46c3c822d2d820941d.png",
-    "long_description": "Caper focuses on compacting Amazon-Go's technology (image recognition, sensor fusion and artificial intelligence) into a smart shopping cart, allowing each shopper to throw her groceries into the cart and self-checkout without cashiers. The technology is looking to fundamentally transform physical retail and rapidly scale into existing grocery stores.",
-    "name": "Caper",
-    "one_liner": "Plug-and-play cashier-less retail powered by computer vision and AI",
-    "slug": "caper",
-    "status": "Acquired",
-    "subindustry": "B2B -> Retail",
-    "tags": [
-      "Artificial Intelligence",
-      "Cashierless Checkout",
-      "Computer Vision",
-      "Retail Tech"
-    ],
-    "team_size": 15,
-    "top_company": true,
-    "website": "https://www.caper.ai/",
-    "yc_url": "https://www.ycombinator.com/companies/caper"
-  },
-  {
-    "batch": "Winter 2016",
     "id": 1067,
     "industries": [
       "Healthcare",
@@ -1564,33 +1344,6 @@ export const curatedCompanies: CuratedCompany[] = [
     "top_company": true,
     "website": "http://scale.com",
     "yc_url": "https://www.ycombinator.com/companies/scale-ai"
-  },
-  {
-    "batch": "Summer 2016",
-    "id": 1433,
-    "industries": [
-      "B2B",
-      "Engineering, Product and Design"
-    ],
-    "industry": "B2B",
-    "is_hiring": false,
-    "launched_at": 1465405816,
-    "location": "Amsterdam, NH, Netherlands",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/bdee5b69dd38909ad07702b3aebc29f8d5880658.png",
-    "long_description": "The world’s largest omnichannel communications platform.\r\n \r\nBird CRM powers communication between businesses and their customers — across any channel, always with the right context, and on every corner of the planet. Its products and solutions are the foundational building blocks to business communications across preferred channels, like SMS, Voice, WhatsApp, WeChat, Messenger, Email and more. Founded in 2011, Bird connects to billions of devices and is trusted by nearly 20,000 customers worldwide.\r\n \r\nHeadquartered in Amsterdam, Bird operates across nine global hubs — including Singapore, Dublin, Shanghai, Sydney, London, Bogota and Asuncion — and is proud to be a “Work Anywhere” company. Its team of 500 employees represent more than 55 nationalities.",
-    "name": "Bird",
-    "one_liner": "The world’s largest omnichannel communications platform",
-    "slug": "bird",
-    "status": "Active",
-    "subindustry": "B2B -> Engineering, Product and Design",
-    "tags": [
-      "Messaging",
-      "API"
-    ],
-    "team_size": 500,
-    "top_company": true,
-    "website": "http://bird.com",
-    "yc_url": "https://www.ycombinator.com/companies/bird"
   },
   {
     "batch": "Winter 2017",
@@ -1726,33 +1479,6 @@ export const curatedCompanies: CuratedCompany[] = [
     "top_company": true,
     "website": "http://www.flocksafety.com",
     "yc_url": "https://www.ycombinator.com/companies/flock-safety"
-  },
-  {
-    "batch": "Winter 2018",
-    "id": 1654,
-    "industries": [
-      "Fintech",
-      "Insurance"
-    ],
-    "industry": "Fintech",
-    "is_hiring": false,
-    "launched_at": 1493701824,
-    "location": "San Francisco, CA, USA",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/6d7ef9c80d04b0eeccadce07af72fa59e617fb84.png",
-    "long_description": "Newfront is building the modern insurance brokerage. Transparent data delivered real-time translates into a lower total cost of risk and greater insights. We work with 20% of US unicorns, 100s of YC startups, and 150+ public companies on their Business Insurance and Total Rewards.\r\n\r\nHeadquartered in San Francisco, Newfront has more than 800 colleagues and offices throughout the US. ",
-    "name": "Newfront",
-    "one_liner": "Modern insurance brokerage.",
-    "slug": "newfront-insurance",
-    "status": "Acquired",
-    "subindustry": "Fintech -> Insurance",
-    "tags": [
-      "Fintech",
-      "Insurance"
-    ],
-    "team_size": 800,
-    "top_company": true,
-    "website": "https://www.newfront.com/",
-    "yc_url": "https://www.ycombinator.com/companies/newfront-insurance"
   },
   {
     "batch": "Summer 2017",
@@ -1918,30 +1644,6 @@ export const curatedCompanies: CuratedCompany[] = [
     "top_company": true,
     "website": "https://www.deel.com/",
     "yc_url": "https://www.ycombinator.com/companies/deel"
-  },
-  {
-    "batch": "Winter 2019",
-    "id": 12237,
-    "industries": [
-      "B2B",
-      "Supply Chain and Logistics"
-    ],
-    "industry": "B2B",
-    "is_hiring": false,
-    "launched_at": 1543948512,
-    "location": "",
-    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/3adc2d7230f0a2c3c705c361a16f9f9b93e81b7d.png",
-    "long_description": "Nowports is the first digital Freight Forwarder shipping ocean containers to and from Latin America. One out of every two containers gets lost or delayed due to miscommunication and lack of management. The platform reduces human mistakes to 0% and saves up to 40% of delays with Nowports models and algorithms. Nowports assist companies so moving ocean containers is fast, simple and secure.",
-    "name": "Nowports",
-    "one_liner": "The core engine of supply chain in LATAM",
-    "slug": "nowports",
-    "status": "Active",
-    "subindustry": "B2B -> Supply Chain and Logistics",
-    "tags": [],
-    "team_size": 550,
-    "top_company": true,
-    "website": "https://nowports.com/",
-    "yc_url": "https://www.ycombinator.com/companies/nowports"
   },
   {
     "batch": "Summer 2019",
@@ -2497,38 +2199,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "B2B",
-    "description": "Dotmatics (now owned by Siemens) offers ELN, LIMS, and chemistry-aware data tools for life-science R&D teams, and is the most frequently cited rival to Benchling.",
-    "id": "ext-dotmatics",
-    "location": "Boston, MA, USA",
-    "logo_url": "https://www.google.com/s2/favicons?domain=dotmatics.com&sz=128",
-    "name": "Dotmatics",
-    "one_liner": "Scientific informatics suite for biotech and pharma R&D.",
-    "slug": "dotmatics",
-    "tags": [
-      "SaaS",
-      "Biotech",
-      "R&D Software"
-    ],
-    "website": "https://www.dotmatics.com"
-  },
-  {
-    "category": "B2B",
-    "description": "Matillion builds and manages data pipelines with low-code, push-down transformations for cloud data platforms, competing with Fivetran in data integration.",
-    "id": "ext-matillion",
-    "location": "Manchester, UK; Denver, CO, USA",
-    "logo_url": "https://www.google.com/s2/favicons?domain=matillion.com&sz=128",
-    "name": "Matillion",
-    "one_liner": "Cloud-native ETL/ELT platform for data warehouses.",
-    "slug": "matillion",
-    "tags": [
-      "SaaS",
-      "Data Engineering",
-      "Analytics"
-    ],
-    "website": "https://www.matillion.com"
-  },
-  {
-    "category": "B2B",
     "description": "Amplitude is a Nasdaq-listed product analytics company that competes with Heap on event tracking, funnels, and behavioral analysis for product teams.",
     "id": "ext-amplitude",
     "location": "San Francisco, CA, USA",
@@ -2640,37 +2310,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     "website": "https://fadv.com"
   },
   {
-    "category": "Industrials",
-    "description": "IonQ (NYSE: IONQ) builds trapped-ion quantum computers and cloud access, and is routinely ranked alongside Rigetti as one of the two leading pure-play quantum computing stocks.",
-    "id": "ext-ionq",
-    "location": "College Park, MD, USA",
-    "logo_url": "https://www.google.com/s2/favicons?domain=ionq.com&sz=128",
-    "name": "IonQ",
-    "one_liner": "Public trapped-ion quantum computing company.",
-    "slug": "ionq",
-    "tags": [
-      "Quantum Computing",
-      "Hardware"
-    ],
-    "website": "https://ionq.com"
-  },
-  {
-    "category": "B2B",
-    "description": "ShipMonk operates a multi-warehouse fulfillment network with inventory software for DTC and e-commerce brands, competing directly with ShipBob in outsourced fulfillment.",
-    "id": "ext-shipmonk",
-    "location": "Fort Lauderdale, FL, USA",
-    "logo_url": "https://www.google.com/s2/favicons?domain=shipmonk.com&sz=128",
-    "name": "ShipMonk",
-    "one_liner": "Tech-driven third-party fulfillment for e-commerce brands.",
-    "slug": "shipmonk",
-    "tags": [
-      "Logistics",
-      "E-commerce",
-      "Fulfillment"
-    ],
-    "website": "https://www.shipmonk.com"
-  },
-  {
     "category": "Healthcare",
     "description": "Twist Bioscience makes synthetic DNA at scale on a silicon-based platform, supplying biotech, pharma, and industrial biology customers, including Ginkgo itself.",
     "id": "ext-twist-bioscience",
@@ -2685,52 +2324,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "DNA Synthesis"
     ],
     "website": "https://www.twistbioscience.com"
-  },
-  {
-    "category": "Industrials",
-    "description": "NuScale Power designs and licenses small modular nuclear reactors, and was the first SMR maker to win NRC design approval and go public.",
-    "id": "ext-nuscale",
-    "location": "Tigard, OR",
-    "logo_url": "https://www.google.com/s2/favicons?domain=nuscalepower.com&sz=128",
-    "name": "NuScale Power",
-    "one_liner": "Public small modular reactor developer for carbon-free power.",
-    "slug": "nuscale-power",
-    "tags": [
-      "Small Modular Reactors",
-      "Nuclear Energy",
-      "Climate"
-    ],
-    "website": "https://www.nuscalepower.com"
-  },
-  {
-    "category": "B2B",
-    "description": "Sysco is the incumbent broadline food distributor supplying restaurants, healthcare, and education customers across North America.",
-    "id": "ext-sysco",
-    "location": "Houston, TX",
-    "logo_url": "https://www.google.com/s2/favicons?domain=sysco.com&sz=128",
-    "name": "Sysco",
-    "one_liner": "Largest foodservice distributor in North America.",
-    "slug": "sysco",
-    "tags": [
-      "Food Distribution",
-      "Supply Chain"
-    ],
-    "website": "https://www.sysco.com"
-  },
-  {
-    "category": "Real Estate and Construction",
-    "description": "United Rentals rents construction and industrial equipment through thousands of locations across North America and Europe.",
-    "id": "ext-united-rentals",
-    "location": "Stamford, CT",
-    "logo_url": "https://www.google.com/s2/favicons?domain=unitedrentals.com&sz=128",
-    "name": "United Rentals",
-    "one_liner": "World's largest equipment rental company.",
-    "slug": "united-rentals",
-    "tags": [
-      "Construction",
-      "Equipment Rental"
-    ],
-    "website": "https://www.unitedrentals.com"
   },
   {
     "category": "B2B",
@@ -2845,22 +2438,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     "website": "https://birdeye.com"
   },
   {
-    "category": "B2B",
-    "description": "Zippin builds cashierless checkout systems for retailers, using cameras and sensors that let shoppers grab items and walk out without scanning.",
-    "id": "ext-zippin",
-    "location": "San Francisco, CA",
-    "logo_url": "https://www.google.com/s2/favicons?domain=getzippin.com&sz=128",
-    "name": "Zippin",
-    "one_liner": "Computer-vision checkout-free store technology.",
-    "slug": "zippin",
-    "tags": [
-      "Computer Vision",
-      "Cashierless Checkout",
-      "Retail Tech"
-    ],
-    "website": "https://www.getzippin.com"
-  },
-  {
     "category": "Healthcare",
     "description": "Hims & Hers is a publicly traded telehealth company selling prescriptions and treatments for sexual health, hair loss, mental health, and more.",
     "id": "ext-hims-hers",
@@ -2926,22 +2503,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "B2B",
-    "description": "Sinch is a Sweden-based, publicly traded (XSTO: SINCH) communications platform providing SMS, voice, and email APIs for enterprises worldwide.",
-    "id": "ext-sinch",
-    "location": "Stockholm, Sweden",
-    "logo_url": "https://www.google.com/s2/favicons?domain=sinch.com&sz=128",
-    "name": "Sinch",
-    "one_liner": "Public CPaaS company for messaging, voice, and email at scale.",
-    "slug": "sinch",
-    "tags": [
-      "CPaaS",
-      "Messaging",
-      "API"
-    ],
-    "website": "https://www.sinch.com"
-  },
-  {
-    "category": "B2B",
     "description": "BambooHR is a privately held HR information system (HRIS) covering hiring, onboarding, payroll, and benefits for SMBs.",
     "id": "ext-bamboohr",
     "location": "Lindon, UT, USA",
@@ -3001,21 +2562,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Security"
     ],
     "website": "https://www.motorolasolutions.com"
-  },
-  {
-    "category": "Fintech",
-    "description": "Embroker is a tech-first insurance brokerage offering self-serve commercial coverage for startups and small businesses.",
-    "id": "ext-embroker",
-    "location": "San Francisco, CA, USA",
-    "logo_url": "https://www.google.com/s2/favicons?domain=embroker.com&sz=128",
-    "name": "Embroker",
-    "one_liner": "Digital commercial insurance brokerage for startups and SMBs.",
-    "slug": "embroker",
-    "tags": [
-      "Insurance",
-      "Insurtech"
-    ],
-    "website": "https://www.embroker.com"
   },
   {
     "category": "Healthcare",
@@ -3114,22 +2660,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "B2B",
-    "description": "DHL Global Forwarding is one of the world's largest traditional air and ocean freight forwarders, part of the publicly traded Deutsche Post DHL Group.",
-    "id": "ext-dhl-global-forwarding",
-    "location": "Bonn, Germany",
-    "logo_url": "https://www.google.com/s2/favicons?domain=dhl.com&sz=128",
-    "name": "DHL Global Forwarding",
-    "one_liner": "Legacy global freight forwarding arm of Deutsche Post DHL.",
-    "slug": "dhl-global-forwarding",
-    "tags": [
-      "Logistics",
-      "Supply Chain and Logistics",
-      "Freight"
-    ],
-    "website": "https://www.dhl.com/global-en/home/global-forwarding.html"
-  },
-  {
-    "category": "B2B",
     "description": "Toast (NYSE: TOST) is a restaurant-focused POS, payments, and operations platform used broadly across cafes and restaurants.",
     "id": "ext-toast",
     "location": "Boston, MA, USA",
@@ -3176,6 +2706,36 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     ],
     "website": "https://blinkit.com"
   },
+  {
+    "category": "Fintech",
+    "description": "PayPal is a long-running online payments and checkout brand used by consumers and merchants worldwide.",
+    "id": "ext-paypal",
+    "location": "San Jose, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=paypal.com&sz=128",
+    "name": "PayPal",
+    "one_liner": "Household-name online payments and checkout.",
+    "slug": "paypal",
+    "tags": [
+      "Payments",
+      "Fintech"
+    ],
+    "website": "https://www.paypal.com"
+  },
+  {
+    "category": "Fintech",
+    "description": "Robinhood is a commission-free trading app known for bringing retail investors into stocks and crypto.",
+    "id": "ext-robinhood",
+    "location": "Menlo Park, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=robinhood.com&sz=128",
+    "name": "Robinhood",
+    "one_liner": "Commission-free retail trading app.",
+    "slug": "robinhood",
+    "tags": [
+      "Fintech",
+      "Trading"
+    ],
+    "website": "https://robinhood.com"
+  }
 ];
 
 export const curatedBattles: CuratedBattle[] = [
@@ -3511,28 +3071,6 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
-    "id": "battle-benchling-dotmatics",
-    "left_argument": "Cloud-native ELN/LIMS built molecular-biology-first for modern biotech.",
-    "right_argument": "Broad scientific informatics suite with deep chemistry support.",
-    "rival_id": "ext-dotmatics",
-    "slug": "benchling-vs-dotmatics",
-    "space": "Biotech R&D Software",
-    "title": "Benchling vs Dotmatics",
-    "yc_slug": "benchling"
-  },
-  {
-    "featured": false,
-    "id": "battle-fivetran-matillion",
-    "left_argument": "Zero-maintenance managed ELT with 700+ connectors.",
-    "right_argument": "Cloud-native ETL with AI-assisted, low-code pipeline building.",
-    "rival_id": "ext-matillion",
-    "slug": "fivetran-vs-matillion",
-    "space": "Data Integration",
-    "title": "Fivetran vs Matillion",
-    "yc_slug": "fivetran"
-  },
-  {
-    "featured": false,
     "id": "battle-heap-amplitude",
     "left_argument": "Auto-captures every user interaction with no manual event tagging.",
     "right_argument": "Mature, plan-and-tag analytics suite trusted at enterprise scale.",
@@ -3610,28 +3148,6 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
-    "id": "battle-rigetti-ionq",
-    "left_argument": "Superconducting-qubit quantum processors with cloud access.",
-    "right_argument": "Trapped-ion quantum systems with faster-growing commercial revenue.",
-    "rival_id": "ext-ionq",
-    "slug": "rigetti-computing-vs-ionq",
-    "space": "Quantum Computing",
-    "title": "Rigetti Computing vs IonQ",
-    "yc_slug": "rigetti-computing"
-  },
-  {
-    "featured": false,
-    "id": "battle-shipbob-shipmonk",
-    "left_argument": "Distributed fulfillment network built for fast-growing DTC brands.",
-    "right_argument": "Growth-equity-backed 3PL with tech-driven multi-warehouse fulfillment.",
-    "rival_id": "ext-shipmonk",
-    "slug": "shipbob-vs-shipmonk",
-    "space": "E-commerce Fulfillment",
-    "title": "ShipBob vs ShipMonk",
-    "yc_slug": "shipbob"
-  },
-  {
-    "featured": false,
     "id": "battle-ginkgo-bioworks-twist",
     "left_argument": "Full-stack biology foundry that designs and engineers organisms for customers.",
     "right_argument": "The DNA supplier of record, manufacturing synthetic genes at industrial scale, including for Ginkgo.",
@@ -3640,39 +3156,6 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Synthetic Biology",
     "title": "Ginkgo Bioworks vs Twist Bioscience",
     "yc_slug": "ginkgo-bioworks"
-  },
-  {
-    "featured": false,
-    "id": "battle-oklo-nuscale",
-    "left_argument": "Fast fission micro-reactors aimed at data centers and remote power.",
-    "right_argument": "First small modular reactor design to win NRC approval and go public.",
-    "rival_id": "ext-nuscale",
-    "slug": "oklo-vs-nuscale-power",
-    "space": "Nuclear Energy",
-    "title": "Oklo vs NuScale Power",
-    "yc_slug": "oklo"
-  },
-  {
-    "featured": false,
-    "id": "battle-grubmarket-sysco",
-    "left_argument": "Tech-enabled marketplace and software modernizing food supply chains.",
-    "right_argument": "The incumbent broadline distributor restaurants and institutions already rely on.",
-    "rival_id": "ext-sysco",
-    "slug": "grubmarket-vs-sysco",
-    "space": "Food Distribution",
-    "title": "GrubMarket vs Sysco",
-    "yc_slug": "grubmarket"
-  },
-  {
-    "featured": false,
-    "id": "battle-equipmentshare-united-rentals",
-    "left_argument": "Telematics-driven rental and fleet software built for contractors.",
-    "right_argument": "The world's largest equipment rental company by fleet and locations.",
-    "rival_id": "ext-united-rentals",
-    "slug": "equipmentshare-vs-united-rentals",
-    "space": "Equipment Rental",
-    "title": "EquipmentShare vs United Rentals",
-    "yc_slug": "equipmentshare"
   },
   {
     "featured": true,
@@ -3753,17 +3236,6 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
-    "id": "battle-caper-zippin",
-    "left_argument": "Instacart-owned smart cart technology now rolling out at Wegmans and other grocers.",
-    "right_argument": "Computer-vision checkout-free store technology backed by SAP and Kraft Heinz's venture arm.",
-    "rival_id": "ext-zippin",
-    "slug": "caper-vs-zippin",
-    "space": "Cashierless Retail",
-    "title": "Caper vs Zippin",
-    "yc_slug": "caper"
-  },
-  {
-    "featured": false,
     "id": "battle-nurx-hims-hers",
     "left_argument": "Birth control, PrEP, and women's health prescriptions delivered online.",
     "right_argument": "Public telehealth brand covering sexual health, hair loss, and mental health.",
@@ -3808,17 +3280,6 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
-    "id": "battle-bird-sinch",
-    "left_argument": "Owns its own carrier network for faster, cheaper omnichannel messaging.",
-    "right_argument": "Public CPaaS scale spanning SMS, voice, and email across 60+ countries.",
-    "rival_id": "ext-sinch",
-    "slug": "bird-vs-sinch",
-    "space": "CPaaS",
-    "title": "Bird vs Sinch",
-    "yc_slug": "bird"
-  },
-  {
-    "featured": false,
     "id": "battle-rippling-bamboohr",
     "left_argument": "Unified HR, IT, and Finance system built for fast-scaling companies.",
     "right_argument": "Long-established, SMB-friendly HRIS with deep small-business trust.",
@@ -3860,17 +3321,6 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Public Safety / ALPR",
     "title": "Flock Safety vs Motorola Solutions",
     "yc_slug": "flock-safety"
-  },
-  {
-    "featured": false,
-    "id": "battle-newfront-embroker",
-    "left_argument": "Tech-enabled brokerage blending advisors with software for mid-market risk.",
-    "right_argument": "Self-serve digital brokerage built for startups and SMBs.",
-    "rival_id": "ext-embroker",
-    "slug": "newfront-vs-embroker",
-    "space": "Insurtech Brokerage",
-    "title": "Newfront vs Embroker",
-    "yc_slug": "newfront-insurance"
   },
   {
     "featured": false,
@@ -3940,17 +3390,6 @@ export const curatedBattles: CuratedBattle[] = [
   },
   {
     "featured": false,
-    "id": "battle-nowports-dhl-global-forwarding",
-    "left_argument": "Digital-first freight forwarder streamlining LATAM trade with tech and embedded financing.",
-    "right_argument": "Traditional global freight forwarding giant with legacy scale in ocean and air.",
-    "rival_id": "ext-dhl-global-forwarding",
-    "slug": "nowports-vs-dhl-global-forwarding",
-    "space": "Freight Forwarding",
-    "title": "Nowports vs DHL Global Forwarding",
-    "yc_slug": "nowports"
-  },
-  {
-    "featured": false,
     "id": "battle-odeko-toast",
     "left_argument": "All-in-one ordering, supply, and operations platform built specifically for independent cafes.",
     "right_argument": "Public restaurant POS and ordering platform used broadly across cafes and restaurants.",
@@ -3981,6 +3420,28 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Quick Commerce",
     "title": "Zepto vs Blinkit",
     "yc_slug": "zepto"
+  },
+  {
+    "featured": false,
+    "id": "battle-stripe-paypal",
+    "left_argument": "Developer-first APIs, docs, and startup default.",
+    "right_argument": "The payments brand most consumers already recognize and trust.",
+    "rival_id": "ext-paypal",
+    "slug": "stripe-vs-paypal",
+    "space": "Payments",
+    "title": "Stripe vs PayPal",
+    "yc_slug": "stripe"
+  },
+  {
+    "featured": false,
+    "id": "battle-coinbase-robinhood",
+    "left_argument": "Regulated crypto-first exchange built for trust and compliance.",
+    "right_argument": "Commission-free app that brought retail investors into stocks and crypto alike.",
+    "rival_id": "ext-robinhood",
+    "slug": "coinbase-vs-robinhood",
+    "space": "Trading Apps",
+    "title": "Coinbase vs Robinhood",
+    "yc_slug": "coinbase"
   },
   {
     "featured": false,
