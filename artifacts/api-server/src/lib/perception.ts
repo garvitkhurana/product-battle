@@ -291,37 +291,20 @@ export async function getTasteDnaForSession(sessionId: string) {
   }
 
   let closestCompanies: string[] = [];
+  // Only surface co-vote alignments once there is independent volume.
+  // Never fall back to axis-neighbors or the user's own picks.
+  const MIN_COVOTE_WINS = 5;
   if (comparisonCount >= 8 && winCounts.size > 0) {
-    const rankedIds = [...winCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([id]) => id);
+    const rankedIds = [...winCounts.entries()]
+      .filter(([, count]) => count >= MIN_COVOTE_WINS)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([id]) => id);
     if (rankedIds.length) {
       const rows = await db.select().from(battleParticipantsTable).where(inArray(battleParticipantsTable.id, rankedIds));
       const byId = new Map(rows.map((row) => [row.id, row.name]));
       closestCompanies = rankedIds.map((id) => byId.get(id)).filter((name): name is string => Boolean(name));
     }
-  }
-
-  // Fallback only when there is still no co-vote signal: axis-neighbors the user never saw.
-  if (!closestCompanies.length && comparisonCount >= 12) {
-    const [participants, allAxisRows] = await Promise.all([
-      db.select().from(battleParticipantsTable),
-      db.select().from(perceptionAxesTable),
-    ]);
-    const axisByParticipant = new Map<string, Map<string, number>>();
-    for (const axis of allAxisRows) {
-      const values = axisByParticipant.get(axis.participantId) ?? new Map<string, number>();
-      values.set(axis.axisKey, axis.score);
-      axisByParticipant.set(axis.participantId, values);
-    }
-    closestCompanies = participants
-      .filter((participant) => !facedParticipantIds.has(participant.id))
-      .map((participant) => {
-        const values = axisByParticipant.get(participant.id);
-        const distance = axes.reduce((total, axis) => total + Math.abs(axis.score - (values?.get(axis.key) ?? 3)), 0);
-        return { name: participant.name, distance };
-      })
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, 3)
-      .map((item) => item.name);
   }
 
   return {

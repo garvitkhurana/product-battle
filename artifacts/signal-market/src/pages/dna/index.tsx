@@ -205,7 +205,7 @@ export default function TasteDna() {
                   ))}
                   {!dna.closestCompanies?.length && (
                     <li className="text-sm font-mono text-[#625c55]">
-                      Not enough community co-signal yet. Keep comparing — alignments unlock from people with a similar profile, not from your own clicks.
+                      Not enough signals yet — check back soon.
                     </li>
                   )}
                 </ul>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'wouter';
-import { Layers, Activity, Fingerprint, Map as MapIcon } from 'lucide-react';
+import { Layers, Activity, Fingerprint } from 'lucide-react';
 import { Show, UserButton } from '@clerk/react';
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -10,7 +10,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     { href: '/', label: 'Launch', icon: <Activity className="w-4 h-4" /> },
     { href: '/battles', label: 'Comparisons', icon: <Layers className="w-4 h-4" /> },
     { href: '/swipe', label: 'Continuous', icon: <Activity className="w-4 h-4" /> },
-    { href: '/map', label: 'Ecosystem', icon: <MapIcon className="w-4 h-4" /> },
     { href: '/dna', label: 'Taste DNA', icon: <Fingerprint className="w-4 h-4" /> },
   ];
 
@@ -97,6 +96,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <nav className="flex flex-col gap-3">
                 <Link href="/submit" className="text-sm font-medium hover:text-primary transition-colors">Propose Comparison</Link>
                 <Link href="/transactions" className="text-sm font-medium hover:text-primary transition-colors">Historical Receipts</Link>
+                <Link href="/map" className="text-sm font-medium hover:text-primary transition-colors">Ecosystem map</Link>
               </nav>
             </div>
             <div className="space-y-4">
@@ -108,10 +108,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="space-y-4">
               <h4 className="font-bold uppercase tracking-widest text-xs text-muted-foreground">Contact</h4>
               <a
-                href="mailto:garvit.khurana@gmail.com"
+                href="mailto:hello@ycbattle.com"
                 className="break-all text-sm font-medium hover:text-primary transition-colors"
               >
-                garvit.khurana@gmail.com
+                hello@ycbattle.com
               </a>
             </div>
           </div>
