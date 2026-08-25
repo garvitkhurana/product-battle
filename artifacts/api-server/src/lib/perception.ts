@@ -670,6 +670,28 @@ export async function getPerceptionMapPoints() {
     }
   }
 
+  // Collision / repulsion so logo markers stay legible (forceCollide-style).
+  const MIN_MARKER_DIST = 9;
+  for (let iter = 0; iter < 40; iter++) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i]!;
+        const b = nodes[j]!;
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const dist = Math.hypot(dx, dy) || 0.01;
+        if (dist >= MIN_MARKER_DIST) continue;
+        const push = ((MIN_MARKER_DIST - dist) / dist) * 0.5;
+        const ox = dx * push;
+        const oy = dy * push;
+        a.x -= ox;
+        a.y -= oy;
+        b.x += ox;
+        b.y += oy;
+      }
+    }
+  }
+
   return participants.map((participant) => {
     const node = byId.get(participant.id)!;
     const signal = signalByParticipant.get(participant.id);

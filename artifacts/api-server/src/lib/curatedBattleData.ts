@@ -3175,7 +3175,7 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Quick Commerce"
     ],
     "website": "https://blinkit.com"
-  }
+  },
 ];
 
 export const curatedBattles: CuratedBattle[] = [
@@ -3981,5 +3981,27 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "Quick Commerce",
     "title": "Zepto vs Blinkit",
     "yc_slug": "zepto"
+  },
+  {
+    "featured": false,
+    "id": "battle-doordash-toast",
+    "left_argument": "Consumer delivery marketplace density and logistics.",
+    "right_argument": "Restaurant POS and back-of-house ops platform.",
+    "rival_id": "ext-toast",
+    "slug": "doordash-vs-toast",
+    "space": "Food Tech",
+    "title": "DoorDash vs Toast",
+    "yc_slug": "doordash"
+  },
+  {
+    "featured": false,
+    "id": "battle-gusto-bamboohr",
+    "left_argument": "Payroll, benefits, and compliance rails for growing teams.",
+    "right_argument": "SMB HRIS focused on hiring and people ops software — not a payroll bank.",
+    "rival_id": "ext-bamboohr",
+    "slug": "gusto-vs-bamboohr",
+    "space": "HR Tech",
+    "title": "Gusto vs BambooHR",
+    "yc_slug": "gusto"
   }
 ];

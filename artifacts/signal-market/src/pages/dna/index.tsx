@@ -171,7 +171,11 @@ export default function TasteDna() {
               {dna.headline || 'Your preferences skew heavily towards contrarian technical infrastructure.'}
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t-2 border-[#181513]">
+            <div
+              className={`grid gap-8 pt-8 border-t-2 border-[#181513] ${
+                dna.closestCompanies?.length ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
+              }`}
+            >
               <div className="space-y-6">
                 <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-[#625c55] mb-4">Dominant Axes</h3>
                 {(dna.axes ?? []).map((axis) => {
@@ -195,22 +199,35 @@ export default function TasteDna() {
                 })}
               </div>
 
-              <div>
-                <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-[#625c55] mb-4">Aligned Entities</h3>
-                <ul className="space-y-3">
-                  {dna.closestCompanies?.map((company, i) => (
-                    <li key={i} className="flex items-center gap-3 p-3 bg-[#d7ff45] border border-[#181513] font-bold">
-                      <span className="font-mono text-xs text-[#625c55]">0{i + 1}</span>
-                      {company}
-                    </li>
-                  ))}
-                  {!dna.closestCompanies?.length && (
-                    <li className="text-sm font-mono text-[#625c55]">
-                      Not enough signals yet — check back soon.
-                    </li>
-                  )}
-                </ul>
-              </div>
+              {dna.closestCompanies?.length ? (
+                <div>
+                  <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-[#625c55] mb-4">Aligned Entities</h3>
+                  <ul className="space-y-3">
+                    {dna.closestCompanies.map((company, i) => (
+                      <li key={i} className="flex items-center gap-3 p-3 bg-[#d7ff45] border border-[#181513] font-bold">
+                        <span className="font-mono text-xs text-[#625c55]">0{i + 1}</span>
+                        {company}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-[#181513] bg-[#fff8ef] p-5 space-y-4">
+                  <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-[#625c55]">Aligned Entities</h3>
+                  <p className="font-mono text-sm text-[#625c55] leading-relaxed">
+                    Not enough independent co-signals yet. Add more comparisons to unlock companies that share your profile — not a mirror of your own clicks.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Link
+                      href="/swipe"
+                      className="inline-flex bg-[#181513] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-widest text-[#fff8ef] hover:bg-[#ff5038]"
+                    >
+                      Continue comparing
+                    </Link>
+                    <AddNextBatchCta label="Add another batch" />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

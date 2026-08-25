@@ -58,12 +58,34 @@ export default function EcosystemMap() {
   const width = maxX - minX || 100;
   const height = maxY - minY || 100;
 
-  const plottedPoints = points.map((point) => ({
-    point,
-    left: ((point.x - minX) / width) * 100,
-    top: ((point.y - minY) / height) * 100,
-    size: point.confidence >= 60 ? 'md' as const : 'sm' as const,
-  }));
+  const plottedPoints = (() => {
+    const items = points.map((point) => ({
+      point,
+      left: ((point.x - minX) / width) * 100,
+      top: ((point.y - minY) / height) * 100,
+      size: point.confidence >= 60 ? ('md' as const) : ('sm' as const),
+    }));
+    // Screen-space collision: keep logo footprints from stacking after % projection.
+    const minPct = 7;
+    for (let iter = 0; iter < 30; iter++) {
+      for (let i = 0; i < items.length; i++) {
+        for (let j = i + 1; j < items.length; j++) {
+          const a = items[i]!;
+          const b = items[j]!;
+          const dx = b.left - a.left;
+          const dy = b.top - a.top;
+          const dist = Math.hypot(dx, dy) || 0.01;
+          if (dist >= minPct) continue;
+          const push = ((minPct - dist) / dist) * 0.45;
+          a.left = Math.min(96, Math.max(4, a.left - dx * push));
+          a.top = Math.min(96, Math.max(4, a.top - dy * push));
+          b.left = Math.min(96, Math.max(4, b.left + dx * push));
+          b.top = Math.min(96, Math.max(4, b.top + dy * push));
+        }
+      }
+    }
+    return items;
+  })();
   const pointPositions = new Map(
     plottedPoints.map(({ point, left, top }) => [point.participant.id, { left, top }]),
   );

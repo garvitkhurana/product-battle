@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { battleParticipantsTable, battlesTable, db, perceptionAxesTable, productsTable } from "@workspace/db";
 import {
   curatedBattles,
@@ -8,11 +8,6 @@ import {
 
 const CURATED_CREATOR_ID = "yc-battle-directory";
 const CURATED_CREATOR_NAME = "YC Battle directory";
-const LEGACY_DEMO_BATTLE_SLUGS = [
-  "airbnb-vs-booking",
-  "brex-vs-ramp",
-  "rippling-vs-gusto",
-];
 export const HOUSEHOLD_BATTLE_SLUGS = [
   "airbnb-vs-vrbo",
   "doordash-vs-uber-eats",
@@ -29,6 +24,15 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   "honeylove-vs-skims",
   "zepto-vs-blinkit",
   "scribd-vs-kindle-unlimited",
+  // Axis-covering cohort: infra↔consumer, regulated↔software, early↔late signal
+  "matterport-vs-iguide",
+  "clipboard-vs-shiftkey",
+  "fivestars-vs-square",
+  "weave-vs-solutionreach",
+  "heroku-vs-render",
+  // Same-space axis covers: food delivery vs restaurant OS; payroll vs pure HRIS
+  "doordash-vs-toast",
+  "gusto-vs-bamboohr",
 ] as const;
 
 export const LAUNCH_BATTLE_SLUGS = new Set<string>(HOUSEHOLD_BATTLE_SLUGS);
@@ -179,41 +183,75 @@ export async function seedBattleMatchups(): Promise<void> {
       },
     });
 
-  await db
-    .update(battlesTable)
-    .set({ status: "archived", isLaunch: false })
-    .where(inArray(battlesTable.slug, LEGACY_DEMO_BATTLE_SLUGS));
-
-  const launchBattles = await db
-    .select()
-    .from(battlesTable)
-    .where(and(eq(battlesTable.isLaunch, true), eq(battlesTable.status, "active")));
-  const launchParticipantIds = [...new Set(launchBattles.flatMap((battle) => [battle.participantAId, battle.participantBId]))];
-  const launchParticipants = launchParticipantIds.length
-    ? await db.select().from(battleParticipantsTable).where(inArray(battleParticipantsTable.id, launchParticipantIds))
-    : [];
+  // Seed perception axes for every curated participant so expanded batches
+  // and axis-covering household pairs can move Taste DNA off the midpoint.
+  const allParticipants = await db.select().from(battleParticipantsTable);
   const axisScores = (participant: typeof battleParticipantsTable.$inferSelect) => {
     const category = participant.category.toLowerCase();
-    const regulated = /fintech|health|insurance|legal|government|energy/.test(category) ? 1 : 4;
-    const consumer = /consumer|travel|food|marketplace|media|retail/.test(category) ? 5 : 2;
-    const scale = participant.isYcCompany ? 2 : 5;
-    const batchYear = Number(participant.ycBatch?.match(/(19|20)\d{2}/)?.[0] ?? "2020");
+    const name = participant.name.toLowerCase();
+    const regulated = /fintech|health|insurance|legal|government|energy|lending|bank|payroll|crypto|gusto|rippling|brex|stripe|coinbase|adp|amex|square/.test(
+      category + " " + name,
+    )
+      ? 1
+      : 5;
+    const consumer = /consumer|travel|food|marketplace|media|retail|livestream|quick commerce|property/.test(
+      category,
+    )
+      ? 5
+      : /infra|paas|devops|developer|b2b|data|cloud|saas|hr|construction|3d/.test(category)
+        ? 1
+        : 2;
+    // Craft vs scale: differentiate from pure YC/challenger binary.
+    const scale = /marketplace|payments|cloud|platform|enterprise|incumbent|retail|delivery/.test(
+      category + " " + name,
+    )
+      ? 5
+      : participant.isYcCompany
+        ? 2
+        : 4;
+    const challenger = participant.isYcCompany
+      ? /whatnot|zepto|goat|honeylove|clipboard/.test(participant.slug)
+        ? 1
+        : 2
+      : /google|amazon|youtube|github|adp|amex|binance|uber|tiktok|kindle|square|jira|atlassian|toast/.test(
+            name,
+          )
+        ? 5
+        : 4;
+
+    const batchYear = Number(participant.ycBatch?.match(/(19|20)\d{2}/)?.[0] ?? "0");
+    let batchEra: number;
+    if (participant.isYcCompany && batchYear > 0) {
+      if (batchYear < 2012) batchEra = 1;
+      else if (batchYear < 2017) batchEra = 2;
+      else if (batchYear < 2021) batchEra = 4;
+      else batchEra = 5;
+    } else if (
+      /google|amazon|youtube|github|adp|amex|microsoft|apple|meta|facebook|jira|atlassian/.test(name)
+    ) {
+      batchEra = 1; // established incumbents read as earlier-era
+    } else if (/tiktok|blinkit|stockx|shiftkey|render|iguide|solutionreach|toast|bamboohr/.test(name)) {
+      batchEra = 5; // newer-market rivals
+    } else {
+      batchEra = 3;
+    }
+
     return {
       "infra-consumer": consumer,
-      "challenger-incumbent": participant.isYcCompany ? 1 : 5,
+      "challenger-incumbent": challenger,
       "craft-scale": scale,
-      "batch-era": batchYear >= 2020 ? 4 : batchYear >= 2015 ? 3 : 2,
+      "batch-era": batchEra,
       "regulated-software": regulated,
     };
   };
-  const axisRows = launchParticipants.flatMap((participant) =>
+  const axisRows = allParticipants.flatMap((participant) =>
     Object.entries(axisScores(participant)).map(([axisKey, score]) => ({
-      id: `launch-axis-${participant.id}-${axisKey}`,
+      id: `axis-${participant.id}-${axisKey}`,
       participantId: participant.id,
       axisKey,
       score,
       source: "Curated from public company descriptions",
-      version: "launch-rubric-v1",
+      version: "axis-rubric-v3",
     })),
   );
   if (axisRows.length) {
