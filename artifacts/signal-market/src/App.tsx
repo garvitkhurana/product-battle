@@ -1,9 +1,8 @@
-import { useEffect, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ToastProvider, Toaster } from '@/hooks/use-toast';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import NotFound from '@/pages/not-found';
 import {
   Route,
   Switch,
@@ -13,20 +12,24 @@ import {
 import { ClerkProvider } from '@clerk/react';
 import { publishableKeyFromHost } from '@clerk/react/internal';
 import { shadcn } from '@clerk/themes';
+import { Loader2 } from 'lucide-react';
 
 import { Layout } from '@/components/layout/Layout';
 import Index from '@/pages/index';
-import BattlesList from '@/pages/battles/index';
-import BattleDetail from '@/pages/battles/[slug]';
-import SwipeFlow from '@/pages/swipe/index';
-import TasteDna from '@/pages/dna/index';
-import CompanyProfile from '@/pages/companies/[slug]';
-import EcosystemMap from '@/pages/map/index';
-import Submit from '@/pages/submit/index';
-import Transactions from '@/pages/transactions';
-import Legal from '@/pages/legal';
-import { SignInPage, SignUpPage } from '@/pages/auth';
 import { PerceptionSessionProvider } from '@/lib/session';
+
+const BattlesList = lazy(() => import('@/pages/battles/index'));
+const BattleDetail = lazy(() => import('@/pages/battles/[slug]'));
+const SwipeFlow = lazy(() => import('@/pages/swipe/index'));
+const TasteDna = lazy(() => import('@/pages/dna/index'));
+const CompanyProfile = lazy(() => import('@/pages/companies/[slug]'));
+const EcosystemMap = lazy(() => import('@/pages/map/index'));
+const Submit = lazy(() => import('@/pages/submit/index'));
+const Transactions = lazy(() => import('@/pages/transactions'));
+const Legal = lazy(() => import('@/pages/legal'));
+const NotFound = lazy(() => import('@/pages/not-found'));
+const SignInPage = lazy(() => import('@/pages/auth').then((m) => ({ default: m.SignInPage })));
+const SignUpPage = lazy(() => import('@/pages/auth').then((m) => ({ default: m.SignUpPage })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -89,32 +92,36 @@ const clerkAppearance = {
   },
 };
 
+function RouteFallback() {
+  return (
+    <div className="flex flex-1 items-center justify-center py-24">
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+    </div>
+  );
+}
+
 function Router() {
   return (
     <Layout>
       <RoutedErrorBoundary>
-        <Switch>
-          <Route path="/" component={Index} />
-          
-          <Route path="/battles" component={BattlesList} />
-          <Route path="/battles/:slug" component={BattleDetail} />
-          
-          <Route path="/swipe" component={SwipeFlow} />
-          <Route path="/dna" component={TasteDna} />
-          
-          <Route path="/companies/:slug" component={CompanyProfile} />
-          <Route path="/map" component={EcosystemMap} />
-          <Route path="/ecosystem" component={EcosystemRedirect} />
-          
-          <Route path="/submit" component={Submit} />
-          <Route path="/transactions" component={Transactions} />
-          <Route path="/legal" component={Legal} />
-          
-          <Route path="/sign-in/*?" component={SignInPage} />
-          <Route path="/sign-up/*?" component={SignUpPage} />
-          
-          <Route component={NotFound} />
-        </Switch>
+        <Suspense fallback={<RouteFallback />}>
+          <Switch>
+            <Route path="/" component={Index} />
+            <Route path="/battles" component={BattlesList} />
+            <Route path="/battles/:slug" component={BattleDetail} />
+            <Route path="/swipe" component={SwipeFlow} />
+            <Route path="/dna" component={TasteDna} />
+            <Route path="/companies/:slug" component={CompanyProfile} />
+            <Route path="/map" component={EcosystemMap} />
+            <Route path="/ecosystem" component={EcosystemRedirect} />
+            <Route path="/submit" component={Submit} />
+            <Route path="/transactions" component={Transactions} />
+            <Route path="/legal" component={Legal} />
+            <Route path="/sign-in/*?" component={SignInPage} />
+            <Route path="/sign-up/*?" component={SignUpPage} />
+            <Route component={NotFound} />
+          </Switch>
+        </Suspense>
       </RoutedErrorBoundary>
     </Layout>
   );

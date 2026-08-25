@@ -1,11 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useGetPerceptionMap, useListBattles } from '@workspace/api-client-react';
 import { Copy, Loader2, Map as MapIcon, Share2 } from 'lucide-react';
 import { useLocation } from 'wouter';
-import { addExpandedBattles, getNextComparisonBatch } from '@/lib/expandedQueue';
-import { isInvalidPerceptionSessionError, useSessionToken } from '@/lib/session';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
+import { AddNextBatchCta } from '@/components/AddNextBatchCta';
 
 const REGION_COLORS = ['#ff5038', '#d7ff45', '#8f5cff', '#57c3ff', '#ffb347', '#7ddea2'];
 
@@ -13,42 +12,13 @@ export default function EcosystemMap() {
   const [location, setLocation] = useLocation();
   const { data: points, isLoading, error } = useGetPerceptionMap();
   const { data: battles } = useListBattles();
-  const { sessionToken, isCreatingSession, retrySession } = useSessionToken();
   const { toast } = useToast();
-  const [isAddingBatch, setIsAddingBatch] = useState(false);
-  const [batchError, setBatchError] = useState<string | null>(null);
-  const [batchMessage, setBatchMessage] = useState<string | null>(null);
   const hasNextBatchIntent = new URLSearchParams(location.split('?')[1] ?? '').get('next') === '1';
 
   const shareUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}/api/card/map`
       : 'https://ycbattle.com/api/card/map';
-
-  const handleAddBatch = async () => {
-    if (!sessionToken || isAddingBatch) return;
-    setIsAddingBatch(true);
-    setBatchError(null);
-    setBatchMessage(null);
-    try {
-      const nextBatch = await getNextComparisonBatch(sessionToken);
-      if (!nextBatch.battles.length) {
-        setBatchMessage('You have completed every currently curated comparison. More matchups can be added from the repository next.');
-        return;
-      }
-      addExpandedBattles(sessionToken, nextBatch.battles);
-      setLocation('/swipe');
-    } catch (error) {
-      if (isInvalidPerceptionSessionError(error)) {
-        retrySession();
-        setBatchError('Your private session expired, so we started a fresh one. Finish its launch queue to add another batch.');
-        return;
-      }
-      setBatchError(error instanceof Error ? error.message : 'We could not prepare another comparison batch.');
-    } finally {
-      setIsAddingBatch(false);
-    }
-  };
 
   const regions = useMemo(() => {
     const names = [...new Set((points ?? []).map((point) => point.cluster))];
@@ -253,27 +223,10 @@ export default function EcosystemMap() {
           </p>
         </div>
 
-        <section className={`mt-5 border-2 border-[#181513] p-5 md:p-6 ${hasNextBatchIntent ? 'bg-[#d7ff45]' : 'bg-[#fff8ef]'}`}>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#ff5038]">Continue your private queue</p>
-          <div className="mt-3 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-            <div className="max-w-xl">
-              <h2 className="text-2xl font-bold tracking-[-0.04em]">Add the next ten ecosystem comparisons.</h2>
-              <p className="mt-2 font-mono text-xs leading-relaxed text-[#625c55]">
-                Finish the current cohort first, then this adds the next curated batch to your existing Taste DNA session.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={handleAddBatch}
-              disabled={!sessionToken || isCreatingSession || isAddingBatch}
-              className="shrink-0 bg-[#181513] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-[#fff8ef] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isAddingBatch ? 'Preparing batch…' : isCreatingSession ? 'Preparing session…' : 'Add next batch'}
-            </button>
-          </div>
-          {batchError && <p className="mt-4 font-mono text-xs text-[#ff5038]">{batchError}</p>}
-          {batchMessage && <p className="mt-4 font-mono text-xs text-[#625c55]">{batchMessage}</p>}
-        </section>
+        <AddNextBatchCta
+          variant="banner"
+          className={`mt-5 ${hasNextBatchIntent ? '!bg-[#d7ff45]' : ''}`}
+        />
       </div>
     </div>
   );

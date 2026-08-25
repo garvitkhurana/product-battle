@@ -236,7 +236,9 @@ async function getPublicBattleViews(includeArchived = false) {
     const participantBSignal = signals.get(participantB.id);
     const participantAWins = comparison.winners.get(participantA.id) ?? 0;
     const participantBWins = comparison.winners.get(participantB.id) ?? 0;
-    const showShare = comparison.total >= 10;
+    const total = comparison.total;
+    const participantAPercentage = total > 0 ? Math.round((participantAWins / total) * 100) : 50;
+    const participantBPercentage = total > 0 ? 100 - participantAPercentage : 50;
     return [
       {
         id: battle.id,
@@ -246,9 +248,9 @@ async function getPublicBattleViews(includeArchived = false) {
         category: battle.category,
         participantA: toBattleParticipant(participantA),
         participantB: toBattleParticipant(participantB),
-        comparisonCount: comparison.total,
-        participantAPercentage: showShare ? Math.round((participantAWins / comparison.total) * 100) : 50,
-        participantBPercentage: showShare ? Math.round((participantBWins / comparison.total) * 100) : 50,
+        comparisonCount: total,
+        participantAPercentage,
+        participantBPercentage,
         participantARating: participantASignal?.rating ?? 1500,
         participantBRating: participantBSignal?.rating ?? 1500,
         participantAConfidence: Math.min(100, Math.round(((participantASignal?.comparisonCount ?? 0) / 20) * 100)),

@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import { useListBattles } from '@workspace/api-client-react';
 import { Activity, ArrowRight, ShieldAlert } from 'lucide-react';
 import { CompanyMark } from '@/components/CompanyMark';
+import { AddNextBatchCta } from '@/components/AddNextBatchCta';
 
 export default function BattlesList() {
   const { data: battles, isLoading, error } = useListBattles();
@@ -24,6 +25,8 @@ export default function BattlesList() {
             </span>
           </div>
         </header>
+
+        <AddNextBatchCta variant="banner" className="mt-8" />
 
         <div className="pt-10">
           {isLoading ? (

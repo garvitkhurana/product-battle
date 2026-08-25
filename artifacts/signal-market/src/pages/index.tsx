@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import { useListBattles } from '@workspace/api-client-react';
 import { ArrowRight, Activity, Zap } from 'lucide-react';
 import { CompanyMark } from '@/components/CompanyMark';
+import { AddNextBatchCta } from '@/components/AddNextBatchCta';
 
 export default function Index() {
   const { data: battles, isLoading } = useListBattles();
@@ -25,7 +26,7 @@ export default function Index() {
               An independent engine measuring community confidence in the latest launch cohorts through rapid, pairwise choices. No arbitrary scores. Pure relational data.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 pt-4">
               <Link 
                 href="/swipe" 
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-bold text-lg hover:bg-foreground transition-colors"
@@ -40,6 +41,7 @@ export default function Index() {
                 Browse Gallery
                 <ArrowRight className="w-5 h-5" />
               </Link>
+              <AddNextBatchCta variant="hero" label="Add new comparisons" />
             </div>
           </div>
           

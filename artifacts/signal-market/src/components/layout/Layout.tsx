@@ -8,10 +8,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: '/', label: 'Launch', icon: <Activity className="w-4 h-4" /> },
-    { href: '/battles', label: 'Comparisons', icon: <Layers className="w-4 h-4" /> },
     { href: '/swipe', label: 'Continuous', icon: <Activity className="w-4 h-4" /> },
-    { href: '/map', label: 'Ecosystem', icon: <MapIcon className="w-4 h-4" /> },
+    { href: '/battles', label: 'Comparisons', icon: <Layers className="w-4 h-4" /> },
     { href: '/dna', label: 'Taste DNA', icon: <Fingerprint className="w-4 h-4" /> },
+    { href: '/map', label: 'Ecosystem', icon: <MapIcon className="w-4 h-4" /> },
   ];
 
   return (

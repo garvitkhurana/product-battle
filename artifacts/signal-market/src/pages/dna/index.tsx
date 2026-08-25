@@ -4,6 +4,7 @@ import { isInvalidPerceptionSessionError, useSessionToken } from '@/lib/session'
 import { Loader2, Fingerprint, Lock, Share2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
+import { AddNextBatchCta } from '@/components/AddNextBatchCta';
 
 export default function TasteDna() {
   const { sessionToken, sessionError, isCreatingSession, invalidateSession, retrySession } = useSessionToken();
@@ -230,6 +231,8 @@ export default function TasteDna() {
               Copy blurb
             </button>
           </div>
+
+          <AddNextBatchCta variant="banner" className="mt-8 text-left" label="Add another ecosystem batch" />
         </div>
       )}
       </div>
