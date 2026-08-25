@@ -47,7 +47,7 @@ export function WordReactionPrompt({ open, sessionToken, target, onClose, onSess
         onSuccess: () => {
           toast({
             title: 'Word recorded',
-            description: `Private signal for ${target.participantName}. Public clouds need 5+ independent submissions.`,
+            description: `Saved for ${target.participantName}. It shows up once 5 people agree.`,
           });
           setWord('');
           onClose();
@@ -71,9 +71,9 @@ export function WordReactionPrompt({ open, sessionToken, target, onClose, onSess
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-[#181513]/45 p-4 sm:items-center">
       <div className="w-full max-w-md border-2 border-[#181513] bg-[#fff8ef] p-5 shadow-[8px_8px_0_#181513]">
         <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#ff5038]">One-word reaction</p>
-        <h2 className="mt-2 text-2xl font-bold tracking-tight">One word for {target.participantName}?</h2>
+        <h2 className="mt-2 text-2xl font-bold tracking-tight">Sum up {target.participantName} in one word.</h2>
         <p className="mt-2 font-mono text-xs leading-relaxed text-[#625c55]">
-          Optional. Stored privately until 5+ independent people submit the same word. Community perception, unverified.
+          Shows up once 5 people agree with you.
         </p>
         <form onSubmit={submit} className="mt-5 space-y-3">
           <input

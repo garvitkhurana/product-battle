@@ -115,7 +115,10 @@ export default function SwipeFlow() {
       }
     }, {
       onSuccess: (result) => {
-        if ((result.comparisonCount ?? result.tasteDna?.comparisonCount ?? nextCompletedCount) >= 10) {
+        const comparisonCount =
+          result.comparisonCount ?? result.tasteDna?.comparisonCount ?? nextCompletedCount;
+        // Unlock at 10, then every 5th vote (10, 15, 20, …) — not after every swipe.
+        if (comparisonCount >= 10 && comparisonCount % 5 === 0) {
           setWordPrompt({
             participantId: selectedParticipant.id,
             participantName: selectedParticipant.name,

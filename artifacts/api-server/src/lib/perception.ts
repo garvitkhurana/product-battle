@@ -244,17 +244,17 @@ export async function getTasteDnaForSession(sessionId: string) {
     .from(perceptionComparisonsTable)
     .where(eq(perceptionComparisonsTable.sessionId, sessionId));
   const comparisonCount = events.length;
-  const confidence = confidenceFor(comparisonCount);
+  const voteDepth = confidenceFor(comparisonCount);
   const winnerIds = events.map((event) => event.winnerParticipantId);
   if (!winnerIds.length) {
     return {
       comparisonCount,
-      confidence,
+      confidence: 0,
       canShare: false,
       headline: "Your taste DNA is still taking shape.",
       archetype: null,
       rarityPercent: null,
-      axes: AXIS_KEYS.map((key) => toAxis(key, 3, confidence)),
+      axes: AXIS_KEYS.map((key) => toAxis(key, 3, voteDepth)),
       closestCompanies: [],
       completedBattleIds: [],
     };
@@ -269,8 +269,14 @@ export async function getTasteDnaForSession(sessionId: string) {
   }
   const axes = AXIS_KEYS.map((key) => {
     const scores = scoresByKey.get(key) ?? [3];
-    return toAxis(key, Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length), confidence);
+    return toAxis(key, Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length), voteDepth);
   });
+  // Breadth × depth: blank axes must discount overall confidence.
+  const signalAxes = axes.filter((axis) => Math.abs(axis.score - 3) >= 0.75).length;
+  const confidence = Math.min(
+    100,
+    Math.round((signalAxes / AXIS_KEYS.length) * voteDepth),
+  );
   const strongest = [...axes].sort((a, b) => Math.abs(b.score - 3) - Math.abs(a.score - 3))[0];
   const { archetype, rarityPercent } = archetypeFor(axes);
   const headline =
