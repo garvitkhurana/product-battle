@@ -2,7 +2,7 @@
   "source": "https://github.com/garvitkhurana/product-battle/tree/main/data",
   "importedAt": "2026-08-23",
   "meta": {
-    "note": "Curated YC vs non-YC head-to-head rivalries. Opinions only — not investment advice. Not affiliated with Y Combinator.",
+    "note": "Curated YC vs non-YC head-to-head rivalries. Opinions only \u2014 not investment advice. Not affiliated with Y Combinator.",
     "vote_price_usd": 0.99
   },
   "competitors": [
@@ -478,38 +478,6 @@
     },
     {
       "category": "B2B",
-      "description": "Dotmatics (now owned by Siemens) offers ELN, LIMS, and chemistry-aware data tools for life-science R&D teams, and is the most frequently cited rival to Benchling.",
-      "id": "ext-dotmatics",
-      "location": "Boston, MA, USA",
-      "logo_url": "https://www.google.com/s2/favicons?domain=dotmatics.com&sz=128",
-      "name": "Dotmatics",
-      "one_liner": "Scientific informatics suite for biotech and pharma R&D.",
-      "slug": "dotmatics",
-      "tags": [
-        "SaaS",
-        "Biotech",
-        "R&D Software"
-      ],
-      "website": "https://www.dotmatics.com"
-    },
-    {
-      "category": "B2B",
-      "description": "Matillion builds and manages data pipelines with low-code, push-down transformations for cloud data platforms, competing with Fivetran in data integration.",
-      "id": "ext-matillion",
-      "location": "Manchester, UK; Denver, CO, USA",
-      "logo_url": "https://www.google.com/s2/favicons?domain=matillion.com&sz=128",
-      "name": "Matillion",
-      "one_liner": "Cloud-native ETL/ELT platform for data warehouses.",
-      "slug": "matillion",
-      "tags": [
-        "SaaS",
-        "Data Engineering",
-        "Analytics"
-      ],
-      "website": "https://www.matillion.com"
-    },
-    {
-      "category": "B2B",
       "description": "Amplitude is a Nasdaq-listed product analytics company that competes with Heap on event tracking, funnels, and behavioral analysis for product teams.",
       "id": "ext-amplitude",
       "location": "San Francisco, CA, USA",
@@ -621,37 +589,6 @@
       "website": "https://fadv.com"
     },
     {
-      "category": "Industrials",
-      "description": "IonQ (NYSE: IONQ) builds trapped-ion quantum computers and cloud access, and is routinely ranked alongside Rigetti as one of the two leading pure-play quantum computing stocks.",
-      "id": "ext-ionq",
-      "location": "College Park, MD, USA",
-      "logo_url": "https://www.google.com/s2/favicons?domain=ionq.com&sz=128",
-      "name": "IonQ",
-      "one_liner": "Public trapped-ion quantum computing company.",
-      "slug": "ionq",
-      "tags": [
-        "Quantum Computing",
-        "Hardware"
-      ],
-      "website": "https://ionq.com"
-    },
-    {
-      "category": "B2B",
-      "description": "ShipMonk operates a multi-warehouse fulfillment network with inventory software for DTC and e-commerce brands, competing directly with ShipBob in outsourced fulfillment.",
-      "id": "ext-shipmonk",
-      "location": "Fort Lauderdale, FL, USA",
-      "logo_url": "https://www.google.com/s2/favicons?domain=shipmonk.com&sz=128",
-      "name": "ShipMonk",
-      "one_liner": "Tech-driven third-party fulfillment for e-commerce brands.",
-      "slug": "shipmonk",
-      "tags": [
-        "Logistics",
-        "E-commerce",
-        "Fulfillment"
-      ],
-      "website": "https://www.shipmonk.com"
-    },
-    {
       "category": "Healthcare",
       "description": "Twist Bioscience makes synthetic DNA at scale on a silicon-based platform, supplying biotech, pharma, and industrial biology customers, including Ginkgo itself.",
       "id": "ext-twist-bioscience",
@@ -666,52 +603,6 @@
         "DNA Synthesis"
       ],
       "website": "https://www.twistbioscience.com"
-    },
-    {
-      "category": "Industrials",
-      "description": "NuScale Power designs and licenses small modular nuclear reactors, and was the first SMR maker to win NRC design approval and go public.",
-      "id": "ext-nuscale",
-      "location": "Tigard, OR",
-      "logo_url": "https://www.google.com/s2/favicons?domain=nuscalepower.com&sz=128",
-      "name": "NuScale Power",
-      "one_liner": "Public small modular reactor developer for carbon-free power.",
-      "slug": "nuscale-power",
-      "tags": [
-        "Small Modular Reactors",
-        "Nuclear Energy",
-        "Climate"
-      ],
-      "website": "https://www.nuscalepower.com"
-    },
-    {
-      "category": "B2B",
-      "description": "Sysco is the incumbent broadline food distributor supplying restaurants, healthcare, and education customers across North America.",
-      "id": "ext-sysco",
-      "location": "Houston, TX",
-      "logo_url": "https://www.google.com/s2/favicons?domain=sysco.com&sz=128",
-      "name": "Sysco",
-      "one_liner": "Largest foodservice distributor in North America.",
-      "slug": "sysco",
-      "tags": [
-        "Food Distribution",
-        "Supply Chain"
-      ],
-      "website": "https://www.sysco.com"
-    },
-    {
-      "category": "Real Estate and Construction",
-      "description": "United Rentals rents construction and industrial equipment through thousands of locations across North America and Europe.",
-      "id": "ext-united-rentals",
-      "location": "Stamford, CT",
-      "logo_url": "https://www.google.com/s2/favicons?domain=unitedrentals.com&sz=128",
-      "name": "United Rentals",
-      "one_liner": "World's largest equipment rental company.",
-      "slug": "united-rentals",
-      "tags": [
-        "Construction",
-        "Equipment Rental"
-      ],
-      "website": "https://www.unitedrentals.com"
     },
     {
       "category": "B2B",
@@ -826,22 +717,6 @@
       "website": "https://birdeye.com"
     },
     {
-      "category": "B2B",
-      "description": "Zippin builds cashierless checkout systems for retailers, using cameras and sensors that let shoppers grab items and walk out without scanning.",
-      "id": "ext-zippin",
-      "location": "San Francisco, CA",
-      "logo_url": "https://www.google.com/s2/favicons?domain=getzippin.com&sz=128",
-      "name": "Zippin",
-      "one_liner": "Computer-vision checkout-free store technology.",
-      "slug": "zippin",
-      "tags": [
-        "Computer Vision",
-        "Cashierless Checkout",
-        "Retail Tech"
-      ],
-      "website": "https://www.getzippin.com"
-    },
-    {
       "category": "Healthcare",
       "description": "Hims & Hers is a publicly traded telehealth company selling prescriptions and treatments for sexual health, hair loss, mental health, and more.",
       "id": "ext-hims-hers",
@@ -861,7 +736,7 @@
       "category": "Consumer",
       "description": "iFood commands over 80% of Brazil's food delivery market and is fully owned by Prosus and its affiliate Movile.",
       "id": "ext-ifood",
-      "location": "São Paulo, Brazil",
+      "location": "S\u00e3o Paulo, Brazil",
       "logo_url": "https://www.google.com/s2/favicons?domain=ifood.com.br&sz=128",
       "name": "iFood",
       "one_liner": "Dominant Brazilian food delivery app, owned by Prosus.",
@@ -904,22 +779,6 @@
         "Publishing"
       ],
       "website": "https://www.si.com"
-    },
-    {
-      "category": "B2B",
-      "description": "Sinch is a Sweden-based, publicly traded (XSTO: SINCH) communications platform providing SMS, voice, and email APIs for enterprises worldwide.",
-      "id": "ext-sinch",
-      "location": "Stockholm, Sweden",
-      "logo_url": "https://www.google.com/s2/favicons?domain=sinch.com&sz=128",
-      "name": "Sinch",
-      "one_liner": "Public CPaaS company for messaging, voice, and email at scale.",
-      "slug": "sinch",
-      "tags": [
-        "CPaaS",
-        "Messaging",
-        "API"
-      ],
-      "website": "https://www.sinch.com"
     },
     {
       "category": "B2B",
@@ -982,21 +841,6 @@
         "Security"
       ],
       "website": "https://www.motorolasolutions.com"
-    },
-    {
-      "category": "Fintech",
-      "description": "Embroker is a tech-first insurance brokerage offering self-serve commercial coverage for startups and small businesses.",
-      "id": "ext-embroker",
-      "location": "San Francisco, CA, USA",
-      "logo_url": "https://www.google.com/s2/favicons?domain=embroker.com&sz=128",
-      "name": "Embroker",
-      "one_liner": "Digital commercial insurance brokerage for startups and SMBs.",
-      "slug": "embroker",
-      "tags": [
-        "Insurance",
-        "Insurtech"
-      ],
-      "website": "https://www.embroker.com"
     },
     {
       "category": "Healthcare",
@@ -1095,22 +939,6 @@
     },
     {
       "category": "B2B",
-      "description": "DHL Global Forwarding is one of the world's largest traditional air and ocean freight forwarders, part of the publicly traded Deutsche Post DHL Group.",
-      "id": "ext-dhl-global-forwarding",
-      "location": "Bonn, Germany",
-      "logo_url": "https://www.google.com/s2/favicons?domain=dhl.com&sz=128",
-      "name": "DHL Global Forwarding",
-      "one_liner": "Legacy global freight forwarding arm of Deutsche Post DHL.",
-      "slug": "dhl-global-forwarding",
-      "tags": [
-        "Logistics",
-        "Supply Chain and Logistics",
-        "Freight"
-      ],
-      "website": "https://www.dhl.com/global-en/home/global-forwarding.html"
-    },
-    {
-      "category": "B2B",
       "description": "Toast (NYSE: TOST) is a restaurant-focused POS, payments, and operations platform used broadly across cafes and restaurants.",
       "id": "ext-toast",
       "location": "Boston, MA, USA",
@@ -1156,6 +984,36 @@
         "Quick Commerce"
       ],
       "website": "https://blinkit.com"
+    },
+    {
+      "category": "Fintech",
+      "description": "PayPal is a long-running online payments and checkout brand used by consumers and merchants worldwide.",
+      "id": "ext-paypal",
+      "location": "San Jose, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=paypal.com&sz=128",
+      "name": "PayPal",
+      "one_liner": "Household-name online payments and checkout.",
+      "slug": "paypal",
+      "tags": [
+        "Payments",
+        "Fintech"
+      ],
+      "website": "https://www.paypal.com"
+    },
+    {
+      "category": "Fintech",
+      "description": "Robinhood is a commission-free trading app known for bringing retail investors into stocks and crypto.",
+      "id": "ext-robinhood",
+      "location": "Menlo Park, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=robinhood.com&sz=128",
+      "name": "Robinhood",
+      "one_liner": "Commission-free retail trading app.",
+      "slug": "robinhood",
+      "tags": [
+        "Fintech",
+        "Trading"
+      ],
+      "website": "https://robinhood.com"
     }
   ],
   "battles": [
@@ -1491,28 +1349,6 @@
     },
     {
       "featured": false,
-      "id": "battle-benchling-dotmatics",
-      "left_argument": "Cloud-native ELN/LIMS built molecular-biology-first for modern biotech.",
-      "right_argument": "Broad scientific informatics suite with deep chemistry support.",
-      "rival_id": "ext-dotmatics",
-      "slug": "benchling-vs-dotmatics",
-      "space": "Biotech R&D Software",
-      "title": "Benchling vs Dotmatics",
-      "yc_slug": "benchling"
-    },
-    {
-      "featured": false,
-      "id": "battle-fivetran-matillion",
-      "left_argument": "Zero-maintenance managed ELT with 700+ connectors.",
-      "right_argument": "Cloud-native ETL with AI-assisted, low-code pipeline building.",
-      "rival_id": "ext-matillion",
-      "slug": "fivetran-vs-matillion",
-      "space": "Data Integration",
-      "title": "Fivetran vs Matillion",
-      "yc_slug": "fivetran"
-    },
-    {
-      "featured": false,
       "id": "battle-heap-amplitude",
       "left_argument": "Auto-captures every user interaction with no manual event tagging.",
       "right_argument": "Mature, plan-and-tag analytics suite trusted at enterprise scale.",
@@ -1590,28 +1426,6 @@
     },
     {
       "featured": false,
-      "id": "battle-rigetti-ionq",
-      "left_argument": "Superconducting-qubit quantum processors with cloud access.",
-      "right_argument": "Trapped-ion quantum systems with faster-growing commercial revenue.",
-      "rival_id": "ext-ionq",
-      "slug": "rigetti-computing-vs-ionq",
-      "space": "Quantum Computing",
-      "title": "Rigetti Computing vs IonQ",
-      "yc_slug": "rigetti-computing"
-    },
-    {
-      "featured": false,
-      "id": "battle-shipbob-shipmonk",
-      "left_argument": "Distributed fulfillment network built for fast-growing DTC brands.",
-      "right_argument": "Growth-equity-backed 3PL with tech-driven multi-warehouse fulfillment.",
-      "rival_id": "ext-shipmonk",
-      "slug": "shipbob-vs-shipmonk",
-      "space": "E-commerce Fulfillment",
-      "title": "ShipBob vs ShipMonk",
-      "yc_slug": "shipbob"
-    },
-    {
-      "featured": false,
       "id": "battle-ginkgo-bioworks-twist",
       "left_argument": "Full-stack biology foundry that designs and engineers organisms for customers.",
       "right_argument": "The DNA supplier of record, manufacturing synthetic genes at industrial scale, including for Ginkgo.",
@@ -1620,39 +1434,6 @@
       "space": "Synthetic Biology",
       "title": "Ginkgo Bioworks vs Twist Bioscience",
       "yc_slug": "ginkgo-bioworks"
-    },
-    {
-      "featured": false,
-      "id": "battle-oklo-nuscale",
-      "left_argument": "Fast fission micro-reactors aimed at data centers and remote power.",
-      "right_argument": "First small modular reactor design to win NRC approval and go public.",
-      "rival_id": "ext-nuscale",
-      "slug": "oklo-vs-nuscale-power",
-      "space": "Nuclear Energy",
-      "title": "Oklo vs NuScale Power",
-      "yc_slug": "oklo"
-    },
-    {
-      "featured": false,
-      "id": "battle-grubmarket-sysco",
-      "left_argument": "Tech-enabled marketplace and software modernizing food supply chains.",
-      "right_argument": "The incumbent broadline distributor restaurants and institutions already rely on.",
-      "rival_id": "ext-sysco",
-      "slug": "grubmarket-vs-sysco",
-      "space": "Food Distribution",
-      "title": "GrubMarket vs Sysco",
-      "yc_slug": "grubmarket"
-    },
-    {
-      "featured": false,
-      "id": "battle-equipmentshare-united-rentals",
-      "left_argument": "Telematics-driven rental and fleet software built for contractors.",
-      "right_argument": "The world's largest equipment rental company by fleet and locations.",
-      "rival_id": "ext-united-rentals",
-      "slug": "equipmentshare-vs-united-rentals",
-      "space": "Equipment Rental",
-      "title": "EquipmentShare vs United Rentals",
-      "yc_slug": "equipmentshare"
     },
     {
       "featured": true,
@@ -1701,7 +1482,7 @@
     {
       "featured": false,
       "id": "battle-truebill-trim",
-      "left_argument": "Now Rocket Money — tracks spending and cancels unwanted subscriptions at scale.",
+      "left_argument": "Now Rocket Money \u2014 tracks spending and cancels unwanted subscriptions at scale.",
       "right_argument": "OneMain-owned rival that negotiates bills and cancels subscriptions on your behalf.",
       "rival_id": "ext-trim",
       "slug": "truebill-vs-trim",
@@ -1730,17 +1511,6 @@
       "space": "Local Business Messaging",
       "title": "Podium vs Birdeye",
       "yc_slug": "podium"
-    },
-    {
-      "featured": false,
-      "id": "battle-caper-zippin",
-      "left_argument": "Instacart-owned smart cart technology now rolling out at Wegmans and other grocers.",
-      "right_argument": "Computer-vision checkout-free store technology backed by SAP and Kraft Heinz's venture arm.",
-      "rival_id": "ext-zippin",
-      "slug": "caper-vs-zippin",
-      "space": "Cashierless Retail",
-      "title": "Caper vs Zippin",
-      "yc_slug": "caper"
     },
     {
       "featured": false,
@@ -1788,17 +1558,6 @@
     },
     {
       "featured": false,
-      "id": "battle-bird-sinch",
-      "left_argument": "Owns its own carrier network for faster, cheaper omnichannel messaging.",
-      "right_argument": "Public CPaaS scale spanning SMS, voice, and email across 60+ countries.",
-      "rival_id": "ext-sinch",
-      "slug": "bird-vs-sinch",
-      "space": "CPaaS",
-      "title": "Bird vs Sinch",
-      "yc_slug": "bird"
-    },
-    {
-      "featured": false,
       "id": "battle-rippling-bamboohr",
       "left_argument": "Unified HR, IT, and Finance system built for fast-scaling companies.",
       "right_argument": "Long-established, SMB-friendly HRIS with deep small-business trust.",
@@ -1840,17 +1599,6 @@
       "space": "Public Safety / ALPR",
       "title": "Flock Safety vs Motorola Solutions",
       "yc_slug": "flock-safety"
-    },
-    {
-      "featured": false,
-      "id": "battle-newfront-embroker",
-      "left_argument": "Tech-enabled brokerage blending advisors with software for mid-market risk.",
-      "right_argument": "Self-serve digital brokerage built for startups and SMBs.",
-      "rival_id": "ext-embroker",
-      "slug": "newfront-vs-embroker",
-      "space": "Insurtech Brokerage",
-      "title": "Newfront vs Embroker",
-      "yc_slug": "newfront-insurance"
     },
     {
       "featured": false,
@@ -1920,17 +1668,6 @@
     },
     {
       "featured": false,
-      "id": "battle-nowports-dhl-global-forwarding",
-      "left_argument": "Digital-first freight forwarder streamlining LATAM trade with tech and embedded financing.",
-      "right_argument": "Traditional global freight forwarding giant with legacy scale in ocean and air.",
-      "rival_id": "ext-dhl-global-forwarding",
-      "slug": "nowports-vs-dhl-global-forwarding",
-      "space": "Freight Forwarding",
-      "title": "Nowports vs DHL Global Forwarding",
-      "yc_slug": "nowports"
-    },
-    {
-      "featured": false,
       "id": "battle-odeko-toast",
       "left_argument": "All-in-one ordering, supply, and operations platform built specifically for independent cafes.",
       "right_argument": "Public restaurant POS and ordering platform used broadly across cafes and restaurants.",
@@ -1961,6 +1698,50 @@
       "space": "Quick Commerce",
       "title": "Zepto vs Blinkit",
       "yc_slug": "zepto"
+    },
+    {
+      "featured": false,
+      "id": "battle-stripe-paypal",
+      "left_argument": "Developer-first APIs, docs, and startup default.",
+      "right_argument": "The payments brand most consumers already recognize and trust.",
+      "rival_id": "ext-paypal",
+      "slug": "stripe-vs-paypal",
+      "space": "Payments",
+      "title": "Stripe vs PayPal",
+      "yc_slug": "stripe"
+    },
+    {
+      "featured": false,
+      "id": "battle-coinbase-robinhood",
+      "left_argument": "Regulated crypto-first exchange built for trust and compliance.",
+      "right_argument": "Commission-free app that brought retail investors into stocks and crypto alike.",
+      "rival_id": "ext-robinhood",
+      "slug": "coinbase-vs-robinhood",
+      "space": "Trading Apps",
+      "title": "Coinbase vs Robinhood",
+      "yc_slug": "coinbase"
+    },
+    {
+      "featured": false,
+      "id": "battle-doordash-toast",
+      "left_argument": "Consumer delivery marketplace density and logistics.",
+      "right_argument": "Restaurant POS and back-of-house ops platform.",
+      "rival_id": "ext-toast",
+      "slug": "doordash-vs-toast",
+      "space": "Food Tech",
+      "title": "DoorDash vs Toast",
+      "yc_slug": "doordash"
+    },
+    {
+      "featured": false,
+      "id": "battle-gusto-bamboohr",
+      "left_argument": "Payroll, benefits, and compliance rails for growing teams.",
+      "right_argument": "SMB HRIS focused on hiring and people ops software \u2014 not a payroll bank.",
+      "rival_id": "ext-bamboohr",
+      "slug": "gusto-vs-bamboohr",
+      "space": "HR Tech",
+      "title": "Gusto vs BambooHR",
+      "yc_slug": "gusto"
     }
   ]
 }
