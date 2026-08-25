@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { FileText, Shield, UserX } from 'lucide-react';
+import { FileText, MessageSquare, Shield, UserX } from 'lucide-react';
 
 export default function Legal() {
   return (
@@ -46,6 +46,21 @@ export default function Legal() {
                 <li><strong>Ephemeral Sessions:</strong> Your comparative choices are tied to a temporary session token. If you do not create an account, this connection is severed when your local storage clears.</li>
                 <li><strong>Aggregate Signal:</strong> Individual preferences are immediately dissolved into the mathematical aggregate. We care about the cohort's geometry, not your specific identity.</li>
               </ul>
+            </div>
+          </section>
+
+          {/* Community Words */}
+          <section className="space-y-6">
+            <h2 className="text-2xl font-bold flex items-center gap-2 border-b border-border pb-4">
+              <MessageSquare className="w-6 h-6 text-primary" /> Community Words
+            </h2>
+            <div className="prose prose-neutral max-w-none font-mono text-sm leading-relaxed space-y-4 text-muted-foreground">
+              <p>
+                Occasionally, participants may be shown an optional prompt to describe a company in one word. Submitted words are stored against the same ephemeral session as your comparisons and are never displayed publicly until at least 5 independent sessions submit the same word — this prevents any single submission from appearing as if it were verified community consensus.
+              </p>
+              <p>
+                Words that never reach this threshold are not displayed and do not accumulate individual visibility. We reserve the right to filter or remove words that are abusive, spam, or manipulated.
+              </p>
             </div>
           </section>
 
