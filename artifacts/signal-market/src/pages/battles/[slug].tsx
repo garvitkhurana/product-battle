@@ -7,6 +7,7 @@ import {
   isRecordedPerceptionSwipeError,
   useSessionToken,
 } from '@/lib/session';
+import { markWordPromptOffered, shouldOfferWordPrompt } from '@/lib/wordPromptEligibility';
 import { ArrowLeft, Check, Copy, Link2, Loader2, Share2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
@@ -66,7 +67,14 @@ export default function BattleDetail() {
             title: 'Signal recorded',
             description: 'Live community split updated for this comparison.',
           });
-          if ((result.comparisonCount ?? result.tasteDna?.comparisonCount ?? 0) >= 10) {
+          if (
+            sessionToken &&
+            shouldOfferWordPrompt(
+              sessionToken,
+              result.comparisonCount ?? result.tasteDna?.comparisonCount ?? 0,
+            )
+          ) {
+            markWordPromptOffered(sessionToken);
             setWordPrompt({ participantId: selected.id, participantName: selected.name });
           }
         },
@@ -227,14 +235,17 @@ export default function BattleDetail() {
                     <p className="font-mono text-4xl font-bold tracking-[-0.08em] md:text-5xl">{aPct}%</p>
                   )}
                 </div>
-                <div className="absolute bottom-7 left-7 right-7 border-t border-[#181513]/50 pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] md:bottom-10 md:left-10 md:right-10">
-                  {isComplete
-                    ? alreadyRecorded
-                      ? 'Already recorded'
-                      : selectedId === battle.participantA.id
-                        ? 'Your signal'
-                        : 'Not selected'
-                    : 'Choose this side'}
+                <div className="absolute bottom-7 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
+                  <div className="border-t border-[#181513]/50" />
+                  <p className="mt-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
+                    {isComplete
+                      ? alreadyRecorded
+                        ? 'Already recorded'
+                        : selectedId === battle.participantA.id
+                          ? 'Your signal'
+                          : 'Not selected'
+                      : 'Choose this side'}
+                  </p>
                 </div>
               </button>
 
@@ -269,14 +280,17 @@ export default function BattleDetail() {
                     <p className="font-mono text-4xl font-bold tracking-[-0.08em] md:text-5xl">{bPct}%</p>
                   )}
                 </div>
-                <div className="absolute bottom-7 left-7 right-7 border-t border-[#181513]/50 pt-4 font-mono text-[10px] font-bold uppercase tracking-[0.16em] md:bottom-10 md:left-10 md:right-10">
-                  {isComplete
-                    ? alreadyRecorded
-                      ? 'Already recorded'
-                      : selectedId === battle.participantB.id
-                        ? 'Your signal'
-                        : 'Not selected'
-                    : 'Choose this side'}
+                <div className="absolute bottom-7 left-7 right-7 md:bottom-10 md:left-10 md:right-10">
+                  <div className="border-t border-[#181513]/50" />
+                  <p className="mt-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
+                    {isComplete
+                      ? alreadyRecorded
+                        ? 'Already recorded'
+                        : selectedId === battle.participantB.id
+                          ? 'Your signal'
+                          : 'Not selected'
+                      : 'Choose this side'}
+                  </p>
                 </div>
               </button>
             </div>

@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
 import { WordReactionPrompt } from '@/components/WordReactionPrompt';
 import { readExpandedBattles } from '@/lib/expandedQueue';
+import { markWordPromptOffered, shouldOfferWordPrompt } from '@/lib/wordPromptEligibility';
 
 export default function SwipeFlow() {
   const { sessionToken, sessionError, isCreatingSession, invalidateSession, retrySession } = useSessionToken();
@@ -117,8 +118,8 @@ export default function SwipeFlow() {
       onSuccess: (result) => {
         const comparisonCount =
           result.comparisonCount ?? result.tasteDna?.comparisonCount ?? nextCompletedCount;
-        // Unlock at 10, then every 5th vote (10, 15, 20, …) — not after every swipe.
-        if (comparisonCount >= 10 && comparisonCount % 5 === 0) {
+        if (sessionToken && shouldOfferWordPrompt(sessionToken, comparisonCount)) {
+          markWordPromptOffered(sessionToken);
           setWordPrompt({
             participantId: selectedParticipant.id,
             participantName: selectedParticipant.name,
