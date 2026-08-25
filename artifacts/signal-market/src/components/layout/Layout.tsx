@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'wouter';
 import { Layers, Activity, Fingerprint, Map as MapIcon } from 'lucide-react';
 import { Show, UserButton } from '@clerk/react';
+import { Logo } from '@/components/Logo';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
@@ -19,9 +20,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-sm">
         <div className="container mx-auto px-4 md:px-6 min-h-16 py-3 md:h-16 md:py-0 flex flex-wrap items-center justify-between">
           <div className="flex min-w-0 items-center gap-8">
-            <Link href="/" className="shrink-0 font-bold text-xl tracking-tight text-primary flex items-center gap-2">
-              <span className="w-3 h-3 bg-primary" />
-              YC BATTLE
+            <Link href="/" className="shrink-0 transition-opacity hover:opacity-80">
+              <Logo />
             </Link>
             
             <nav className="hidden md:flex items-center gap-6">
@@ -84,10 +84,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="container mx-auto px-4 py-12 md:py-16">
           <div className="grid grid-cols-1 gap-12 md:grid-cols-5">
             <div className="md:col-span-2 space-y-4">
-              <div className="font-bold tracking-tight text-xl flex items-center gap-2">
-                <span className="w-3 h-3 bg-foreground" />
-                YC BATTLE
-              </div>
+              <Logo iconClassName="h-8 w-8" />
               <p className="text-muted-foreground text-sm max-w-sm font-mono leading-relaxed">
                 An independent public perception engine. A sharp, cultural signal board capturing community confidence in emerging cohorts.
               </p>
