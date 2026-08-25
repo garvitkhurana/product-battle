@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRoute } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
-import { getGetBattleQueryKey, useGetBattle, useRecordPerceptionSwipe } from '@workspace/api-client-react';
+import {
+  getGetBattleQueryKey,
+  useGetBattle,
+  useGetTasteDna,
+  useRecordPerceptionSwipe,
+} from '@workspace/api-client-react';
 import {
   isInvalidPerceptionSessionError,
   isRecordedPerceptionSwipeError,
@@ -17,7 +22,13 @@ import { WordReactionPrompt } from '@/components/WordReactionPrompt';
 export default function BattleDetail() {
   const [, params] = useRoute('/battles/:slug');
   const slug = params?.slug || '';
-  const { sessionToken, invalidateSession } = useSessionToken();
+  const {
+    sessionToken,
+    sessionError,
+    isCreatingSession,
+    invalidateSession,
+    retrySession,
+  } = useSessionToken();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -29,8 +40,11 @@ export default function BattleDetail() {
   });
 
   const recordSwipe = useRecordPerceptionSwipe();
+  const tasteDna = useGetTasteDna();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [alreadyRecorded, setAlreadyRecorded] = useState(false);
+  const [checkedVoteHistoryKey, setCheckedVoteHistoryKey] = useState<string | null>(null);
+  const voteHistoryRequestKey = useRef<string | null>(null);
   const [wordPrompt, setWordPrompt] = useState<{ participantId: string; participantName: string } | null>(null);
   const [showEntryCue] = useState(() => {
     const entrySlug = sessionStorage.getItem('yc_battle_entry');
@@ -38,6 +52,39 @@ export default function BattleDetail() {
     sessionStorage.removeItem('yc_battle_entry');
     return true;
   });
+
+  const voteHistoryKey = sessionToken && battle ? `${sessionToken}:${battle.id}` : null;
+
+  useEffect(() => {
+    if (!sessionToken || !battle || !voteHistoryKey) return;
+    if (voteHistoryRequestKey.current === voteHistoryKey) return;
+
+    voteHistoryRequestKey.current = voteHistoryKey;
+    setCheckedVoteHistoryKey(null);
+    setSelectedId(null);
+    setAlreadyRecorded(false);
+
+    tasteDna.mutate(
+      { data: { sessionToken } },
+      {
+        onSuccess: (dna) => {
+          setAlreadyRecorded(dna.completedBattleIds.includes(battle.id));
+          setCheckedVoteHistoryKey(voteHistoryKey);
+        },
+        onError: (error) => {
+          if (isInvalidPerceptionSessionError(error)) {
+            voteHistoryRequestKey.current = null;
+            invalidateSession();
+            return;
+          }
+
+          // The write endpoint remains authoritative and rejects duplicate votes.
+          // Let the page recover instead of trapping visitors behind a loading state.
+          setCheckedVoteHistoryKey(voteHistoryKey);
+        },
+      },
+    );
+  }, [battle, invalidateSession, sessionToken, tasteDna, voteHistoryKey]);
 
   const refreshSplit = async () => {
     await queryClient.invalidateQueries({ queryKey: getGetBattleQueryKey(slug) });
@@ -128,7 +175,32 @@ export default function BattleDetail() {
     window.open(intent, '_blank', 'noopener,noreferrer');
   };
 
-  if (isLoading) {
+  if (sessionError) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-[#f6e5d2] p-5">
+        <div className="max-w-lg border-2 border-[#181513] bg-[#fff8ef] p-8 text-center shadow-[6px_6px_0_#181513]">
+          <p className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-[#ff5038]">
+            Private session unavailable
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight">We could not check your prior signals.</h1>
+          <button
+            type="button"
+            onClick={retrySession}
+            className="mt-7 bg-[#181513] px-6 py-3 font-mono text-xs font-bold uppercase tracking-widest text-[#fff8ef]"
+          >
+            Retry session
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    isLoading ||
+    isCreatingSession ||
+    !sessionToken ||
+    (voteHistoryKey !== null && checkedVoteHistoryKey !== voteHistoryKey)
+  ) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
