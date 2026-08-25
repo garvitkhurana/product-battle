@@ -5,6 +5,7 @@ import { useLocation } from 'wouter';
 import { addExpandedBattles, getNextComparisonBatch } from '@/lib/expandedQueue';
 import { isInvalidPerceptionSessionError, useSessionToken } from '@/lib/session';
 import { useToast } from '@/hooks/use-toast';
+import { CompanyMark } from '@/components/CompanyMark';
 
 const REGION_COLORS = ['#ff5038', '#d7ff45', '#8f5cff', '#57c3ff', '#ffb347', '#7ddea2'];
 
@@ -91,7 +92,7 @@ export default function EcosystemMap() {
     point,
     left: ((point.x - minX) / width) * 100,
     top: ((point.y - minY) / height) * 100,
-    size: 10 + Math.round((point.confidence / 100) * 18),
+    size: point.confidence >= 60 ? 'md' as const : 'sm' as const,
   }));
   const pointPositions = new Map(
     plottedPoints.map(({ point, left, top }) => [point.participant.id, { left, top }]),
@@ -225,20 +226,22 @@ export default function EcosystemMap() {
                     key={point.participant.id}
                     onClick={() => setLocation(`/companies/${point.participant.slug}`)}
                     aria-label={`Open ${point.participant.name}`}
-                    className="absolute z-20 -translate-x-1/2 -translate-y-1/2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#181513]"
+                    className="group absolute z-20 -translate-x-1/2 -translate-y-1/2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#181513]"
                     style={{ left: `${left}%`, top: `${top}%` }}
                     title={`${point.participant.name} · ${point.cluster}`}
                   >
                     <span
-                      className="flex items-center justify-center border border-[#181513] font-mono text-[9px] font-bold text-[#181513] shadow-[2px_2px_0_rgba(24,21,19,0.35)] transition-transform hover:scale-110"
-                      style={{
-                        width: size,
-                        height: size,
-                        backgroundColor: regionColor.get(point.cluster) ?? '#fff8ef',
-                        opacity: point.confidence < 25 ? 0.45 : 0.95,
-                      }}
+                      className={`block border-2 bg-[#fff8ef] p-0.5 shadow-[2px_2px_0_rgba(24,21,19,0.35)] transition-transform group-hover:scale-110 ${
+                        point.confidence < 25 ? 'opacity-45' : 'opacity-95'
+                      }`}
+                      style={{ borderColor: regionColor.get(point.cluster) ?? '#181513' }}
                     >
-                      {point.participant.name.slice(0, 1)}
+                      <CompanyMark
+                        participant={point.participant}
+                        size={size}
+                        tone="neutral"
+                        className="!border-[1.5px]"
+                      />
                     </span>
                   </button>
                 ))}
