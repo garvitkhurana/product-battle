@@ -31,6 +31,10 @@ function axisPosition(axis: DnaAxis): number {
   return Math.max(0, Math.min(100, ((axis.score - 1) / 4) * 100));
 }
 
+function hasAxisSignal(axis: DnaAxis & { confidence: number }): boolean {
+  return Math.abs(axis.score - 3) >= 0.05 && axis.confidence >= 40;
+}
+
 function archetypeName(value: string): string {
   return value
     .replace(/^THE\s+/i, "")
@@ -99,10 +103,7 @@ export default function TasteDna() {
   const { data: dna, isPending: isLoading, error } = tasteDna;
 
   const meaningfulAxes = useMemo(
-    () =>
-      (dna?.axes ?? []).filter(
-        (axis) => Math.abs(axis.score - 3) >= 0.75 && axis.confidence >= 25,
-      ),
+    () => (dna?.axes ?? []).filter(hasAxisSignal),
     [dna?.axes],
   );
   const topAxis =
@@ -117,23 +118,22 @@ export default function TasteDna() {
     if (!dna) return null;
     const archetype = dna.archetype || "TASTE DNA";
     const tendency =
-      topAxis && Math.abs(topAxis.score - 3) >= 0.75
-        ? axisTendency(topAxis)
-        : "";
+      topAxis && hasAxisSignal(topAxis) ? axisTendency(topAxis) : "";
     const text = `I’m the ${archetypeName(archetype)} on YC Battle.\n${dna.headline}\nWhat’s your startup taste?`;
     const params = new URLSearchParams({
       archetype,
       headline: dna.headline,
+      v: "2",
     });
     if (tendency) params.set("tendency", tendency);
-    const origin =
+    const assetOrigin =
       typeof window !== "undefined"
         ? window.location.origin
         : "https://ycbattle.com";
     return {
       text,
-      cardUrl: `${origin}/api/card/dna?${params.toString()}`,
-      imageUrl: `${origin}/api/og/dna.png?${params.toString()}`,
+      cardUrl: `https://ycbattle.com/api/card/dna?${params.toString()}`,
+      imageUrl: `${assetOrigin}/api/og/dna.png?${params.toString()}`,
     };
   };
 
@@ -341,8 +341,7 @@ export default function TasteDna() {
                     Dominant Axes
                   </h3>
                   {(dna.axes ?? []).map((axis) => {
-                    const meaningful =
-                      Math.abs(axis.score - 3) >= 0.75 && axis.confidence >= 25;
+                    const meaningful = hasAxisSignal(axis);
                     const [lowLabel, highLabel] = axisEndpoints(axis);
                     return (
                       <div

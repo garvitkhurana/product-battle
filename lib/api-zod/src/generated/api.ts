@@ -469,7 +469,7 @@ export const RecordPerceptionSwipeResponse = zod.object({
   "axes": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),
-  "score": zod.int().min(1).max(recordPerceptionSwipeResponseTasteDnaAxesItemScoreMax),
+  "score": zod.number().min(1).max(recordPerceptionSwipeResponseTasteDnaAxesItemScoreMax),
   "confidence": zod.int().min(recordPerceptionSwipeResponseTasteDnaAxesItemConfidenceMin).max(recordPerceptionSwipeResponseTasteDnaAxesItemConfidenceMax)
 })),
   "closestCompanies": zod.array(zod.string()),
@@ -508,7 +508,7 @@ export const GetTasteDnaResponse = zod.object({
   "axes": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),
-  "score": zod.int().min(1).max(getTasteDnaResponseAxesItemScoreMax),
+  "score": zod.number().min(1).max(getTasteDnaResponseAxesItemScoreMax),
   "confidence": zod.int().min(getTasteDnaResponseAxesItemConfidenceMin).max(getTasteDnaResponseAxesItemConfidenceMax)
 })),
   "closestCompanies": zod.array(zod.string()),
@@ -554,7 +554,7 @@ export const GetCompanyPerceptionResponse = zod.object({
   "axes": zod.array(zod.object({
   "key": zod.string(),
   "label": zod.string(),
-  "score": zod.int().min(1).max(getCompanyPerceptionResponseAxesItemScoreMax),
+  "score": zod.number().min(1).max(getCompanyPerceptionResponseAxesItemScoreMax),
   "confidence": zod.int().min(getCompanyPerceptionResponseAxesItemConfidenceMin).max(getCompanyPerceptionResponseAxesItemConfidenceMax)
 })),
   "words": zod.array(zod.object({

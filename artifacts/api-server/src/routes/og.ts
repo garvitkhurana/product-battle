@@ -21,6 +21,9 @@ import {
 
 const router: IRouter = Router();
 const SITE = "https://ycbattle.com";
+const DNA_SHARE_VERSION = "2";
+const DNA_SOCIAL_IMAGE =
+  "https://raw.githubusercontent.com/garvitkhurana/product-battle/main/artifacts/signal-market/public/og.png?v=2";
 
 function escapeHtml(value: string): string {
   return value
@@ -38,11 +41,13 @@ function shareHtml(input: {
   canonicalPath: string;
   sharePath?: string;
   redirectPath?: string;
+  socialImageUrl?: string;
+  autoRedirect?: boolean;
 }): string {
   const pageUrl = `${SITE}${input.sharePath ?? input.canonicalPath}`;
   const canonicalUrl = `${SITE}${input.canonicalPath}`;
   const redirectUrl = `${SITE}${input.redirectPath ?? input.canonicalPath}`;
-  const imageUrl = `${SITE}${input.imagePath}`;
+  const imageUrl = input.socialImageUrl ?? `${SITE}${input.imagePath}`;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -64,9 +69,10 @@ function shareHtml(input: {
   <meta name="twitter:title" content="${escapeHtml(input.title)}" />
   <meta name="twitter:description" content="${escapeHtml(input.description)}" />
   <meta name="twitter:image" content="${escapeHtml(imageUrl)}" />
+  <meta name="twitter:image:src" content="${escapeHtml(imageUrl)}" />
   <meta name="twitter:image:alt" content="${escapeHtml(input.title)}" />
   <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
-  <meta http-equiv="refresh" content="0;url=${escapeHtml(redirectUrl)}" />
+  ${input.autoRedirect === false ? "" : `<meta http-equiv="refresh" content="0;url=${escapeHtml(redirectUrl)}" />`}
 </head>
 <body>
   <p><a href="${escapeHtml(redirectUrl)}">Continue to YC Battle</a></p>
@@ -74,10 +80,23 @@ function shareHtml(input: {
 </html>`;
 }
 
-function sendPng(res: import("express").Response, png: Buffer) {
+function sendPng(
+  res: import("express").Response,
+  png: Buffer,
+  cacheControl = "public, max-age=300",
+) {
   res.setHeader("Content-Type", "image/png");
-  res.setHeader("Cache-Control", "public, max-age=300");
-  res.status(200).send(png);
+  res.setHeader("Cache-Control", cacheControl);
+  // Bypass Express's automatic ETag/freshness handling so crawlers always
+  // receive a complete PNG rather than an empty conditional 304 response.
+  res.statusCode = 200;
+  res.end(png);
+}
+
+function isSocialCrawler(userAgent: string | undefined): boolean {
+  return /Twitterbot|facebookexternalhit|WhatsApp|Slackbot|Discordbot|LinkedInBot/i.test(
+    userAgent ?? "",
+  );
 }
 
 function queryText(
@@ -109,6 +128,7 @@ function dnaShareParams(
   const params = new URLSearchParams({
     archetype: payload.archetype,
     headline: payload.headline,
+    v: DNA_SHARE_VERSION,
   });
   if (payload.tendency) params.set("tendency", payload.tendency);
   return params;
@@ -180,7 +200,11 @@ router.get("/og/battle/:slug.png", async (req, res): Promise<void> => {
 
 router.get("/og/dna.png", (req, res): void => {
   const payload = dnaSharePayload(req.query);
-  sendPng(res, renderDnaOgPng(payload));
+  sendPng(
+    res,
+    renderDnaOgPng(payload),
+    "public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800",
+  );
 });
 
 router.get("/og/company/:slug.png", async (req, res): Promise<void> => {
@@ -263,6 +287,10 @@ router.get("/card/dna", (req, res): void => {
   const payload = dnaSharePayload(req.query);
   res
     .status(200)
+    .set(
+      "Cache-Control",
+      "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+    )
     .type("html")
     .send(
       shareHtml({
@@ -271,6 +299,8 @@ router.get("/card/dna", (req, res): void => {
         imagePath: dnaImagePath(payload),
         canonicalPath: "/dna",
         sharePath: dnaCardPath(payload),
+        socialImageUrl: DNA_SOCIAL_IMAGE,
+        autoRedirect: !isSocialCrawler(req.get("user-agent")),
       }),
     );
 });

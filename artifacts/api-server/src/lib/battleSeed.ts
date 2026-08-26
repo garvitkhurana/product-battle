@@ -39,6 +39,7 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   // Same-space axis covers: food delivery vs restaurant OS; payroll vs pure HRIS
   "doordash-vs-toast",
   "gusto-vs-bamboohr",
+  "rippling-vs-bamboohr",
 ] as const;
 
 export const LAUNCH_BATTLE_SLUGS = new Set<string>(HOUSEHOLD_BATTLE_SLUGS);

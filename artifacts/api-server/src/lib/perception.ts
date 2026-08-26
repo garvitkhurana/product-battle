@@ -16,6 +16,7 @@ import {
   HOUSEHOLD_BATTLE_SLUGS,
   PERCEPTION_EXPANDED_BATCH_SIZE,
 } from "./battleSeed";
+import { calculateTasteAxes } from "./tasteAxisProfile";
 
 export const AXIS_LABELS: Record<string, string> = {
   "infra-consumer": "Infrastructure ↔ Consumer",
@@ -29,6 +30,7 @@ const SESSION_LIFETIME_DAYS = 30;
 const MAX_SWIPES_PER_MINUTE = 30;
 const MAX_SESSIONS_PER_MINUTE = 30;
 const MIN_SWIPES_FOR_WORDS = 10;
+const AXIS_EVIDENCE_TARGET = 5;
 const MIN_WORD_COUNT = 5;
 const MAX_WORDS_PER_MINUTE = 8;
 const BLOCKED_WORDS = new Set([
@@ -335,50 +337,48 @@ export async function getTasteDnaForSession(sessionId: string) {
     .select({
       battleId: perceptionComparisonsTable.battleId,
       winnerParticipantId: perceptionComparisonsTable.winnerParticipantId,
+      loserParticipantId: perceptionComparisonsTable.loserParticipantId,
     })
     .from(perceptionComparisonsTable)
     .where(eq(perceptionComparisonsTable.sessionId, sessionId));
   const comparisonCount = events.length;
-  const voteDepth = confidenceFor(comparisonCount);
-  const winnerIds = events.map((event) => event.winnerParticipantId);
-  if (!winnerIds.length) {
+  if (!events.length) {
     return {
       comparisonCount,
       confidence: 0,
       canShare: false,
       headline: "Your taste DNA is still taking shape.",
       archetype: null,
-      axes: AXIS_KEYS.map((key) => toAxis(key, 3, voteDepth)),
+      axes: AXIS_KEYS.map((key) => toAxis(key, 3, 0)),
       closestCompanies: [],
       completedBattleIds: [],
     };
   }
 
+  const comparedParticipantIds = [
+    ...new Set(
+      events.flatMap((event) => [
+        event.winnerParticipantId,
+        event.loserParticipantId,
+      ]),
+    ),
+  ];
   const axisRows = await db
     .select()
     .from(perceptionAxesTable)
-    .where(inArray(perceptionAxesTable.participantId, winnerIds));
-  const scoresByKey = new Map<string, number[]>();
-  for (const axis of axisRows) {
-    const scores = scoresByKey.get(axis.axisKey) ?? [];
-    scores.push(axis.score);
-    scoresByKey.set(axis.axisKey, scores);
-  }
-  const axes = AXIS_KEYS.map((key) => {
-    const scores = scoresByKey.get(key) ?? [3];
-    return toAxis(
-      key,
-      Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length),
-      voteDepth,
-    );
-  });
-  // Breadth × depth: blank axes must discount overall confidence.
-  const signalAxes = axes.filter(
-    (axis) => Math.abs(axis.score - 3) >= 0.75,
-  ).length;
-  const confidence = Math.min(
-    100,
-    Math.round((signalAxes / AXIS_KEYS.length) * voteDepth),
+    .where(inArray(perceptionAxesTable.participantId, comparedParticipantIds));
+
+  // A comparison only says something about an axis when the two companies
+  // differ on that axis. Same-scored pairs are neutral evidence, not votes for
+  // whichever absolute trait both companies happen to share.
+  const axes = calculateTasteAxes(
+    AXIS_KEYS,
+    events,
+    axisRows,
+    AXIS_EVIDENCE_TARGET,
+  ).map((axis) => toAxis(axis.key, axis.score, axis.confidence));
+  const confidence = Math.round(
+    axes.reduce((sum, axis) => sum + axis.confidence, 0) / axes.length,
   );
   const archetype = archetypeFor(axes);
   const headline = headlineFor(axes, comparisonCount);
