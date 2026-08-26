@@ -7,7 +7,7 @@ import { Seo } from '@/components/Seo';
 
 // Curated independently of the full gallery order in battleSeed.ts, so the
 // homepage teaser can spotlight specific battles without reordering /battles.
-const HOMEPAGE_SPOTLIGHT_SLUGS = ['reddit-vs-discord', 'cursor-vs-codeium', 'opensea-vs-blur'];
+const HOMEPAGE_SPOTLIGHT_SLUGS = ['reddit-vs-discord', 'cursor-vs-codeium', 'willow-vs-wispr-flow'];
 
 export default function Index() {
   const { data: battles, isLoading } = useListBattles();
