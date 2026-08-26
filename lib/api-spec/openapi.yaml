@@ -564,7 +564,6 @@ components:
         canShare: { type: boolean }
         headline: { type: string }
         archetype: { type: string, nullable: true }
-        rarityPercent: { type: integer, minimum: 0, maximum: 100, nullable: true }
         axes:
           type: array
           items:

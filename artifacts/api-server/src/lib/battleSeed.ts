@@ -1,5 +1,11 @@
 import { sql } from "drizzle-orm";
-import { battleParticipantsTable, battlesTable, db, perceptionAxesTable, productsTable } from "@workspace/db";
+import {
+  battleParticipantsTable,
+  battlesTable,
+  db,
+  perceptionAxesTable,
+  productsTable,
+} from "@workspace/db";
 import {
   curatedBattles,
   curatedCompanies,
@@ -24,7 +30,7 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   "honeylove-vs-skims",
   "zepto-vs-blinkit",
   "scribd-vs-kindle-unlimited",
-  // Axis-covering cohort: infra↔consumer, regulated↔software, early↔late signal
+  // Axis-covering cohort: infra↔consumer and regulated↔software signal
   "matterport-vs-iguide",
   "clipboard-vs-shiftkey",
   "fivestars-vs-square",
@@ -37,7 +43,10 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
 
 export const LAUNCH_BATTLE_SLUGS = new Set<string>(HOUSEHOLD_BATTLE_SLUGS);
 export const CURATED_BATTLE_ORDER = [
-  ...new Set([...HOUSEHOLD_BATTLE_SLUGS, ...curatedBattles.map((battle) => battle.slug)]),
+  ...new Set([
+    ...HOUSEHOLD_BATTLE_SLUGS,
+    ...curatedBattles.map((battle) => battle.slug),
+  ]),
 ];
 export const PERCEPTION_EXPANDED_BATCH_SIZE = 10;
 
@@ -55,9 +64,13 @@ function participantIdForRival(id: string): string {
 
 export async function seedBattleMatchups(): Promise<void> {
   const featuredCompanySlugs = new Set(
-    curatedBattles.filter((battle) => battle.featured).map((battle) => battle.yc_slug),
+    curatedBattles
+      .filter((battle) => battle.featured)
+      .map((battle) => battle.yc_slug),
   );
-  const referencedRivalIds = new Set(curatedBattles.map((battle) => battle.rival_id));
+  const referencedRivalIds = new Set(
+    curatedBattles.map((battle) => battle.rival_id),
+  );
 
   await db
     .insert(productsTable)
@@ -67,7 +80,8 @@ export async function seedBattleMatchups(): Promise<void> {
         slug: company.slug,
         title: company.name,
         shortDescription:
-          company.one_liner?.trim() || `YC company in ${company.industry ?? "technology"}.`,
+          company.one_liner?.trim() ||
+          `YC company in ${company.industry ?? "technology"}.`,
         description:
           company.long_description?.trim() ||
           `${company.name} is a YC company in ${company.industry ?? "technology"}.`,
@@ -87,7 +101,9 @@ export async function seedBattleMatchups(): Promise<void> {
   const productRows = await db
     .select({ id: productsTable.id, slug: productsTable.slug })
     .from(productsTable);
-  const productIdsBySlug = new Map(productRows.map((product) => [product.slug, product.id]));
+  const productIdsBySlug = new Map(
+    productRows.map((product) => [product.slug, product.id]),
+  );
 
   const ycParticipants = curatedCompanies.map((company) => ({
     id: participantIdForYcCompany(company.slug),
@@ -95,7 +111,8 @@ export async function seedBattleMatchups(): Promise<void> {
     slug: `yc-${company.slug}`,
     name: company.name,
     shortDescription:
-      company.one_liner?.trim() || `YC company in ${company.industry ?? "technology"}.`,
+      company.one_liner?.trim() ||
+      `YC company in ${company.industry ?? "technology"}.`,
     description:
       company.long_description?.trim() ||
       `${company.name} is a YC company in ${company.industry ?? "technology"}.`,
@@ -145,7 +162,10 @@ export async function seedBattleMatchups(): Promise<void> {
   const participantIdsBySlug = new Map(
     (
       await db
-        .select({ id: battleParticipantsTable.id, slug: battleParticipantsTable.slug })
+        .select({
+          id: battleParticipantsTable.id,
+          slug: battleParticipantsTable.slug,
+        })
         .from(battleParticipantsTable)
     ).map((participant) => [participant.slug, participant.id]),
   );
@@ -186,29 +206,36 @@ export async function seedBattleMatchups(): Promise<void> {
   // Seed perception axes for every curated participant so expanded batches
   // and axis-covering household pairs can move Taste DNA off the midpoint.
   const allParticipants = await db.select().from(battleParticipantsTable);
-  const axisScores = (participant: typeof battleParticipantsTable.$inferSelect) => {
+  const axisScores = (
+    participant: typeof battleParticipantsTable.$inferSelect,
+  ) => {
     const category = participant.category.toLowerCase();
     const name = participant.name.toLowerCase();
-    const regulated = /fintech|health|insurance|legal|government|energy|lending|bank|payroll|crypto|gusto|rippling|brex|stripe|coinbase|adp|amex|square/.test(
-      category + " " + name,
-    )
-      ? 1
-      : 5;
-    const consumer = /consumer|travel|food|marketplace|media|retail|livestream|quick commerce|property/.test(
-      category,
-    )
-      ? 5
-      : /infra|paas|devops|developer|b2b|data|cloud|saas|hr|construction|3d/.test(category)
+    const regulated =
+      /fintech|health|insurance|legal|government|energy|lending|bank|payroll|crypto|gusto|rippling|brex|stripe|coinbase|adp|amex|square/.test(
+        category + " " + name,
+      )
         ? 1
-        : 2;
+        : 5;
+    const consumer =
+      /consumer|travel|food|marketplace|media|retail|livestream|quick commerce|property/.test(
+        category,
+      )
+        ? 5
+        : /infra|paas|devops|developer|b2b|data|cloud|saas|hr|construction|3d/.test(
+              category,
+            )
+          ? 1
+          : 2;
     // Craft vs scale: differentiate from pure YC/challenger binary.
-    const scale = /marketplace|payments|cloud|platform|enterprise|incumbent|retail|delivery/.test(
-      category + " " + name,
-    )
-      ? 5
-      : participant.isYcCompany
-        ? 2
-        : 4;
+    const scale =
+      /marketplace|payments|cloud|platform|enterprise|incumbent|retail|delivery/.test(
+        category + " " + name,
+      )
+        ? 5
+        : participant.isYcCompany
+          ? 2
+          : 4;
     const challenger = participant.isYcCompany
       ? /whatnot|zepto|goat|honeylove|clipboard/.test(participant.slug)
         ? 1
@@ -219,28 +246,10 @@ export async function seedBattleMatchups(): Promise<void> {
         ? 5
         : 4;
 
-    const batchYear = Number(participant.ycBatch?.match(/(19|20)\d{2}/)?.[0] ?? "0");
-    let batchEra: number;
-    if (participant.isYcCompany && batchYear > 0) {
-      if (batchYear < 2012) batchEra = 1;
-      else if (batchYear < 2017) batchEra = 2;
-      else if (batchYear < 2021) batchEra = 4;
-      else batchEra = 5;
-    } else if (
-      /google|amazon|youtube|github|adp|amex|microsoft|apple|meta|facebook|jira|atlassian/.test(name)
-    ) {
-      batchEra = 1; // established incumbents read as earlier-era
-    } else if (/tiktok|blinkit|stockx|shiftkey|render|iguide|solutionreach|toast|bamboohr/.test(name)) {
-      batchEra = 5; // newer-market rivals
-    } else {
-      batchEra = 3;
-    }
-
     return {
       "infra-consumer": consumer,
       "challenger-incumbent": challenger,
       "craft-scale": scale,
-      "batch-era": batchEra,
       "regulated-software": regulated,
     };
   };
@@ -259,8 +268,15 @@ export async function seedBattleMatchups(): Promise<void> {
       .insert(perceptionAxesTable)
       .values(axisRows)
       .onConflictDoUpdate({
-        target: [perceptionAxesTable.participantId, perceptionAxesTable.axisKey],
-        set: { score: sql`excluded.score`, source: sql`excluded.source`, version: sql`excluded.version` },
+        target: [
+          perceptionAxesTable.participantId,
+          perceptionAxesTable.axisKey,
+        ],
+        set: {
+          score: sql`excluded.score`,
+          source: sql`excluded.source`,
+          version: sql`excluded.version`,
+        },
       });
   }
 }

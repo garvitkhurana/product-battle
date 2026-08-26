@@ -11,9 +11,9 @@ confidence-aware perception data. Not affiliated with Y Combinator.
   ensure every Taste DNA dimension gets exercised across the comparison set.
 - **Head-to-head battles** (`/battles/:slug`) — individual comparisons,
   browsable directly. Shows a live community split after voting.
-- **Taste DNA** (`/dna`) — private per-session profile across 5 axes
-  (Infrastructure↔Consumer, Challenger↔Incumbent, Craft↔Scale, Earlier↔Newer
-  batch, Regulated↔Pure software). Confidence is proportional to both axis
+- **Taste DNA** (`/dna`) — private per-session profile across 4 axes
+  (Infrastructure↔Consumer, Challenger↔Incumbent, Craft↔Scale,
+  Regulated↔Pure software). Confidence is proportional to both axis
   coverage and per-axis certainty — a partially-filled profile cannot report
   100% confidence. Aligned Entities are gated on independent co-voting signals,
   never mirrored from the user's own picks.
@@ -27,7 +27,7 @@ confidence-aware perception data. Not affiliated with Y Combinator.
   legible even in dense clusters; region set grows as new comparison
   categories are added.
 - **Dynamic share cards + OG PNGs** under `/api/card/*` and `/api/og/*` — every
-  shared link (site, battle, company, map) renders a real preview image rather
+  shared link (site, battle, Taste DNA, company, map) renders a real preview image rather
   than a generic fallback.
 
 ## Model
@@ -55,13 +55,15 @@ pnpm --filter @workspace/api-spec run codegen
 ## Share / OG endpoints
 
 | Path                        | Purpose                           |
-| ---------------------------- | --------------------------------- |
-| `/api/og/battle/:slug.png`   | Live split card                   |
-| `/api/og/company/:slug.png`  | Top community words               |
-| `/api/og/map.png`            | Territory snapshot                |
-| `/api/card/battle/:slug`     | HTML meta + redirect for crawlers |
-| `/api/card/company/:slug`    | HTML meta + redirect              |
-| `/api/card/map`              | HTML meta + redirect              |
+| --------------------------- | --------------------------------- |
+| `/api/og/battle/:slug.png`  | Live split card                   |
+| `/api/og/dna.png`           | Shareable Taste DNA summary       |
+| `/api/og/company/:slug.png` | Top community words               |
+| `/api/og/map.png`           | Territory snapshot                |
+| `/api/card/battle/:slug`    | HTML meta + redirect for crawlers |
+| `/api/card/dna`             | Taste DNA meta + redirect         |
+| `/api/card/company/:slug`   | HTML meta + redirect              |
+| `/api/card/map`             | HTML meta + redirect              |
 
 ## Contact
 

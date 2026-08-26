@@ -1,9 +1,23 @@
 import { Router, type IRouter } from "express";
 import { eq } from "drizzle-orm";
-import { battleParticipantsTable, battlesTable, db, perceptionComparisonsTable } from "@workspace/db";
+import {
+  battleParticipantsTable,
+  battlesTable,
+  db,
+  perceptionComparisonsTable,
+} from "@workspace/db";
 import { logger } from "../lib/logger";
-import { getCompanyPerceptionBySlug, getMapOgPayload, PerceptionError } from "../lib/perception";
-import { renderBattleOgPng, renderCompanyOgPng, renderMapOgPng } from "../lib/ogPng";
+import {
+  getCompanyPerceptionBySlug,
+  getMapOgPayload,
+  PerceptionError,
+} from "../lib/perception";
+import {
+  renderBattleOgPng,
+  renderCompanyOgPng,
+  renderDnaOgPng,
+  renderMapOgPng,
+} from "../lib/ogPng";
 
 const router: IRouter = Router();
 const SITE = "https://ycbattle.com";
@@ -22,8 +36,12 @@ function shareHtml(input: {
   description: string;
   imagePath: string;
   canonicalPath: string;
+  sharePath?: string;
+  redirectPath?: string;
 }): string {
-  const pageUrl = `${SITE}${input.canonicalPath}`;
+  const pageUrl = `${SITE}${input.sharePath ?? input.canonicalPath}`;
+  const canonicalUrl = `${SITE}${input.canonicalPath}`;
+  const redirectUrl = `${SITE}${input.redirectPath ?? input.canonicalPath}`;
   const imageUrl = `${SITE}${input.imagePath}`;
   return `<!doctype html>
 <html lang="en">
@@ -37,17 +55,21 @@ function shareHtml(input: {
   <meta property="og:url" content="${escapeHtml(pageUrl)}" />
   <meta property="og:site_name" content="YC Battle" />
   <meta property="og:image" content="${escapeHtml(imageUrl)}" />
+  <meta property="og:image:secure_url" content="${escapeHtml(imageUrl)}" />
+  <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${escapeHtml(input.title)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escapeHtml(input.title)}" />
   <meta name="twitter:description" content="${escapeHtml(input.description)}" />
   <meta name="twitter:image" content="${escapeHtml(imageUrl)}" />
-  <link rel="canonical" href="${escapeHtml(pageUrl)}" />
-  <meta http-equiv="refresh" content="0;url=${escapeHtml(pageUrl)}" />
+  <meta name="twitter:image:alt" content="${escapeHtml(input.title)}" />
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
+  <meta http-equiv="refresh" content="0;url=${escapeHtml(redirectUrl)}" />
 </head>
 <body>
-  <p><a href="${escapeHtml(pageUrl)}">Continue to YC Battle</a></p>
+  <p><a href="${escapeHtml(redirectUrl)}">Continue to YC Battle</a></p>
 </body>
 </html>`;
 }
@@ -58,25 +80,85 @@ function sendPng(res: import("express").Response, png: Buffer) {
   res.status(200).send(png);
 }
 
+function queryText(
+  value: unknown,
+  fallback: string,
+  maxLength: number,
+): string {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return typeof raw === "string" && raw.trim()
+    ? raw.trim().slice(0, maxLength)
+    : fallback;
+}
+
+function dnaSharePayload(query: import("express").Request["query"]) {
+  return {
+    archetype: queryText(query.archetype, "TASTE DNA", 48),
+    headline: queryText(
+      query.headline,
+      "My preferences are taking shape.",
+      120,
+    ),
+    tendency: queryText(query.tendency, "", 64) || undefined,
+  };
+}
+
+function dnaShareParams(
+  payload: ReturnType<typeof dnaSharePayload>,
+): URLSearchParams {
+  const params = new URLSearchParams({
+    archetype: payload.archetype,
+    headline: payload.headline,
+  });
+  if (payload.tendency) params.set("tendency", payload.tendency);
+  return params;
+}
+
+function dnaImagePath(payload: ReturnType<typeof dnaSharePayload>): string {
+  return `/api/og/dna.png?${dnaShareParams(payload).toString()}`;
+}
+
+function dnaCardPath(payload: ReturnType<typeof dnaSharePayload>): string {
+  return `/api/card/dna?${dnaShareParams(payload).toString()}`;
+}
+
 router.get("/og/battle/:slug.png", async (req, res): Promise<void> => {
   try {
     const slug = String(req.params.slug ?? "");
-    const [battle] = await db.select().from(battlesTable).where(eq(battlesTable.slug, slug));
+    const [battle] = await db
+      .select()
+      .from(battlesTable)
+      .where(eq(battlesTable.slug, slug));
     if (!battle) {
       res.status(404).send("Not found");
       return;
     }
     const [participantA, participantB, comparisons] = await Promise.all([
-      db.select().from(battleParticipantsTable).where(eq(battleParticipantsTable.id, battle.participantAId)).then((rows) => rows[0]),
-      db.select().from(battleParticipantsTable).where(eq(battleParticipantsTable.id, battle.participantBId)).then((rows) => rows[0]),
-      db.select().from(perceptionComparisonsTable).where(eq(perceptionComparisonsTable.battleId, battle.id)),
+      db
+        .select()
+        .from(battleParticipantsTable)
+        .where(eq(battleParticipantsTable.id, battle.participantAId))
+        .then((rows) => rows[0]),
+      db
+        .select()
+        .from(battleParticipantsTable)
+        .where(eq(battleParticipantsTable.id, battle.participantBId))
+        .then((rows) => rows[0]),
+      db
+        .select()
+        .from(perceptionComparisonsTable)
+        .where(eq(perceptionComparisonsTable.battleId, battle.id)),
     ]);
     if (!participantA || !participantB) {
       res.status(404).send("Not found");
       return;
     }
-    const winsA = comparisons.filter((row) => row.winnerParticipantId === participantA.id).length;
-    const winsB = comparisons.filter((row) => row.winnerParticipantId === participantB.id).length;
+    const winsA = comparisons.filter(
+      (row) => row.winnerParticipantId === participantA.id,
+    ).length;
+    const winsB = comparisons.filter(
+      (row) => row.winnerParticipantId === participantB.id,
+    ).length;
     const total = winsA + winsB;
     const pctA = total > 0 ? Math.round((winsA / total) * 100) : 50;
     const pctB = total > 0 ? 100 - pctA : 50;
@@ -96,9 +178,16 @@ router.get("/og/battle/:slug.png", async (req, res): Promise<void> => {
   }
 });
 
+router.get("/og/dna.png", (req, res): void => {
+  const payload = dnaSharePayload(req.query);
+  sendPng(res, renderDnaOgPng(payload));
+});
+
 router.get("/og/company/:slug.png", async (req, res): Promise<void> => {
   try {
-    const profile = await getCompanyPerceptionBySlug(String(req.params.slug ?? ""));
+    const profile = await getCompanyPerceptionBySlug(
+      String(req.params.slug ?? ""),
+    );
     sendPng(
       res,
       renderCompanyOgPng({
@@ -129,14 +218,25 @@ router.get("/og/map.png", async (_req, res): Promise<void> => {
 router.get("/card/battle/:slug", async (req, res): Promise<void> => {
   try {
     const slug = String(req.params.slug ?? "");
-    const [battle] = await db.select().from(battlesTable).where(eq(battlesTable.slug, slug));
+    const [battle] = await db
+      .select()
+      .from(battlesTable)
+      .where(eq(battlesTable.slug, slug));
     if (!battle) {
       res.status(404).send("Not found");
       return;
     }
     const [participantA, participantB] = await Promise.all([
-      db.select().from(battleParticipantsTable).where(eq(battleParticipantsTable.id, battle.participantAId)).then((rows) => rows[0]),
-      db.select().from(battleParticipantsTable).where(eq(battleParticipantsTable.id, battle.participantBId)).then((rows) => rows[0]),
+      db
+        .select()
+        .from(battleParticipantsTable)
+        .where(eq(battleParticipantsTable.id, battle.participantAId))
+        .then((rows) => rows[0]),
+      db
+        .select()
+        .from(battleParticipantsTable)
+        .where(eq(battleParticipantsTable.id, battle.participantBId))
+        .then((rows) => rows[0]),
     ]);
     if (!participantA || !participantB) {
       res.status(404).send("Not found");
@@ -157,6 +257,22 @@ router.get("/card/battle/:slug", async (req, res): Promise<void> => {
     logger.error({ err: error }, "Unable to render battle share card");
     res.status(503).send("Unavailable");
   }
+});
+
+router.get("/card/dna", (req, res): void => {
+  const payload = dnaSharePayload(req.query);
+  res
+    .status(200)
+    .type("html")
+    .send(
+      shareHtml({
+        title: `${payload.archetype} — YC Battle Taste DNA`,
+        description: `${payload.headline} What's your startup taste?`,
+        imagePath: dnaImagePath(payload),
+        canonicalPath: "/dna",
+        sharePath: dnaCardPath(payload),
+      }),
+    );
 });
 
 router.get("/card/company/:slug", async (req, res): Promise<void> => {

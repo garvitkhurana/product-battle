@@ -85,7 +85,14 @@ function createCanvas(bg: Rgb): Uint8Array {
   return pixels;
 }
 
-function fillRect(pixels: Uint8Array, x: number, y: number, w: number, h: number, color: Rgb) {
+function fillRect(
+  pixels: Uint8Array,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  color: Rgb,
+) {
   const x0 = Math.max(0, Math.floor(x));
   const y0 = Math.max(0, Math.floor(y));
   const x1 = Math.min(WIDTH, Math.ceil(x + w));
@@ -100,12 +107,26 @@ function fillRect(pixels: Uint8Array, x: number, y: number, w: number, h: number
   }
 }
 
-function drawGlyph(pixels: Uint8Array, gx: number, gy: number, rows: number[], scale: number, color: Rgb) {
+function drawGlyph(
+  pixels: Uint8Array,
+  gx: number,
+  gy: number,
+  rows: number[],
+  scale: number,
+  color: Rgb,
+) {
   for (let row = 0; row < 7; row++) {
     const bits = rows[row] ?? 0;
     for (let col = 0; col < 5; col++) {
       if (bits & (1 << (4 - col))) {
-        fillRect(pixels, gx + col * scale, gy + row * scale, scale, scale, color);
+        fillRect(
+          pixels,
+          gx + col * scale,
+          gy + row * scale,
+          scale,
+          scale,
+          color,
+        );
       }
     }
   }
@@ -138,7 +159,10 @@ function encodePng(pixels: Uint8Array): Buffer {
   for (let y = 0; y < HEIGHT; y++) {
     const rowStart = y * (stride + 1);
     raw[rowStart] = 0;
-    Buffer.from(pixels.buffer, pixels.byteOffset + y * stride, stride).copy(raw, rowStart + 1);
+    Buffer.from(pixels.buffer, pixels.byteOffset + y * stride, stride).copy(
+      raw,
+      rowStart + 1,
+    );
   }
   const compressed = deflateSync(raw, { level: 9 });
   const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
@@ -197,7 +221,10 @@ export function renderBattleOgPng(input: {
   return encodePng(pixels);
 }
 
-export function renderCompanyOgPng(input: { name: string; words: string[] }): Buffer {
+export function renderCompanyOgPng(input: {
+  name: string;
+  words: string[];
+}): Buffer {
   const pixels = createCanvas([255, 248, 239]);
   drawGrid(pixels);
   brandHeader(pixels);
@@ -217,12 +244,56 @@ export function renderCompanyOgPng(input: { name: string; words: string[] }): Bu
         x = 48;
         y += 8 * scale + 24;
       }
-      fillRect(pixels, x, y - 8, width, 7 * scale + 16, index % 2 === 0 ? [255, 80, 56] : [215, 255, 69]);
+      fillRect(
+        pixels,
+        x,
+        y - 8,
+        width,
+        7 * scale + 16,
+        index % 2 === 0 ? [255, 80, 56] : [215, 255, 69],
+      );
       drawText(pixels, label, x + 12, y, scale, [24, 21, 19]);
       x += width + 16;
     });
   }
   drawText(pixels, "UNVERIFIED COMMUNITY WORDS", 48, 560, 2, [98, 92, 85]);
+  return encodePng(pixels);
+}
+
+export function renderDnaOgPng(input: {
+  archetype: string;
+  headline: string;
+  tendency?: string;
+}): Buffer {
+  const pixels = createCanvas([255, 248, 239]);
+  drawGrid(pixels);
+  brandHeader(pixels);
+
+  fillRect(pixels, 930, 48, 222, 132, [24, 21, 19]);
+  fillRect(pixels, 922, 40, 222, 132, [215, 255, 69]);
+  drawText(pixels, "SHARE YOUR", 948, 68, 2, [24, 21, 19], 170);
+  drawText(pixels, "TASTE", 948, 108, 4, [24, 21, 19], 170);
+
+  drawText(pixels, "TASTE DNA", 48, 120, 2, [255, 80, 56]);
+  drawText(pixels, input.archetype.slice(0, 36), 48, 170, 4, [24, 21, 19], 820);
+  drawText(pixels, input.headline.slice(0, 52), 48, 270, 5, [24, 21, 19], 1080);
+
+  fillRect(pixels, 48, 390, 1104, 3, [24, 21, 19]);
+  if (input.tendency) {
+    drawText(
+      pixels,
+      input.tendency.slice(0, 40),
+      48,
+      430,
+      4,
+      [255, 80, 56],
+      900,
+    );
+  }
+  drawText(pixels, "WHAT IS YOUR STARTUP TASTE?", 48, 520, 3, [98, 92, 85]);
+
+  fillRect(pixels, 900, 500, 180, 54, [255, 80, 56]);
+  fillRect(pixels, 1010, 530, 142, 54, [215, 255, 69]);
   return encodePng(pixels);
 }
 
@@ -235,12 +306,33 @@ export function renderMapOgPng(input: {
   brandHeader(pixels);
   drawText(pixels, "YC ECOSYSTEM TERRITORY", 48, 120, 3, [98, 92, 85]);
   drawText(pixels, "MAP OF SIGNAL", 48, 180, 7, [24, 21, 19]);
-  drawText(pixels, `${input.companyCount} COMPANIES`, 48, 280, 4, [255, 80, 56]);
+  drawText(
+    pixels,
+    `${input.companyCount} COMPANIES`,
+    48,
+    280,
+    4,
+    [255, 80, 56],
+  );
   const regions = input.regions.slice(0, 5);
   regions.forEach((region, index) => {
     const y = 360 + index * 36;
-    fillRect(pixels, 48, y, 18, 18, index % 2 === 0 ? [255, 80, 56] : [215, 255, 69]);
-    drawText(pixels, `${region.name.slice(0, 24)}  ${region.count}`, 80, y, 3, [24, 21, 19]);
+    fillRect(
+      pixels,
+      48,
+      y,
+      18,
+      18,
+      index % 2 === 0 ? [255, 80, 56] : [215, 255, 69],
+    );
+    drawText(
+      pixels,
+      `${region.name.slice(0, 24)}  ${region.count}`,
+      80,
+      y,
+      3,
+      [24, 21, 19],
+    );
   });
   if (!regions.length) {
     drawText(pixels, "COLLECTING TERRITORY SIGNALS", 48, 380, 3, [98, 92, 85]);
