@@ -34,7 +34,8 @@ export type CuratedBattle = {
   title: string;
   space: string;
   yc_slug: string;
-  rival_id: string;
+  rival_id?: string;
+  rival_yc_slug?: string;
   left_argument: string;
   right_argument: string;
   featured: boolean;
@@ -1723,6 +1724,75 @@ export const curatedCompanies: CuratedCompany[] = [
     "top_company": true,
     "website": "https://www.zeptonow.com/",
     "yc_url": "https://www.ycombinator.com/companies/zepto"
+  },
+  {
+    "batch": "Summer 2022",
+    "industry": "B2B",
+    "location": "San Francisco, CA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=cursor.com&sz=128",
+    "long_description": "Cursor is an AI-native code editor developed by Anysphere for writing, understanding, and modifying software with AI.",
+    "name": "Cursor",
+    "one_liner": "AI-native code editor for building software.",
+    "slug": "cursor",
+    "status": "Active",
+    "tags": [
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "website": "https://www.cursor.com",
+    "yc_url": "https://www.ycombinator.com/companies"
+  },
+  {
+    "batch": "Summer 2021",
+    "industry": "B2B",
+    "location": "Mountain View, CA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=codeium.com&sz=128",
+    "long_description": "Codeium, created by the YC company Exafunction, built AI coding autocomplete and chat tools before becoming Windsurf.",
+    "name": "Codeium",
+    "one_liner": "AI coding assistant and editor, now known as Windsurf.",
+    "slug": "codeium",
+    "status": "Acquired",
+    "tags": [
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "website": "https://codeium.com",
+    "yc_url": "https://www.ycombinator.com/companies"
+  },
+  {
+    "batch": "Spring 2025",
+    "industry": "Consumer",
+    "location": "San Francisco, CA, USA",
+    "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/4d1a38295742d380ffb6bd899dae457066824da5.png",
+    "long_description": "Willow is an AI dictation app that writes into any text field and is designed for email, messaging, documents, and AI prompting workflows.",
+    "name": "Willow",
+    "one_liner": "The voice interface replacing your keyboard.",
+    "slug": "willow",
+    "status": "Active",
+    "tags": [
+      "Artificial Intelligence",
+      "Productivity",
+      "Voice"
+    ],
+    "website": "https://willowvoice.com",
+    "yc_url": "https://www.ycombinator.com/companies/willow"
+  },
+  {
+    "batch": "Winter 2018",
+    "industry": "B2B",
+    "location": "San Francisco, CA, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=replit.com&sz=128",
+    "long_description": "Replit is a collaborative browser-based development environment for creating, running, and deploying software.",
+    "name": "Replit",
+    "one_liner": "Collaborative in-browser development environment.",
+    "slug": "replit",
+    "status": "Active",
+    "tags": [
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "website": "https://replit.com",
+    "yc_url": "https://www.ycombinator.com/companies/replit"
   }
 ];
 
@@ -2735,6 +2805,37 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Trading"
     ],
     "website": "https://robinhood.com"
+  },
+  {
+    "category": "Consumer",
+    "description": "Wispr Flow is an AI voice-to-text application that turns natural speech into polished writing across desktop and mobile apps.",
+    "id": "ext-wispr-flow",
+    "location": "San Francisco, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=wisprflow.ai&sz=128",
+    "name": "Wispr Flow",
+    "one_liner": "AI dictation that writes across every app.",
+    "slug": "wispr-flow",
+    "tags": [
+      "Artificial Intelligence",
+      "Productivity",
+      "Voice"
+    ],
+    "website": "https://wisprflow.ai"
+  },
+  {
+    "category": "B2B",
+    "description": "Bolt.new is StackBlitz's browser-based AI development agent for prompting, running, editing, and deploying full-stack applications.",
+    "id": "ext-bolt-new",
+    "location": "San Francisco, CA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=bolt.new&sz=128",
+    "name": "Bolt.new",
+    "one_liner": "Build and deploy full-stack apps from the browser.",
+    "slug": "bolt-new",
+    "tags": [
+      "Developer Tools",
+      "Artificial Intelligence"
+    ],
+    "website": "https://bolt.new"
   }
 ];
 
@@ -3464,5 +3565,38 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "HR Tech",
     "title": "Gusto vs BambooHR",
     "yc_slug": "gusto"
+  },
+  {
+    "featured": true,
+    "id": "battle-cursor-codeium",
+    "left_argument": "AI-native editor built around agentic coding workflows and deep codebase context.",
+    "right_argument": "YC-backed AI coding assistant that evolved into the Windsurf agentic IDE.",
+    "rival_yc_slug": "codeium",
+    "slug": "cursor-vs-codeium",
+    "space": "AI Coding",
+    "title": "Cursor vs Codeium",
+    "yc_slug": "cursor"
+  },
+  {
+    "featured": true,
+    "id": "battle-willow-wispr-flow",
+    "left_argument": "YC voice interface focused on fast, personalized dictation across every text field.",
+    "right_argument": "Established cross-platform AI dictation product for polished writing in any app.",
+    "rival_id": "ext-wispr-flow",
+    "slug": "willow-vs-wispr-flow",
+    "space": "AI Dictation",
+    "title": "Willow vs Wispr Flow",
+    "yc_slug": "willow"
+  },
+  {
+    "featured": true,
+    "id": "battle-replit-bolt-new",
+    "left_argument": "YC browser-based development platform combining an IDE, AI agents, hosting, and collaboration.",
+    "right_argument": "StackBlitz's prompt-to-app builder powered by in-browser WebContainers.",
+    "rival_id": "ext-bolt-new",
+    "slug": "replit-vs-bolt-new",
+    "space": "AI App Builders",
+    "title": "Replit vs Bolt.new",
+    "yc_slug": "replit"
   }
 ];

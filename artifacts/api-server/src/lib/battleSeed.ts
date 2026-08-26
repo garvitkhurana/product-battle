@@ -40,6 +40,9 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   "doordash-vs-toast",
   "gusto-vs-bamboohr",
   "rippling-vs-bamboohr",
+  "cursor-vs-codeium",
+  "willow-vs-wispr-flow",
+  "replit-vs-bolt-new",
 ] as const;
 
 export const LAUNCH_BATTLE_SLUGS = new Set<string>(HOUSEHOLD_BATTLE_SLUGS);
@@ -70,7 +73,9 @@ export async function seedBattleMatchups(): Promise<void> {
       .map((battle) => battle.yc_slug),
   );
   const referencedRivalIds = new Set(
-    curatedBattles.map((battle) => battle.rival_id),
+    curatedBattles.flatMap((battle) =>
+      battle.rival_id ? [battle.rival_id] : [],
+    ),
   );
 
   await db
@@ -170,6 +175,26 @@ export async function seedBattleMatchups(): Promise<void> {
         .from(battleParticipantsTable)
     ).map((participant) => [participant.slug, participant.id]),
   );
+  const participantBIdForBattle = (
+    battle: (typeof curatedBattles)[number],
+  ): string => {
+    if (battle.rival_yc_slug) {
+      return (
+        participantIdsBySlug.get(`yc-${battle.rival_yc_slug}`) ??
+        participantIdForYcCompany(battle.rival_yc_slug)
+      );
+    }
+    if (!battle.rival_id) {
+      throw new Error(`Battle ${battle.slug} is missing a rival`);
+    }
+    const rivalSlug =
+      curatedCompetitors.find((rival) => rival.id === battle.rival_id)?.slug ??
+      battle.rival_id;
+    return (
+      participantIdsBySlug.get(`rival-${rivalSlug}`) ??
+      participantIdForRival(battle.rival_id)
+    );
+  };
 
   await db
     .insert(battlesTable)
@@ -183,10 +208,7 @@ export async function seedBattleMatchups(): Promise<void> {
         participantAId:
           participantIdsBySlug.get(`yc-${battle.yc_slug}`) ??
           participantIdForYcCompany(battle.yc_slug),
-        participantBId:
-          participantIdsBySlug.get(
-            `rival-${curatedCompetitors.find((rival) => rival.id === battle.rival_id)?.slug ?? battle.rival_id}`,
-          ) ?? participantIdForRival(battle.rival_id),
+        participantBId: participantBIdForBattle(battle),
         status: LAUNCH_BATTLE_SLUGS.has(battle.slug) ? "active" : "archived",
         isLaunch: LAUNCH_BATTLE_SLUGS.has(battle.slug),
       })),

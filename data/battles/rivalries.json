@@ -1014,6 +1014,37 @@
         "Trading"
       ],
       "website": "https://robinhood.com"
+    },
+    {
+      "category": "Consumer",
+      "description": "Wispr Flow is an AI voice-to-text application that turns natural speech into polished writing across desktop and mobile apps.",
+      "id": "ext-wispr-flow",
+      "location": "San Francisco, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=wisprflow.ai&sz=128",
+      "name": "Wispr Flow",
+      "one_liner": "AI dictation that writes across every app.",
+      "slug": "wispr-flow",
+      "tags": [
+        "Artificial Intelligence",
+        "Productivity",
+        "Voice"
+      ],
+      "website": "https://wisprflow.ai"
+    },
+    {
+      "category": "B2B",
+      "description": "Bolt.new is StackBlitz's browser-based AI development agent for prompting, running, editing, and deploying full-stack applications.",
+      "id": "ext-bolt-new",
+      "location": "San Francisco, CA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=bolt.new&sz=128",
+      "name": "Bolt.new",
+      "one_liner": "Build and deploy full-stack apps from the browser.",
+      "slug": "bolt-new",
+      "tags": [
+        "Developer Tools",
+        "Artificial Intelligence"
+      ],
+      "website": "https://bolt.new"
     }
   ],
   "battles": [
@@ -1742,6 +1773,39 @@
       "space": "HR Tech",
       "title": "Gusto vs BambooHR",
       "yc_slug": "gusto"
+    },
+    {
+      "featured": true,
+      "id": "battle-cursor-codeium",
+      "left_argument": "AI-native editor built around agentic coding workflows and deep codebase context.",
+      "right_argument": "YC-backed AI coding assistant that evolved into the Windsurf agentic IDE.",
+      "rival_yc_slug": "codeium",
+      "slug": "cursor-vs-codeium",
+      "space": "AI Coding",
+      "title": "Cursor vs Codeium",
+      "yc_slug": "cursor"
+    },
+    {
+      "featured": true,
+      "id": "battle-willow-wispr-flow",
+      "left_argument": "YC voice interface focused on fast, personalized dictation across every text field.",
+      "right_argument": "Established cross-platform AI dictation product for polished writing in any app.",
+      "rival_id": "ext-wispr-flow",
+      "slug": "willow-vs-wispr-flow",
+      "space": "AI Dictation",
+      "title": "Willow vs Wispr Flow",
+      "yc_slug": "willow"
+    },
+    {
+      "featured": true,
+      "id": "battle-replit-bolt-new",
+      "left_argument": "YC browser-based development platform combining an IDE, AI agents, hosting, and collaboration.",
+      "right_argument": "StackBlitz's prompt-to-app builder powered by in-browser WebContainers.",
+      "rival_id": "ext-bolt-new",
+      "slug": "replit-vs-bolt-new",
+      "space": "AI App Builders",
+      "title": "Replit vs Bolt.new",
+      "yc_slug": "replit"
     }
   ]
 }

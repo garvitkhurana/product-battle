@@ -1683,6 +1683,75 @@
       "top_company": true,
       "website": "https://www.zeptonow.com/",
       "yc_url": "https://www.ycombinator.com/companies/zepto"
+    },
+    {
+      "batch": "Summer 2022",
+      "industry": "B2B",
+      "location": "San Francisco, CA, USA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=cursor.com&sz=128",
+      "long_description": "Cursor is an AI-native code editor developed by Anysphere for writing, understanding, and modifying software with AI.",
+      "name": "Cursor",
+      "one_liner": "AI-native code editor for building software.",
+      "slug": "cursor",
+      "status": "Active",
+      "tags": [
+        "Developer Tools",
+        "Artificial Intelligence"
+      ],
+      "website": "https://www.cursor.com",
+      "yc_url": "https://www.ycombinator.com/companies"
+    },
+    {
+      "batch": "Summer 2021",
+      "industry": "B2B",
+      "location": "Mountain View, CA, USA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=codeium.com&sz=128",
+      "long_description": "Codeium, created by the YC company Exafunction, built AI coding autocomplete and chat tools before becoming Windsurf.",
+      "name": "Codeium",
+      "one_liner": "AI coding assistant and editor, now known as Windsurf.",
+      "slug": "codeium",
+      "status": "Acquired",
+      "tags": [
+        "Developer Tools",
+        "Artificial Intelligence"
+      ],
+      "website": "https://codeium.com",
+      "yc_url": "https://www.ycombinator.com/companies"
+    },
+    {
+      "batch": "Spring 2025",
+      "industry": "Consumer",
+      "location": "San Francisco, CA, USA",
+      "logo_url": "https://bookface-images.s3.amazonaws.com/small_logos/4d1a38295742d380ffb6bd899dae457066824da5.png",
+      "long_description": "Willow is an AI dictation app that writes into any text field and is designed for email, messaging, documents, and AI prompting workflows.",
+      "name": "Willow",
+      "one_liner": "The voice interface replacing your keyboard.",
+      "slug": "willow",
+      "status": "Active",
+      "tags": [
+        "Artificial Intelligence",
+        "Productivity",
+        "Voice"
+      ],
+      "website": "https://willowvoice.com",
+      "yc_url": "https://www.ycombinator.com/companies/willow"
+    },
+    {
+      "batch": "Winter 2018",
+      "industry": "B2B",
+      "location": "San Francisco, CA, USA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=replit.com&sz=128",
+      "long_description": "Replit is a collaborative browser-based development environment for creating, running, and deploying software.",
+      "name": "Replit",
+      "one_liner": "Collaborative in-browser development environment.",
+      "slug": "replit",
+      "status": "Active",
+      "tags": [
+        "Developer Tools",
+        "Artificial Intelligence"
+      ],
+      "website": "https://replit.com",
+      "yc_url": "https://www.ycombinator.com/companies/replit"
     }
   ]
 }
