@@ -17,10 +17,12 @@ const CURATED_CREATOR_NAME = "YC Battle directory";
 // Drives both the seeded launch set and the /battles board order, so the
 // sequence here is the running order people actually see.
 export const HOUSEHOLD_BATTLE_SLUGS = [
-  // Front row: the live, currently-interesting categories.
-  "willow-vs-wispr-flow", // AI dictation
-  "replit-vs-bolt-new", // AI app building
+  // Front row: the live, currently-interesting categories. Order also decides
+  // what Continuous mode deals first, so the most widely-recognized pair leads
+  // — a forced-choice queue has no menu to self-select from.
   "cursor-vs-codeium", // AI coding
+  "replit-vs-bolt-new", // AI app building
+  "willow-vs-wispr-flow", // AI dictation
   "zepto-vs-blinkit", // Quick commerce
   "gusto-vs-adp", // Payroll
   // Household names: broadest recognition, no repeated company.
