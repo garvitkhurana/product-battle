@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useListBattles } from '@workspace/api-client-react';
 import { Activity, ArrowRight, ShieldAlert } from 'lucide-react';
@@ -7,6 +8,18 @@ import { Seo } from '@/components/Seo';
 
 export default function BattlesList() {
   const { data: battles, isLoading, error } = useListBattles();
+
+  // Lead with the pairings people are actually engaging with. Sort is stable,
+  // so battles on equal counts keep the API's curated order — which means a
+  // cold board (every count still 0) reads as deliberately sequenced rather
+  // than shuffled.
+  const rankedBattles = useMemo(
+    () =>
+      battles
+        ? [...battles].sort((a, b) => b.comparisonCount - a.comparisonCount)
+        : [],
+    [battles],
+  );
 
   return (
     <div className="flex-1 bg-[#f6e5d2]">
@@ -56,7 +69,7 @@ export default function BattlesList() {
                 <p className="mt-1 font-mono text-sm">Please refresh the page and try again.</p>
               </div>
             </div>
-          ) : battles?.length === 0 ? (
+          ) : rankedBattles.length === 0 ? (
             <div className="flex flex-col items-center justify-center space-y-4 border-2 border-dashed border-[#181513] bg-[#fff8ef] p-16 text-center">
               <Activity className="h-12 w-12 text-[#625c55]" />
               <h3 className="text-xl font-bold">No active comparisons</h3>
@@ -66,7 +79,7 @@ export default function BattlesList() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {battles?.map((battle) => (
+              {rankedBattles.map((battle) => (
                 <Link
                   key={battle.id}
                   href={`/battles/${battle.slug}`}
