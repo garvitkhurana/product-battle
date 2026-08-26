@@ -313,12 +313,12 @@ router.get("/card/dna", (req, res): void => {
         description: `${payload.headline} What's your startup taste?`,
         imagePath: dnaImagePath(payload),
         canonicalPath: "/dna",
-        redirectPath: "/swipe",
+        redirectPath: "/battles",
         sharePath: dnaCardPath(payload),
         socialImageUrl: DNA_SOCIAL_IMAGE,
         autoRedirect: !isSocialCrawler(req.get("user-agent")),
         bodyImageUrl: `${SITE}${dnaImagePath(payload)}`,
-        ctaLabel: "Find your own Taste DNA",
+        ctaLabel: "Pick your side",
         // Personalized, unbounded query-param variants: keep them out of the
         // index (social crawlers still read OG tags) now that this renders as
         // a real page instead of an instant redirect.
