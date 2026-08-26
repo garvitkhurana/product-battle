@@ -14,8 +14,16 @@ import {
 
 const CURATED_CREATOR_ID = "yc-battle-directory";
 const CURATED_CREATOR_NAME = "YC Battle directory";
+// Drives both the seeded launch set and the /battles board order, so the
+// sequence here is the running order people actually see.
 export const HOUSEHOLD_BATTLE_SLUGS = [
-  // Household-name front row: broadest recognition, no repeated company.
+  // Front row: the live, currently-interesting categories.
+  "willow-vs-wispr-flow", // AI dictation
+  "replit-vs-bolt-new", // AI app building
+  "cursor-vs-codeium", // AI coding
+  "zepto-vs-blinkit", // Quick commerce
+  "gusto-vs-adp", // Payroll
+  // Household names: broadest recognition, no repeated company.
   "airbnb-vs-vrbo",
   "doordash-vs-uber-eats",
   "twitch-vs-youtube",
@@ -26,20 +34,15 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   "dropbox-vs-google-drive",
   "gitlab-vs-github",
   "opensea-vs-blur",
-  "cursor-vs-codeium",
   "whatnot-vs-tiktok-shop",
   "goat-vs-stockx",
-  "gusto-vs-adp",
   "brex-vs-amex",
   "honeylove-vs-skims",
-  "zepto-vs-blinkit",
   "scribd-vs-kindle-unlimited",
   // Axis-covering cohort: infra↔consumer and regulated↔software signal
   "fivestars-vs-square",
   "heroku-vs-render",
   "rippling-vs-bamboohr",
-  "willow-vs-wispr-flow",
-  "replit-vs-bolt-new",
 ] as const;
 
 export const LAUNCH_BATTLE_SLUGS = new Set<string>(HOUSEHOLD_BATTLE_SLUGS);
