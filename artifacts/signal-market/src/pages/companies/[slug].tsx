@@ -1,6 +1,6 @@
 import { Link, useRoute } from 'wouter';
 import { getGetCompanyPerceptionQueryKey, useCreateCompanyClaim, useGetCompanyPerception } from '@workspace/api-client-react';
-import { Loader2, AlertCircle, BarChart3, Database, Copy, Share2 } from 'lucide-react';
+import { Loader2, AlertCircle, BarChart3, Database, Copy, MessageCircle, Share2 } from 'lucide-react';
 import { type FormEvent, useMemo, useState } from 'react';
 import { useAuth } from '@clerk/react';
 import { useToast } from '@/hooks/use-toast';
@@ -68,13 +68,24 @@ export default function CompanyProfile() {
     }
   };
 
-  const shareCompany = () => {
+  const shareText = (() => {
     const top = (profile.words ?? []).slice(0, 3).map((word) => word.word).join(', ');
-    const text = top
+    return top
       ? `${profile.participant.name} on YC Battle — community perception, unverified: ${top}`
       : `${profile.participant.name} on YC Battle — community perception`;
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+  })();
+
+  const shareCompany = () => {
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(intent, '_blank', 'noopener,noreferrer');
+  };
+
+  const shareCompanyOnWhatsApp = () => {
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
   return (
@@ -139,6 +150,14 @@ export default function CompanyProfile() {
               >
                 <Share2 className="h-4 w-4" />
                 Share
+              </button>
+              <button
+                type="button"
+                onClick={shareCompanyOnWhatsApp}
+                className="inline-flex items-center gap-2 px-4 py-2 border border-foreground bg-[#d7ff45] font-bold text-sm hover:bg-[#fff8ef] transition-colors"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
               </button>
             </div>
           </div>

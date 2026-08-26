@@ -13,7 +13,7 @@ import {
   useSessionToken,
 } from '@/lib/session';
 import { markWordPromptOffered, shouldOfferWordPrompt } from '@/lib/wordPromptEligibility';
-import { ArrowLeft, Check, Copy, Link2, Loader2, Share2 } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Link2, Loader2, MessageCircle, Share2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
@@ -169,11 +169,23 @@ export default function BattleDetail() {
     }
   };
 
+  const shareText = battle
+    ? `${battle.participantA.name} vs ${battle.participantB.name} — who earns your signal?`
+    : '';
+
   const shareComparison = () => {
     if (!battle) return;
-    const text = `${battle.participantA.name} vs ${battle.participantB.name} — who earns your signal?`;
-    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
     window.open(intent, '_blank', 'noopener,noreferrer');
+  };
+
+  const shareOnWhatsApp = () => {
+    if (!battle) return;
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
   const seoTitle = battle
@@ -284,6 +296,14 @@ export default function BattleDetail() {
             >
               <Share2 className="h-3.5 w-3.5" />
               Share
+            </button>
+            <button
+              type="button"
+              onClick={shareOnWhatsApp}
+              className="inline-flex items-center gap-2 border border-[#181513] bg-[#d7ff45] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] hover:bg-[#fff8ef]"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              WhatsApp
             </button>
             <span className="border border-[#181513] bg-[#fff8ef] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
               {battle.category}
@@ -431,6 +451,14 @@ export default function BattleDetail() {
                 >
                   <Link2 className="h-3.5 w-3.5" />
                   Copy link
+                </button>
+                <button
+                  type="button"
+                  onClick={shareOnWhatsApp}
+                  className="inline-flex items-center gap-2 border border-[#fff8ef] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  WhatsApp
                 </button>
                 <Link href="/swipe" className="bg-[#d7ff45] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-[#181513]">Continuous mode</Link>
                 <Link href="/dna" className="border border-[#fff8ef] px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest">Taste DNA</Link>

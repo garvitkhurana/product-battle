@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useGetPerceptionMap, useListBattles } from '@workspace/api-client-react';
-import { Copy, Loader2, Map as MapIcon, Share2 } from 'lucide-react';
+import { Copy, Loader2, Map as MapIcon, MessageCircle, Share2 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { CompanyMark } from '@/components/CompanyMark';
@@ -101,10 +101,19 @@ export default function EcosystemMap() {
     }
   };
 
+  const shareText = 'Map of the YC ecosystem — territories from co-voting and word overlap on YC Battle.';
+
   const shareMap = () => {
-    const text = 'Map of the YC ecosystem — territories from co-voting and word overlap on YC Battle.';
     window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`,
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
+  };
+
+  const shareMapOnWhatsApp = () => {
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`,
       '_blank',
       'noopener,noreferrer',
     );
@@ -153,6 +162,14 @@ export default function EcosystemMap() {
             >
               <Share2 className="h-3.5 w-3.5" />
               Share map
+            </button>
+            <button
+              type="button"
+              onClick={shareMapOnWhatsApp}
+              className="inline-flex items-center gap-2 border-2 border-[#181513] bg-[#d7ff45] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em]"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+              WhatsApp
             </button>
           </div>
         </header>
