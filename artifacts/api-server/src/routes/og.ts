@@ -43,11 +43,26 @@ function shareHtml(input: {
   redirectPath?: string;
   socialImageUrl?: string;
   autoRedirect?: boolean;
+  bodyImageUrl?: string;
+  ctaLabel?: string;
 }): string {
   const pageUrl = `${SITE}${input.sharePath ?? input.canonicalPath}`;
   const canonicalUrl = `${SITE}${input.canonicalPath}`;
   const redirectUrl = `${SITE}${input.redirectPath ?? input.canonicalPath}`;
   const imageUrl = input.socialImageUrl ?? `${SITE}${input.imagePath}`;
+  const ctaLabel = input.ctaLabel ?? "Continue to YC Battle";
+  // When a visible card image is supplied, let the person actually see it —
+  // no instant meta-refresh yanking them away before they can look at it.
+  const body = input.bodyImageUrl
+    ? `<body style="margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f6e5d2;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:560px;width:100%;padding:24px;text-align:center;">
+    <img src="${escapeHtml(input.bodyImageUrl)}" alt="${escapeHtml(input.title)}" style="width:100%;height:auto;border:2px solid #181513;display:block;" />
+    <a href="${escapeHtml(redirectUrl)}" style="display:inline-block;margin-top:24px;padding:16px 32px;background:#181513;color:#fff8ef;text-decoration:none;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;font-size:13px;">${escapeHtml(ctaLabel)}</a>
+  </div>
+</body>`
+    : `<body>
+  <p><a href="${escapeHtml(redirectUrl)}">${escapeHtml(ctaLabel)}</a></p>
+</body>`;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -72,11 +87,9 @@ function shareHtml(input: {
   <meta name="twitter:image:src" content="${escapeHtml(imageUrl)}" />
   <meta name="twitter:image:alt" content="${escapeHtml(input.title)}" />
   <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
-  ${input.autoRedirect === false ? "" : `<meta http-equiv="refresh" content="0;url=${escapeHtml(redirectUrl)}" />`}
+  ${input.autoRedirect === false || input.bodyImageUrl ? "" : `<meta http-equiv="refresh" content="0;url=${escapeHtml(redirectUrl)}" />`}
 </head>
-<body>
-  <p><a href="${escapeHtml(redirectUrl)}">Continue to YC Battle</a></p>
-</body>
+${body}
 </html>`;
 }
 
@@ -302,6 +315,8 @@ router.get("/card/dna", (req, res): void => {
         sharePath: dnaCardPath(payload),
         socialImageUrl: DNA_SOCIAL_IMAGE,
         autoRedirect: !isSocialCrawler(req.get("user-agent")),
+        bodyImageUrl: `${SITE}${dnaImagePath(payload)}`,
+        ctaLabel: "Find your own Taste DNA",
       }),
     );
 });
