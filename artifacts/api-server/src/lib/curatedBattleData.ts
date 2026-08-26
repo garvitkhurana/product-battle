@@ -1951,21 +1951,6 @@ export const curatedCompetitors: CuratedCompetitor[] = [
   },
   {
     "category": "B2B",
-    "description": "Jira is the incumbent project and issue tracking suite for software organizations.",
-    "id": "ext-jira",
-    "location": "Sydney, Australia",
-    "logo_url": "https://www.google.com/s2/favicons?domain=atlassian.com&sz=128",
-    "name": "Jira",
-    "one_liner": "Atlassian's default issue tracker for engineering teams.",
-    "slug": "jira",
-    "tags": [
-      "Developer Tools",
-      "Productivity"
-    ],
-    "website": "https://www.atlassian.com/software/jira"
-  },
-  {
-    "category": "B2B",
     "description": "Labelbox helps teams create and manage labeled datasets for machine learning.",
     "id": "ext-labelbox",
     "location": "San Francisco, CA",
