@@ -45,6 +45,7 @@ function shareHtml(input: {
   autoRedirect?: boolean;
   bodyImageUrl?: string;
   ctaLabel?: string;
+  noindex?: boolean;
 }): string {
   const pageUrl = `${SITE}${input.sharePath ?? input.canonicalPath}`;
   const canonicalUrl = `${SITE}${input.canonicalPath}`;
@@ -69,6 +70,7 @@ function shareHtml(input: {
   <meta charset="utf-8" />
   <title>${escapeHtml(input.title)}</title>
   <meta name="description" content="${escapeHtml(input.description)}" />
+  ${input.noindex ? `<meta name="robots" content="noindex, follow" />` : ""}
   <meta property="og:title" content="${escapeHtml(input.title)}" />
   <meta property="og:description" content="${escapeHtml(input.description)}" />
   <meta property="og:type" content="website" />
@@ -317,6 +319,10 @@ router.get("/card/dna", (req, res): void => {
         autoRedirect: !isSocialCrawler(req.get("user-agent")),
         bodyImageUrl: `${SITE}${dnaImagePath(payload)}`,
         ctaLabel: "Find your own Taste DNA",
+        // Personalized, unbounded query-param variants: keep them out of the
+        // index (social crawlers still read OG tags) now that this renders as
+        // a real page instead of an instant redirect.
+        noindex: true,
       }),
     );
 });
