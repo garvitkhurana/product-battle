@@ -17,34 +17,41 @@ const CURATED_CREATOR_NAME = "YC Battle directory";
 // Drives both the seeded launch set and the /battles board order, so the
 // sequence here is the running order people actually see.
 export const HOUSEHOLD_BATTLE_SLUGS = [
-  // Front row: the live, currently-interesting categories. Order also decides
-  // what Continuous mode deals first, so the most widely-recognized pair leads
-  // — a forced-choice queue has no menu to self-select from.
-  "cursor-vs-codeium", // AI coding
+  // Front row. Order also decides what Continuous mode deals first, so it
+  // balances two jobs: open on a pair people recognize (a forced-choice queue
+  // has no menu to self-select from), and reach every Taste DNA axis early.
+  // An axis only gains evidence when the two sides SCORE DIFFERENTLY on it, so
+  // same-category pairs like Cursor/Codeium contribute nothing and the
+  // cross-category pairs below have to be live and early, not archived.
+  "cursor-vs-codeium", // AI coding — recognizable opener
+  "doordash-vs-toast", // infra↔consumer
+  "gusto-vs-bamboohr", // regulated↔software
+  "fivestars-vs-square", // both weak axes at once
   "replit-vs-bolt-new", // AI app building
-  "willow-vs-wispr-flow", // AI dictation
   "zepto-vs-blinkit", // Quick commerce
+  "clipboard-vs-shiftkey", // all four axes
+  "willow-vs-wispr-flow", // AI dictation
+  "weave-vs-solutionreach", // all four axes
   "gusto-vs-adp", // Payroll
-  // Household names: broadest recognition, no repeated company.
+  // Household names: broadest recognition.
   "airbnb-vs-vrbo",
   "doordash-vs-uber-eats",
   "twitch-vs-youtube",
   "reddit-vs-discord",
   "coinbase-vs-robinhood",
   "stripe-vs-paypal",
+  "matterport-vs-iguide", // infra↔consumer
   "instacart-vs-amazon-fresh",
   "dropbox-vs-google-drive",
   "gitlab-vs-github",
   "opensea-vs-blur",
+  "rippling-vs-bamboohr", // regulated↔software
   "whatnot-vs-tiktok-shop",
   "goat-vs-stockx",
   "brex-vs-amex",
   "honeylove-vs-skims",
   "scribd-vs-kindle-unlimited",
-  // Axis-covering cohort: infra↔consumer and regulated↔software signal
-  "fivestars-vs-square",
   "heroku-vs-render",
-  "rippling-vs-bamboohr",
 ] as const;
 
 export const LAUNCH_BATTLE_SLUGS = new Set<string>(HOUSEHOLD_BATTLE_SLUGS);
