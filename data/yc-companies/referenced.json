@@ -1752,6 +1752,23 @@
       ],
       "website": "https://replit.com",
       "yc_url": "https://www.ycombinator.com/companies/replit"
+    },
+    {
+      "batch": "Summer 2018",
+      "industry": "Fintech",
+      "location": "New York, NY, USA",
+      "logo_url": "https://www.google.com/s2/favicons?domain=opensea.io&sz=128",
+      "long_description": "OpenSea is the largest peer-to-peer marketplace for buying, selling, and discovering NFTs across Ethereum and other chains.",
+      "name": "OpenSea",
+      "one_liner": "The original NFT marketplace.",
+      "slug": "opensea",
+      "status": "Active",
+      "tags": [
+        "Crypto / Web3",
+        "Marketplace"
+      ],
+      "website": "https://opensea.io",
+      "yc_url": "https://www.ycombinator.com/companies/opensea"
     }
   ]
 }

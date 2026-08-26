@@ -1045,6 +1045,21 @@
         "Artificial Intelligence"
       ],
       "website": "https://bolt.new"
+    },
+    {
+      "category": "Crypto / Web3",
+      "description": "Blur is an NFT marketplace and aggregator built for high-volume professional traders, with token incentives for liquidity.",
+      "id": "ext-blur",
+      "location": "New York, NY",
+      "logo_url": "https://www.google.com/s2/favicons?domain=blur.io&sz=128",
+      "name": "Blur",
+      "one_liner": "Pro-trader NFT marketplace and aggregator.",
+      "slug": "blur",
+      "tags": [
+        "Crypto / Web3",
+        "Marketplace"
+      ],
+      "website": "https://blur.io"
     }
   ],
   "battles": [
@@ -1806,6 +1821,17 @@
       "space": "AI App Builders",
       "title": "Replit vs Bolt.new",
       "yc_slug": "replit"
+    },
+    {
+      "featured": true,
+      "id": "battle-opensea-blur",
+      "left_argument": "The original NFT marketplace with the deepest collector reach and history.",
+      "right_argument": "Pro-trader marketplace built for speed, fees, and token-incentivized liquidity.",
+      "rival_id": "ext-blur",
+      "slug": "opensea-vs-blur",
+      "space": "NFT Marketplaces",
+      "title": "OpenSea vs Blur",
+      "yc_slug": "opensea"
     }
   ]
 }

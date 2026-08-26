@@ -31,11 +31,12 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   "zepto-vs-blinkit",
   "scribd-vs-kindle-unlimited",
   // Axis-covering cohort: infra↔consumer and regulated↔software signal
-  "matterport-vs-iguide",
-  "clipboard-vs-shiftkey",
   "fivestars-vs-square",
-  "weave-vs-solutionreach",
   "heroku-vs-render",
+  // Mainstream swaps in for matterport-vs-iguide, clipboard-vs-shiftkey, weave-vs-solutionreach
+  "reddit-vs-discord",
+  "stripe-vs-paypal",
+  "coinbase-vs-robinhood",
   // Same-space axis covers: food delivery vs restaurant OS; payroll vs pure HRIS
   "doordash-vs-toast",
   "gusto-vs-bamboohr",

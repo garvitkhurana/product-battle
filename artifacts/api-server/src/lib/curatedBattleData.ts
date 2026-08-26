@@ -1793,6 +1793,23 @@ export const curatedCompanies: CuratedCompany[] = [
     ],
     "website": "https://replit.com",
     "yc_url": "https://www.ycombinator.com/companies/replit"
+  },
+  {
+    "batch": "Summer 2018",
+    "industry": "Fintech",
+    "location": "New York, NY, USA",
+    "logo_url": "https://www.google.com/s2/favicons?domain=opensea.io&sz=128",
+    "long_description": "OpenSea is the largest peer-to-peer marketplace for buying, selling, and discovering NFTs across Ethereum and other chains.",
+    "name": "OpenSea",
+    "one_liner": "The original NFT marketplace.",
+    "slug": "opensea",
+    "status": "Active",
+    "tags": [
+      "Crypto / Web3",
+      "Marketplace"
+    ],
+    "website": "https://opensea.io",
+    "yc_url": "https://www.ycombinator.com/companies/opensea"
   }
 ];
 
@@ -2836,6 +2853,21 @@ export const curatedCompetitors: CuratedCompetitor[] = [
       "Artificial Intelligence"
     ],
     "website": "https://bolt.new"
+  },
+  {
+    "category": "Crypto / Web3",
+    "description": "Blur is an NFT marketplace and aggregator built for high-volume professional traders, with token incentives for liquidity.",
+    "id": "ext-blur",
+    "location": "New York, NY",
+    "logo_url": "https://www.google.com/s2/favicons?domain=blur.io&sz=128",
+    "name": "Blur",
+    "one_liner": "Pro-trader NFT marketplace and aggregator.",
+    "slug": "blur",
+    "tags": [
+      "Crypto / Web3",
+      "Marketplace"
+    ],
+    "website": "https://blur.io"
   }
 ];
 
@@ -3598,5 +3630,16 @@ export const curatedBattles: CuratedBattle[] = [
     "space": "AI App Builders",
     "title": "Replit vs Bolt.new",
     "yc_slug": "replit"
+  },
+  {
+    "featured": true,
+    "id": "battle-opensea-blur",
+    "left_argument": "The original NFT marketplace with the deepest collector reach and history.",
+    "right_argument": "Pro-trader marketplace built for speed, fees, and token-incentivized liquidity.",
+    "rival_id": "ext-blur",
+    "slug": "opensea-vs-blur",
+    "space": "NFT Marketplaces",
+    "title": "OpenSea vs Blur",
+    "yc_slug": "opensea"
   }
 ];
