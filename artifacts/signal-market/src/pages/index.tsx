@@ -5,8 +5,17 @@ import { CompanyMark } from '@/components/CompanyMark';
 import { AddNextBatchCta } from '@/components/AddNextBatchCta';
 import { Seo } from '@/components/Seo';
 
+// Curated independently of the full gallery order in battleSeed.ts, so the
+// homepage teaser can spotlight specific battles without reordering /battles.
+const HOMEPAGE_SPOTLIGHT_SLUGS = ['reddit-vs-discord', 'cursor-vs-codeium', 'opensea-vs-blur'];
+
 export default function Index() {
   const { data: battles, isLoading } = useListBattles();
+  const spotlightBattles = battles
+    ? HOMEPAGE_SPOTLIGHT_SLUGS.map((slug) => battles.find((battle) => battle.slug === slug)).filter(
+        (battle): battle is NonNullable<typeof battle> => Boolean(battle),
+      )
+    : [];
 
   return (
     <div className="flex-1 flex flex-col">
@@ -105,7 +114,7 @@ export default function Index() {
               Array.from({ length: 3 }).map((_, i) => (
                 <div key={i} className="h-72 animate-pulse border-2 border-[#181513] bg-[#fff8ef]" />
               ))
-            ) : battles?.slice(0, 3).map((battle) => (
+            ) : spotlightBattles.map((battle) => (
               <Link 
                 key={battle.id} 
                 href={`/battles/${battle.slug}`}

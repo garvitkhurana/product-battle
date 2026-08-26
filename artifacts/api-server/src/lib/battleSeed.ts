@@ -15,13 +15,18 @@ import {
 const CURATED_CREATOR_ID = "yc-battle-directory";
 const CURATED_CREATOR_NAME = "YC Battle directory";
 export const HOUSEHOLD_BATTLE_SLUGS = [
+  // Household-name front row: broadest recognition, no repeated company.
   "airbnb-vs-vrbo",
   "doordash-vs-uber-eats",
   "twitch-vs-youtube",
-  "coinbase-vs-binance",
+  "reddit-vs-discord",
+  "coinbase-vs-robinhood",
+  "stripe-vs-paypal",
   "instacart-vs-amazon-fresh",
   "dropbox-vs-google-drive",
   "gitlab-vs-github",
+  "opensea-vs-blur",
+  "cursor-vs-codeium",
   "whatnot-vs-tiktok-shop",
   "goat-vs-stockx",
   "gusto-vs-adp",
@@ -32,16 +37,7 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   // Axis-covering cohort: infra↔consumer and regulated↔software signal
   "fivestars-vs-square",
   "heroku-vs-render",
-  // Mainstream swaps in for matterport-vs-iguide, clipboard-vs-shiftkey, weave-vs-solutionreach
-  "reddit-vs-discord",
-  "stripe-vs-paypal",
-  "coinbase-vs-robinhood",
-  "opensea-vs-blur",
-  // Same-space axis covers: food delivery vs restaurant OS; payroll vs pure HRIS
-  "doordash-vs-toast",
-  "gusto-vs-bamboohr",
   "rippling-vs-bamboohr",
-  "cursor-vs-codeium",
   "willow-vs-wispr-flow",
   "replit-vs-bolt-new",
 ] as const;
