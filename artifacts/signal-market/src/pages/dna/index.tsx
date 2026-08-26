@@ -202,11 +202,11 @@ export default function TasteDna() {
   };
 
   const copyDna = async () => {
-    if (!dna) return;
-    const archetype = archetypeName(dna.archetype || "Taste DNA");
+    const details = getShareDetails();
+    if (!details) return;
     try {
       await navigator.clipboard.writeText(
-        `I’m the ${archetype} on YC Battle. ${dna.headline} What’s your startup taste?`,
+        `${details.text}\n${details.cardUrl}`,
       );
       toast({
         title: "Copied",
