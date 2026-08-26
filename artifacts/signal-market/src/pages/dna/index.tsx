@@ -161,8 +161,9 @@ export default function TasteDna() {
     try {
       const response = await fetch(details.imageUrl);
       if (!response.ok) throw new Error("Card unavailable");
+      const imageBlob = await response.blob();
       const file = new File(
-        [await response.blob()],
+        [imageBlob],
         "yc-battle-taste-dna.png",
         { type: "image/png" },
       );
@@ -177,10 +178,15 @@ export default function TasteDna() {
         return;
       }
 
+      const objectUrl = URL.createObjectURL(imageBlob);
       const download = document.createElement("a");
-      download.href = details.imageUrl;
+      download.href = objectUrl;
       download.download = file.name;
+      download.rel = "noopener";
+      document.body.appendChild(download);
       download.click();
+      download.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
       toast({
         title: "Card downloaded",
         description: "Open Instagram and add the image to your post or story.",
