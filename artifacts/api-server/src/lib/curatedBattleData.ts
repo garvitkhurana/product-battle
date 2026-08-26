@@ -2828,7 +2828,7 @@ export const curatedCompetitors: CuratedCompetitor[] = [
     "description": "Wispr Flow is an AI voice-to-text application that turns natural speech into polished writing across desktop and mobile apps.",
     "id": "ext-wispr-flow",
     "location": "San Francisco, CA",
-    "logo_url": "https://www.google.com/s2/favicons?domain=wisprflow.ai&sz=128",
+    "logo_url": "https://cdn.prod.website-files.com/682f84b3838c89f8ff7667db/68d27d1a8a10f417b5644527_flow-wc-v2.png",
     "name": "Wispr Flow",
     "one_liner": "AI dictation that writes across every app.",
     "slug": "wispr-flow",
