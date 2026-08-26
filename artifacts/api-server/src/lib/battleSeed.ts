@@ -18,7 +18,6 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   "airbnb-vs-vrbo",
   "doordash-vs-uber-eats",
   "twitch-vs-youtube",
-  "stripe-vs-adyen",
   "coinbase-vs-binance",
   "instacart-vs-amazon-fresh",
   "dropbox-vs-google-drive",
