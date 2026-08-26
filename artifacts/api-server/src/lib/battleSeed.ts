@@ -37,6 +37,7 @@ export const HOUSEHOLD_BATTLE_SLUGS = [
   "reddit-vs-discord",
   "stripe-vs-paypal",
   "coinbase-vs-robinhood",
+  "opensea-vs-blur",
   // Same-space axis covers: food delivery vs restaurant OS; payroll vs pure HRIS
   "doordash-vs-toast",
   "gusto-vs-bamboohr",
