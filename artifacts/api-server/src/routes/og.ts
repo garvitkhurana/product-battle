@@ -298,6 +298,7 @@ router.get("/card/dna", (req, res): void => {
         description: `${payload.headline} What's your startup taste?`,
         imagePath: dnaImagePath(payload),
         canonicalPath: "/dna",
+        redirectPath: "/swipe",
         sharePath: dnaCardPath(payload),
         socialImageUrl: DNA_SOCIAL_IMAGE,
         autoRedirect: !isSocialCrawler(req.get("user-agent")),
