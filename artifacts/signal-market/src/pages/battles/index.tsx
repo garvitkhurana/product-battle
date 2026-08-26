@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'wouter';
 import { useListBattles } from '@workspace/api-client-react';
-import { Activity, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Activity, ArrowRight, ShieldAlert, Zap } from 'lucide-react';
 import { CompanyMark } from '@/components/CompanyMark';
 import { AddNextBatchCta } from '@/components/AddNextBatchCta';
 import { Seo } from '@/components/Seo';
@@ -45,10 +45,21 @@ export default function BattlesList() {
                 Pick the pairing you know best. Every choice is a private perception signal, not a public ranking.
               </p>
             </div>
-            <span className="inline-flex w-fit items-center gap-2 border border-[#181513] bg-[#d7ff45] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
-              <span className="h-2 w-2 bg-[#181513]" />
-              {battles?.length ?? 0} live now
-            </span>
+            <div className="flex w-fit flex-col items-start gap-3 sm:items-end">
+              <span className="inline-flex w-fit items-center gap-2 border border-[#181513] bg-[#d7ff45] px-3 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em]">
+                <span className="h-2 w-2 bg-[#181513]" />
+                {battles?.length ?? 0} live now
+              </span>
+              {/* Escape hatch to the fast path: browsing is the warm entry, but
+                  anyone who wants a Taste DNA needs volume, not one-off picks. */}
+              <Link
+                href="/swipe"
+                className="inline-flex w-fit items-center gap-2 whitespace-nowrap border-2 border-[#181513] bg-[#181513] px-4 py-3 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#fff8ef] transition-colors hover:bg-[#ff5038]"
+              >
+                <Zap className="h-3.5 w-3.5" />
+                Continuous mode
+              </Link>
+            </div>
           </div>
         </header>
 
