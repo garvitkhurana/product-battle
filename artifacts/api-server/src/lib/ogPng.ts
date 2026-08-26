@@ -153,6 +153,28 @@ function drawText(
   return cx;
 }
 
+// Break text on word boundaries into lines that fit drawText's clip width.
+// drawText hard-truncates mid-word with no ellipsis, so anything longer than
+// one line must be wrapped before it is drawn.
+function wrapText(text: string, scale: number, maxWidth: number, maxLines: number): string[] {
+  const perLine = Math.floor(maxWidth / (6 * scale));
+  const lines: string[] = [];
+  let current = "";
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length <= perLine) {
+      current = candidate;
+      continue;
+    }
+    if (current) lines.push(current);
+    if (lines.length === maxLines) return lines;
+    // A single word longer than a line still has to be cut somewhere.
+    current = word.length > perLine ? word.slice(0, perLine) : word;
+  }
+  if (current && lines.length < maxLines) lines.push(current);
+  return lines;
+}
+
 function encodePng(pixels: Uint8Array): Buffer {
   const stride = WIDTH * 3;
   const raw = Buffer.alloc((stride + 1) * HEIGHT);
@@ -206,9 +228,13 @@ export function renderBattleOgPng(input: {
   if (input.category) {
     drawText(pixels, input.category.slice(0, 28), 48, 100, 2, [98, 92, 85]);
   }
-  drawText(pixels, input.nameA.slice(0, 18), 48, 180, 6, [24, 21, 19], 520);
+  wrapText(input.nameA, 6, 520, 2).forEach((line, index) => {
+    drawText(pixels, line, 48, 180 + index * 52, 6, [24, 21, 19], 520);
+  });
   drawText(pixels, "VS", 560, 190, 4, [255, 80, 56]);
-  drawText(pixels, input.nameB.slice(0, 18), 640, 180, 6, [24, 21, 19], 520);
+  wrapText(input.nameB, 6, 520, 2).forEach((line, index) => {
+    drawText(pixels, line, 640, 180 + index * 52, 6, [24, 21, 19], 520);
+  });
   fillRect(pixels, 48, 320, 1104, 48, [24, 21, 19]);
   const aWidth = Math.max(8, Math.round((input.pctA / 100) * 1104));
   fillRect(pixels, 48, 320, aWidth, 48, [255, 80, 56]);
@@ -229,7 +255,9 @@ export function renderCompanyOgPng(input: {
   drawGrid(pixels);
   brandHeader(pixels);
   drawText(pixels, "COMMUNITY PERCEPTION", 48, 110, 2, [98, 92, 85]);
-  drawText(pixels, input.name.slice(0, 22), 48, 170, 7, [24, 21, 19], 900);
+  wrapText(input.name, 7, 900, 2).forEach((line, index) => {
+    drawText(pixels, line, 48, 170 + index * 58, 7, [24, 21, 19], 900);
+  });
   const words = input.words.slice(0, 5);
   if (!words.length) {
     drawText(pixels, "NOT ENOUGH SIGNALS YET", 48, 320, 4, [98, 92, 85]);
@@ -276,7 +304,9 @@ export function renderDnaOgPng(input: {
 
   drawText(pixels, "TASTE DNA", 48, 120, 2, [255, 80, 56]);
   drawText(pixels, input.archetype.slice(0, 36), 48, 170, 4, [24, 21, 19], 820);
-  drawText(pixels, input.headline.slice(0, 52), 48, 270, 5, [24, 21, 19], 1080);
+  wrapText(input.headline, 5, 1080, 2).forEach((line, index) => {
+    drawText(pixels, line, 48, 258 + index * 46, 5, [24, 21, 19], 1080);
+  });
 
   fillRect(pixels, 48, 390, 1104, 3, [24, 21, 19]);
   if (input.tendency) {
